@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003 - 2010 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          The eFaps Team
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-type  xmlns="http://www.efaps.org/xsd"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+    <uuid>965f9891-a2e8-4175-8136-2909c7b702ea</uuid>
+    <file-application>eFaps-ERP</file-application>
+    <file-revision>$Rev$</file-revision>
+    <definition>
+        <version-expression>(version==latest)</version-expression>
+        <name>ERP_Document_Class</name>
+        <purpose classification="true" abstract="true">
+            <LinkColumn>DocumentLink</LinkColumn>
+        </purpose>
+        <attribute>
+            <name>OID</name>
+            <type>OID</type>
+            <sqltable>ERP_Document_ClassSQLTable</sqltable>
+            <sqlcolumn>ID</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>ID</name>
+            <type>Long</type>
+            <sqltable>ERP_Document_ClassSQLTable</sqltable>
+            <sqlcolumn>ID</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>DocumentLink</name>
+            <type>Link</type>
+            <typelink>ERP_DocumentAbstract</typelink>
+            <sqltable>ERP_Document_ClassSQLTable</sqltable>
+            <sqlcolumn>DOCID</sqlcolumn>
+        </attribute>
+        <classifies type="ERP_DocumentAbstract" relType="ERP_Document2Class"
+                    relLinkAttribute="DocumentLink" relTypeAttribute="ClassTypeId" />
+    </definition>
+</datamodel-type>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  Copyright 2003 - 2010 The eFaps Team
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Author:          The eFaps Team
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+
+-->
+<install xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+    <application>eFaps-ERP</application>
+    <dependencies>
+        <dependency order="0">
+            <groupId>org.efaps</groupId>
+            <artifactId>efaps-kernel-install</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency order="1">
+            <groupId>org.efaps</groupId>
+            <artifactId>efaps-webapp-install</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency order="2">
+            <groupId>org.efaps.module</groupId>
+            <artifactId>efaps-crm-contacts</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    <version number="1" reloadCache="false" login="true" compile="true">
+        <description>Install ERP Basic Modul.</description>
+        <script type="groovy">
+            import org.efaps.admin.runlevel.RunLevel;
+            import org.efaps.db.Context;
+            import org.efaps.db.SearchQuery;
+            import org.efaps.esjp.admin.ui.UIUpdate;
+            import org.efaps.importer.DataImport;
+
+            import java.net.URL
+            import java.io.File;
+
+            EFAPS_LOGGER.info("Importing Data for ERP Basic Modul;");
+
+            RunLevel.init("shell");
+            RunLevel.execute();
+
+            SearchQuery query = new SearchQuery();
+            query.setQueryTypes("Admin_User_JAASKey");
+            query.addWhereExprEqValue("Key", "ERP_CurrencyAdmin");
+            query.addSelect("OID");
+            query.execute();
+            if (!query.next()) {
+                URL url4 = new URL(EFAPS_ROOTURL, "Data/IMPORT_UserJAASKey.xml");
+                DataImport imp4 = DataImport.readFile(url4);
+                imp4.updateInDB();
+            }
+
+            UIUpdate update = new UIUpdate();
+
+            <!-- ERP_Contacts_ContactMyDesk_Menu_Action_MoveDocuments2Contacts, Contacts_ContactMyDesk_Menu_Action -->
+            update.add2Menu("31854e2f-a6ab-4c91-aaf0-30cd112e8995", "f54e5a23-4760-4322-9600-756ee787cff5", 1);
+        </script>
+    </version>
+</install>
