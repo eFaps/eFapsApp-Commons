@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.OIDType;
 import org.efaps.admin.event.Parameter;
@@ -67,7 +68,69 @@ public abstract class Revision_Base
         final Instance newInst = copyDoc(_parameter);
         updateRevision(_parameter, newInst);
         copyRelations(_parameter, newInst);
+        connectRevision(_parameter, newInst);
+        setStati(_parameter, newInst);
         return new Return();
+    }
+
+    /**
+     * Set the stati for the Instances.
+     *
+     * @param _parameter    Parameter as passed from the eFaps API
+     * @param _newDoc       the newly created Document
+     * @throws EFapsException on error
+     */
+    protected void setStati(final Parameter _parameter,
+                            final Instance _newDoc)
+        throws EFapsException
+    {
+        final Map<?,?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+        if (props.containsKey("Status")) {
+            final String statusStr = (String) props.get("Status");
+            updateStatus(_parameter.getInstance(), statusStr);
+        }
+        if (props.containsKey("RevisionStatus")) {
+            final String statusStr = (String) props.get("RevisionStatus");
+            updateStatus(_newDoc, statusStr);
+        }
+    }
+
+    /**
+     * Set the status for an instance.
+     *
+     * @param _instance     Instance to be updated
+     * @param _statusStr    statsu to be set
+     * @throws EFapsException   on error
+     */
+    protected void updateStatus(final Instance _instance,
+                                final String _statusStr)
+        throws EFapsException
+    {
+        final Type statusType = _instance.getType().getStatusAttribute().getLink();
+        final Status status = Status.find(statusType.getUUID(), _statusStr);
+        if (status != null) {
+            final Update update = new Update(_instance);
+            update.add(_instance.getType().getStatusAttribute(), status.getId());
+            update.execute();
+        }
+    }
+
+    /**
+     * Connect the new Revision to its parent.
+     *
+     * @param _parameter    Parameter as passed from the eFaps API
+     * @param _newDoc       the newly created Document
+     * @throws EFapsException on error
+     */
+    protected void connectRevision(final Parameter _parameter,
+                                   final Instance _newDoc)
+        throws EFapsException
+    {
+        final Instance origInst = _parameter.getInstance();
+        final Insert insert = new Insert(CIERP.Document2Revision);
+        insert.add(CIERP.Document2Revision.FromLink, origInst.getId());
+        insert.add(CIERP.Document2Revision.ToLink, _newDoc.getId());
+        insert.execute();
     }
 
     /**
