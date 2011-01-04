@@ -30,9 +30,11 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.OIDType;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Insert;
@@ -65,12 +67,54 @@ public abstract class Revision_Base
     public Return revise(final Parameter _parameter)
         throws EFapsException
     {
-        final Instance newInst = copyDoc(_parameter);
-        updateRevision(_parameter, newInst);
-        copyRelations(_parameter, newInst);
-        connectRevision(_parameter, newInst);
-        setStati(_parameter, newInst);
+        if (reviseable(_parameter.getInstance())) {
+            final Instance newInst = copyDoc(_parameter);
+            updateRevision(_parameter, newInst);
+            copyRelations(_parameter, newInst);
+            connectRevision(_parameter, newInst);
+            setStati(_parameter, newInst);
+        }
         return new Return();
+    }
+
+    /**
+     * Validate if the given Document can be revised.
+     *
+     * @param _parameter    Parameter as passed from the eFaps API
+     * @return Return with true if can be revised
+     * @throws EFapsException on error
+     */
+    public Return validate(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        if (!reviseable(_parameter.getInstance())) {
+            final StringBuilder html = new StringBuilder()
+                .append(DBProperties.getProperty("org.efaps.esjp.erp.Revision.validate.revisable"));
+            ret.put(ReturnValues.SNIPLETT, html.toString());
+        } else {
+            ret.put(ReturnValues.TRUE, true);
+        }
+        return ret;
+    }
+
+    /**
+     * Check if the given instance can be revised by checking
+     * if a Revise Relation already exists.
+     *
+     * @param _instance instance to be checked
+     * @return true if already revised else false
+     * @throws EFapsException on error
+     */
+    protected boolean reviseable(final Instance _instance)
+        throws EFapsException
+    {
+        boolean ret = false;
+        final QueryBuilder queryBldr = new QueryBuilder(CIERP.Document2Revision);
+        queryBldr.addWhereAttrEqValue(CIERP.Document2Revision.FromLink, _instance.getId());
+        final InstanceQuery query = queryBldr.getQuery();
+        ret = query.execute().isEmpty();
+        return ret;
     }
 
     /**
