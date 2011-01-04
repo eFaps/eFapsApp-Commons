@@ -64,6 +64,12 @@
             <sqlcolumn>NAME</sqlcolumn>
         </attribute>
         <attribute>
+            <name>Revision</name>
+            <type>String</type>
+            <sqltable>ERP_DocumentAbstractSQLTable</sqltable>
+            <sqlcolumn>REVISION</sqlcolumn>
+        </attribute>
+        <attribute>
             <name>Date</name>
             <type>Date</type>
             <sqltable>ERP_DocumentAbstractSQLTable</sqltable>
