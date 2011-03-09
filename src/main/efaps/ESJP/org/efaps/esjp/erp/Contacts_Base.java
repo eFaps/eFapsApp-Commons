@@ -24,13 +24,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
@@ -42,6 +42,7 @@ import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIContacts;
 import org.efaps.esjp.ci.CIERP;
+import org.efaps.ui.wicket.util.EFapsKey;
 import org.efaps.util.EFapsException;
 
 /**
@@ -104,7 +105,8 @@ public abstract class Contacts_Base
         final String input = (String) _parameter.get(ParameterValues.OTHERS);
         final List<Map<String, String>> list = new ArrayList<Map<String, String>>();
         final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-        final String type = properties.containsKey("Type") ? (String) properties.get("Type") : "Contacts_Contact";
+        final String type = properties.containsKey("Type")
+            ? (String) properties.get("Type") : CIContacts.Contact.getType().getName();
         final String keyStr = properties.containsKey("Key") ? (String) properties.get("Key") : "OID";
         final Map<String, Map<String, String>> tmpMap = new TreeMap<String, Map<String, String>>();
         if (input.length() > 0) {
@@ -120,9 +122,9 @@ public abstract class Contacts_Base
                     final String name = multi.<String>getAttribute(CIContacts.Contact.Name);
                     final Object key = multi.getAttribute(keyStr);
                     final Map<String, String> map = new HashMap<String, String>();
-                    map.put("eFapsAutoCompleteKEY", key.toString());
-                    map.put("eFapsAutoCompleteVALUE", name);
-                    map.put("eFapsAutoCompleteCHOICE", name);
+                    map.put(EFapsKey.AUTOCOMPLETE_KEY.getKey(), key.toString());
+                    map.put(EFapsKey.AUTOCOMPLETE_VALUE.getKey(), name);
+                    map.put(EFapsKey.AUTOCOMPLETE_CHOICE.getKey(), name);
                     tmpMap.put(name, map);
                 }
             } else {
@@ -149,17 +151,20 @@ public abstract class Contacts_Base
                 }
 
                 for (final Entry<String, Instance> entry : tax2instances.entrySet()) {
-                    final PrintQuery print = new PrintQuery(entry.getValue());
-                    print.addAttribute(CIContacts.Contact.Name);
-                    print.addAttribute(keyStr);
-                    if (print.execute()) {
-                        final Map<String, String> map = new HashMap<String, String>();
-                        final String choice = entry.getKey() + " - "
-                                                             + print.<String>getAttribute(CIContacts.Contact.Name);
-                        map.put("eFapsAutoCompleteKEY", print.getAttribute(keyStr).toString());
-                        map.put("eFapsAutoCompleteVALUE", print.<String>getAttribute(CIContacts.Contact.Name));
-                        map.put("eFapsAutoCompleteCHOICE", choice);
-                        tmpMap.put(choice, map);
+                    if (entry.getValue().isValid()) {
+                        final PrintQuery print = new PrintQuery(entry.getValue());
+                        print.addAttribute(CIContacts.Contact.Name);
+                        print.addAttribute(keyStr);
+                        if (print.execute()) {
+                            final Map<String, String> map = new HashMap<String, String>();
+                            final String choice = entry.getKey() + " - "
+                                                                 + print.<String>getAttribute(CIContacts.Contact.Name);
+                            map.put(EFapsKey.AUTOCOMPLETE_KEY.getKey(), print.getAttribute(keyStr).toString());
+                            map.put(EFapsKey.AUTOCOMPLETE_VALUE.getKey(),
+                                            print.<String>getAttribute(CIContacts.Contact.Name));
+                            map.put(EFapsKey.AUTOCOMPLETE_CHOICE.getKey(), choice);
+                            tmpMap.put(choice, map);
+                        }
                     }
                 }
             }
