@@ -161,6 +161,7 @@ public abstract class Revision_Base
 
     /**
      * Connect the new Revision to its parent.
+     * Setting property "RevisionConnect" = false deactivates this mechanism.
      *
      * @param _parameter    Parameter as passed from the eFaps API
      * @param _newDoc       the newly created Document
@@ -170,11 +171,14 @@ public abstract class Revision_Base
                                    final Instance _newDoc)
         throws EFapsException
     {
-        final Instance origInst = _parameter.getInstance();
-        final Insert insert = new Insert(CIERP.Document2Revision);
-        insert.add(CIERP.Document2Revision.FromLink, origInst.getId());
-        insert.add(CIERP.Document2Revision.ToLink, _newDoc.getId());
-        insert.execute();
+        final Map<?,?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+        if (!"false".equalsIgnoreCase((String) props.get("RevisionConnect"))) {
+            final Instance origInst = _parameter.getInstance();
+            final Insert insert = new Insert(CIERP.Document2Revision);
+            insert.add(CIERP.Document2Revision.FromLink, origInst.getId());
+            insert.add(CIERP.Document2Revision.ToLink, _newDoc.getId());
+            insert.execute();
+        }
     }
 
     /**
@@ -214,6 +218,7 @@ public abstract class Revision_Base
 
     /**
      * Update the Revision number for the Document.
+     * Setting property "RevisionUpdate" = false deactivates this mechanism.
      *
      * @param _parameter    Parameter as passed from the eFaps API
      * @param _newDoc       the newly created Document
@@ -223,9 +228,12 @@ public abstract class Revision_Base
                                   final Instance _newDoc)
         throws EFapsException
     {
-        final Update update = new Update(_newDoc);
-        update.add(getRevisionAttribute(_parameter, _newDoc), getNextRevision(_parameter, _newDoc));
-        update.execute();
+        final Map<?,?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+        if (!"false".equalsIgnoreCase((String) props.get("RevisionUpdate"))) {
+            final Update update = new Update(_newDoc);
+            update.add(getRevisionAttribute(_parameter, _newDoc), getNextRevision(_parameter, _newDoc));
+            update.execute();
+        }
     }
 
     /**
@@ -257,7 +265,7 @@ public abstract class Revision_Base
      * @return next Revision Number
      */
     protected Object getNextRevision(final Parameter _parameter,
-                                   final Instance _newDoc)
+                                     final Instance _newDoc)
         throws EFapsException
     {
         int ret;
@@ -313,20 +321,20 @@ public abstract class Revision_Base
     {
         final PrintQuery print = new PrintQuery(_origInst);
         for (final Attribute attr : _origInst.getType().getAttributes().values()) {
-            print.addAttribute(attr);
+            print.addAttribute(attr.getName());
         }
         print.execute();
 
-        for (final Attribute attr : _origInst.getType().getAttributes().values()) {
-            final Attribute typeAttr = attr.getParent().getTypeAttribute();
-            final boolean noAdd = attr.getAttributeType().isAlwaysUpdate() || attr.getAttributeType().isCreateUpdate()
-                || typeAttr.getName().equals(attr.getName())
+        for (final Attribute attr : _update.getInstance().getType().getAttributes().values()) {
+            final boolean noAdd = attr.getAttributeType().isAlwaysUpdate()
+                || attr.getAttributeType().isCreateUpdate()
+                ||  attr.getParent().getTypeAttribute().getName().equals(attr.getName())
                 || attr.getAttributeType().getDbAttrType() instanceof OIDType
                 || _added.contains(attr.getSqlColNames().toString())
                 || attr.getParent().getMainTable().getSqlColId().equals(attr.getSqlColNames().get(0));
             if (!noAdd) {
                 final Object object = print.getAttribute(attr);
-                _update.add(attr, object);
+                _update.add(attr.getName(), object);
                 _added.add(attr.getSqlColNames().toString());
             }
         }
