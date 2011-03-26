@@ -51,14 +51,14 @@
             <sqlcolumn>ID</sqlcolumn>
         </attribute>
         <attribute>
-            <name>FromAbstract</name>
+            <name>FromAbstractLink</name>
             <type>Link</type>
             <typelink>ERP_DocumentAbstract</typelink>
             <sqltable>ERP_Document2DocumentAbstractSQLTable</sqltable>
             <sqlcolumn>FROMID</sqlcolumn>
         </attribute>
         <attribute>
-            <name>ToAbstract</name>
+            <name>ToAbstractLink</name>
             <type>Link</type>
             <typelink>ERP_DocumentAbstract</typelink>
             <sqltable>ERP_Document2DocumentAbstractSQLTable</sqltable>
