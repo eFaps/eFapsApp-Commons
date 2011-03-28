@@ -21,6 +21,7 @@
 
 package org.efaps.esjp.erp;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -186,12 +187,14 @@ public abstract class Revision_Base
      *
      * @param _parameter    Parameter as passed from the eFaps API
      * @param _newDoc       the newly created Document
+     * @return Map of old instance to new instance
      * @throws EFapsException on error
      */
-    protected void copyRelations(final Parameter _parameter,
-                                 final Instance _newInst)
+    protected Map<Instance, Instance> copyRelations(final Parameter _parameter,
+                                                    final Instance _newInst)
         throws EFapsException
     {
+        final Map<Instance, Instance> ret = new HashMap<Instance, Instance>();
         final Map<?,?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
         if (props.containsKey("ReviseRelations") && props.containsKey("ReviseRelationsAttribute")) {
             final String [] rels = ((String) props.get("ReviseRelations")).split(";");
@@ -211,9 +214,11 @@ public abstract class Revision_Base
                     added.add(attr.getSqlColNames().toString());
                     addAttributes(_parameter, instance, insert, added);
                     insert.execute();
+                    ret.put(instance, insert.getInstance());
                 }
             }
         }
+        return ret;
     }
 
     /**
