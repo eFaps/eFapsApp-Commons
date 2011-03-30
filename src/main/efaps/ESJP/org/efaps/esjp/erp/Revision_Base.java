@@ -201,22 +201,42 @@ public abstract class Revision_Base
             final String [] attrs = ((String) props.get("ReviseRelationsAttribute")).split(";");
 
             for (int i = 0; i < rels.length; i++) {
-                final Type reltype = Type.get(rels[i]);
-                final QueryBuilder queryBldr = new QueryBuilder(reltype);
-                queryBldr.addWhereAttrEqValue(reltype.getAttribute(attrs[i]), _parameter.getInstance().getId());
-                final InstanceQuery query = queryBldr.getQuery();
-                final List<Instance> instances = query.execute();
-                for (final Instance instance : instances) {
-                    final Insert insert = new Insert(instance.getType());
-                    final Attribute attr = instance.getType().getAttribute(attrs[i]);
-                    insert.add(attr, _newInst.getId());
-                    final Set<String> added = new HashSet<String>();
-                    added.add(attr.getSqlColNames().toString());
-                    addAttributes(_parameter, instance, insert, added);
-                    insert.execute();
-                    ret.put(instance, insert.getInstance());
-                }
+                ret.putAll(copyRelation(_parameter, _newInst, rels[i], attrs[i]));
             }
+        }
+        return ret;
+    }
+
+    /**
+     * @param _parameter    Parameter as passed by the eFaps API
+     * @param _newInst      Instance of  the new doc
+     * @param _typeName     name of the relation type
+     * @param _linkAttrName name of the attribute that connects the relation
+     *                      to the type
+     * @return Map of oldInstance to new Instance
+     * @throws EFapsException on error
+     */
+    protected Map<Instance, Instance> copyRelation(final Parameter _parameter,
+                                                   final Instance _newInst,
+                                                   final String _typeName,
+                                                   final String _linkAttrName)
+        throws EFapsException
+    {
+        final Map<Instance, Instance> ret = new HashMap<Instance, Instance>();
+        final Type reltype = Type.get(_typeName);
+        final QueryBuilder queryBldr = new QueryBuilder(reltype);
+        queryBldr.addWhereAttrEqValue(reltype.getAttribute(_linkAttrName), _parameter.getInstance().getId());
+        final InstanceQuery query = queryBldr.getQuery();
+        final List<Instance> instances = query.execute();
+        for (final Instance instance : instances) {
+            final Insert insert = new Insert(instance.getType());
+            final Attribute attr = instance.getType().getAttribute(_linkAttrName);
+            insert.add(attr, _newInst.getId());
+            final Set<String> added = new HashSet<String>();
+            added.add(attr.getSqlColNames().toString());
+            addAttributes(_parameter, instance, insert, added);
+            insert.execute();
+            ret.put(instance, insert.getInstance());
         }
         return ret;
     }
