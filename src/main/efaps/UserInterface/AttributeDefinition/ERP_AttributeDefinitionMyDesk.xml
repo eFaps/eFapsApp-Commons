@@ -34,14 +34,14 @@
         <version-expression>(version==latest)</version-expression>
         <name>ERP_AttributeDefinitionMyDesk</name>
         <access>
-            <role>Sales_Admin</role>
+            <role>ERP_AttributeDefinitionAdmin</role>
         </access>
 
         <target>
             <menu>ERP_AttributeDefinitionMyDesk_Menu</menu>
-            <table>Sales_AbstractAttrTable</table>
+            <table>ERP_AttributeDefinitionTable</table>
             <evaluate program="org.efaps.esjp.common.uitable.MultiPrint">
-                <property name="Types">Sales_AbstractAttr</property>
+                <property name="Types">ERP_AttributeDefinitionAbstract</property>
                 <property name="ExpandChildTypes">true</property>
             </evaluate>
         </target>

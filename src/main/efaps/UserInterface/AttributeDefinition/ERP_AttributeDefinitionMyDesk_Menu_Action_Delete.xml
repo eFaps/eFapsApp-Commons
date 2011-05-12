@@ -33,7 +33,7 @@
 
     <definition>
         <version-expression>(version==latest)</version-expression>
-        <name>Sales_AbstractAttrMyDesk_Menu_Action_Delete</name>
+        <name>ERP_AttributeDefinitionMyDesk_Menu_Action_Delete</name>
 
         <!-- target definitions -->
         <target>
