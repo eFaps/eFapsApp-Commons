@@ -23,20 +23,31 @@
 
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd"
+<ui-form xmlns="http://www.efaps.org/xsd"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-    <uuid>cc4a3bc2-26a7-4b51-b8e5-fabfef5ce2fa</uuid>
-    <file-application>eFapsApp-Sales</file-application>
+    <uuid>71ae0844-2915-4f98-a6b4-e874d5c6491f</uuid>
+    <file-application>eFapsApp-Commons</file-application>
     <file-revision>$Rev$</file-revision>
 
     <definition>
         <version-expression>(version==latest)</version-expression>
-        <name>ERP_AttributeDefinitionMyDesk_Menu_Action</name>
-        <!-- childs -->
-        <childs>
-            <child>Sales_AbstractAttrMyDesk_Menu_Action_Delete</child>
-        </childs>
+        <name>ERP_AttributeDefinitionForm</name>
+
+        <field name="value">
+            <property name="Columns">40</property>
+            <property name="ModeCreate">EDITABLE</property>
+            <property name="ModeEdit">EDITABLE</property>
+            <property name="Attribute">Value</property>
+            <property name="Required">true</property>
+        </field>
+        <field name="description">
+            <property name="Columns">60</property>
+            <property name="Rows">5</property>
+            <property name="ModeCreate">EDITABLE</property>
+            <property name="ModeEdit">EDITABLE</property>
+            <property name="Attribute">Description</property>
+        </field>
     </definition>
-</ui-menu>
+</ui-form>

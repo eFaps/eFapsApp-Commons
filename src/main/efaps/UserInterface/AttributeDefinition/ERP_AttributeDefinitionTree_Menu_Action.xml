@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2003 - 2009 The eFaps Team
+ Copyright 2003 - 2011 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,22 +27,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>20a7fadc-6f31-49ea-a98a-066c8b17aeee</uuid>
-  <file-application>eFapsApp-Sales</file-application>
-  <file-revision>$Rev$</file-revision>
+    <uuid>86cc8067-1828-4b3f-855b-a9a9bcaf52d9</uuid>
+    <file-application>eFapsApp-Commons</file-application>
+    <file-revision>$Rev$</file-revision>
 
-  <definition>
-    <version-expression>(version==latest)</version-expression>
-    <name>Sales_AbstractAttrTree</name>
-    <!-- targets -->
-    <target>
-      <menu>Sales_AbstractAttrTree_Menu</menu>
-      <form>Sales_AbstractAttrForm</form>
-    </target>
-    <!-- type tree for -->
-    <type>Sales_AbstractAttr</type>
-    <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
-  </definition>
+    <definition>
+        <version-expression>(version==latest)</version-expression>
+        <name>ERP_AttributeDefinitionTree_Menu_Action</name>
+        <!-- childs -->
+        <childs>
+            <child>ERP_AttributeDefinitionTree_Menu_Action_Edit</child>
+        </childs>
+    </definition>
 </ui-menu>

@@ -36,4 +36,15 @@
             <queryattribute name="Name">eFaps</queryattribute>
         </linkattribute>
     </object>
+    <object type="Admin_User_JAASKey">
+        <attribute name="Key">ERP_AttributeDefinitionAdmin</attribute>
+
+        <linkattribute name="UserLink" type="Admin_User_Role">
+            <queryattribute name="Name">ERP_AttributeDefinitionAdmin</queryattribute>
+        </linkattribute>
+
+        <linkattribute name="JAASSystemLink" type="Admin_User_JAASSystem">
+            <queryattribute name="Name">eFaps</queryattribute>
+        </linkattribute>
+    </object>
 </import>

@@ -74,6 +74,9 @@
 
             <!-- ERP_Contacts_ContactMyDesk_Menu_Action_MoveDocuments2Contacts, Contacts_ContactMyDesk_Menu_Action -->
             update.add2Menu("31854e2f-a6ab-4c91-aaf0-30cd112e8995", "f54e5a23-4760-4322-9600-756ee787cff5", 1);
+
+             <!-- ERP_AttributeDefinitionMyDesk, Admin_Common_MyDesk -->
+            update.add2Menu("1c506850-7e64-439f-ad65-9c82dc762db8", "8d9aae87-fa36-4b62-aba0-dbd9c0ca273a", 1);
         </script>
     </version>
 </install>

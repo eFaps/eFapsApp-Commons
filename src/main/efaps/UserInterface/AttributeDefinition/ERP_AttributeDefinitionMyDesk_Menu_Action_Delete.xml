@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2003 - 2009 The eFaps Team
+ Copyright 2003 - 2011 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,21 +27,20 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>a6fcd541-aadb-424d-a36f-d29688c66f26</uuid>
-  <file-application>eFapsApp-Sales</file-application>
-  <file-revision>$Rev$</file-revision>
+    <uuid>a6fcd541-aadb-424d-a36f-d29688c66f26</uuid>
+    <file-application>eFapsApp-Commons</file-application>
+    <file-revision>$Rev$</file-revision>
 
-  <definition>
-    <version-expression>(version==latest)</version-expression>
-    <name>Sales_AbstractAttrMyDesk_Menu_Action_Delete</name>
-    
-    <!-- target definitions -->
-    <target>
-      <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>
-    </target>
-    <!-- properties -->
-    <property name="AskUser">true</property>
-    <property name="Submit">true</property>
-  </definition>
+    <definition>
+        <version-expression>(version==latest)</version-expression>
+        <name>Sales_AbstractAttrMyDesk_Menu_Action_Delete</name>
 
+        <!-- target definitions -->
+        <target>
+            <execute program="org.efaps.esjp.common.uitable.CommonDelete" />
+        </target>
+        <!-- properties -->
+        <property name="AskUser">true</property>
+        <property name="Submit">true</property>
+    </definition>
 </ui-command>
