@@ -24,13 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
 import org.efaps.ci.CIAdminUser;
+import org.efaps.db.AttributeQuery;
 import org.efaps.db.Context;
 import org.efaps.db.QueryBuilder;
 import org.efaps.util.EFapsException;
@@ -60,32 +64,46 @@ public abstract class CommonDocument_Base
                                                            final Object _value,
                                                            final Object _option)
                 throws EFapsException
-        {
-            final Map<?, ?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-            DropDownPosition pos;
-            if ("true".equalsIgnoreCase((String) props.get("SelectCurrent"))) {
-                pos = new DropDownPosition(_value, _option) {
-
-                    @Override
-                    public boolean isSelected()
-                    {
-                        boolean ret = false;
-                        long persId = 0;
-                        try {
-                            persId = Context.getThreadContext().getPerson().getId();
-                        } catch (final EFapsException e) {
-                            // nothing must be done at all
-                            e.printStackTrace();
+            {
+                final Map<?, ?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+                final FieldValue fieldValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+                DropDownPosition pos;
+                if (TargetMode.EDIT.equals(fieldValue.getTargetMode())) {
+                    pos = new DropDownPosition(_value, _option) {
+                        @Override
+                        public boolean isSelected()
+                        {
+                            boolean ret = false;
+                            final Long persId = (Long) fieldValue.getValue();
+                            ret = getValue().equals(persId);
+                            return ret;
                         }
-                        ret = new Long(persId).equals(getValue());
-                        return ret;
+                    };
+                } else {
+                    if ("true".equalsIgnoreCase((String) props.get("SelectCurrent"))) {
+                        pos = new DropDownPosition(_value, _option) {
+
+                            @Override
+                            public boolean isSelected()
+                            {
+                                boolean ret = false;
+                                long persId = 0;
+                                try {
+                                    persId = Context.getThreadContext().getPerson().getId();
+                                } catch (final EFapsException e) {
+                                    // nothing must be done at all
+                                    e.printStackTrace();
+                                }
+                                ret = new Long(persId).equals(getValue());
+                                return ret;
+                            }
+                        };
+                    } else {
+                        pos = super.getDropDownPosition(_parameter, _value, _option);
                     }
-                };
-            } else {
-                pos = super.getDropDownPosition(_parameter, _value, _option);
+                }
+                return pos;
             }
-            return pos;
-        }
 
             @Override
             protected void add2QueryBuilder4List(final Parameter _parameter,
@@ -94,6 +112,7 @@ public abstract class CommonDocument_Base
             {
                 final Map<?, ?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
                 final String rolesStr = (String) props.get("Roles");
+                final String groupsStr = (String) props.get("Groups");
                 if (rolesStr != null && !rolesStr.isEmpty()) {
                     final String[] roles = rolesStr.split(";");
                     final List<Long> roleIds = new ArrayList<Long>();
@@ -109,6 +128,42 @@ public abstract class CommonDocument_Base
 
                         _queryBldr.addWhereAttrInQuery(CIAdminUser.Abstract.ID,
                                         queryBldr.getAttributeQuery(CIAdminUser.Person2Role.UserFromLink));
+                    }
+                }
+                if (groupsStr != null && !groupsStr.isEmpty()) {
+                    final String[] groups;
+                    boolean and = true;
+                    if (groupsStr.contains("|")) {
+                        groups = groupsStr.split("\\|");
+                    } else {
+                        groups = groupsStr.split(";");
+                        and = false;
+                    }
+
+                    final List<Long> groupIds = new ArrayList<Long>();
+                    for (final String group : groups) {
+                        final Group aGroup = Group.get(group);
+                        if (aGroup != null) {
+                            groupIds.add(aGroup.getId());
+                        }
+                    }
+                    if (!groupIds.isEmpty()) {
+                        if (and) {
+                            for (final Long group : groupIds) {
+                                final QueryBuilder queryBldr = new QueryBuilder(CIAdminUser.Person2Group);
+                                queryBldr.addWhereAttrEqValue(CIAdminUser.Person2Group.UserToLink, group);
+                                final AttributeQuery attribute = queryBldr
+                                                        .getAttributeQuery(CIAdminUser.Person2Group.UserFromLink);
+                                _queryBldr.addWhereAttrInQuery(CIAdminUser.Abstract.ID, attribute);
+                            }
+                        } else {
+                            final QueryBuilder queryBldr = new QueryBuilder(CIAdminUser.Person2Group);
+                            queryBldr.addWhereAttrEqValue(CIAdminUser.Person2Group.UserToLink, groupIds.toArray());
+                            final AttributeQuery attribute = queryBldr
+                                                        .getAttributeQuery(CIAdminUser.Person2Group.UserFromLink);
+                            _queryBldr.addWhereAttrInQuery(CIAdminUser.Abstract.ID, attribute);
+                        }
+
                     }
                 }
                 super.add2QueryBuilder4List(_parameter, _queryBldr);
