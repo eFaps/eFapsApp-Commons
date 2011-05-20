@@ -44,8 +44,8 @@
             <column name="MODIFIER" type="INTEGER" not-null="true" />
             <column name="MODIFIED" type="DATETIME" not-null="true" />
             <!-- foreign keys -->
-            <foreign name="T_COCONTACT2CONTACT_FK_CRTR" key="CREATOR" reference="T_USERPERSON(ID)" />
-            <foreign name="T_COCONTACT2CONTACT_FK_MDFR" key="MODIFIER" reference="T_USERPERSON(ID)" />
+            <foreign name="T_ERPOBJ2OBJ_FK_CRTR" key="CREATOR" reference="T_USERPERSON(ID)" />
+            <foreign name="T_ERPOBJ2OBJ_FK_MDFR" key="MODIFIER" reference="T_USERPERSON(ID)" />
         </database>
     </definition>
 </datamodel-sqltable>
