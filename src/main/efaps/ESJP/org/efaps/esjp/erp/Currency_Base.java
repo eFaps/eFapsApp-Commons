@@ -23,16 +23,16 @@ package org.efaps.esjp.erp;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
@@ -142,7 +142,8 @@ public abstract class Currency_Base
         throws EFapsException
     {
         final Return ret = new Return();
-        if (_parameter.get(ParameterValues.ACCESSMODE).equals(TargetMode.CREATE)) {
+        if (_parameter.get(ParameterValues.ACCESSMODE) != null
+                        && _parameter.get(ParameterValues.ACCESSMODE).equals(TargetMode.CREATE)) {
             final Instance instance = _parameter.getInstance();
             if (instance != null && instance.getType().isKindOf(CIERP.Currency.getType())) {
                 final CurrencyInst currencyInst = getCurrencyInst(instance.getId());
