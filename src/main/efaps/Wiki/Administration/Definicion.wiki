@@ -1,0 +1,149 @@
+<wiki:comment>
+@eFapsPackage  org.efaps.wiki.administration
+@eFapsUUID     f182784a-0826-4299-a941-f5d3bfc5d716
+@eFapsRevision $Rev: 6408 $
+</wiki:comment>
+
+
+
+
+#summary Definiciones
+<wiki:toc max_depth="3"/>
+
+----
+
+En este Manual de Usuario usted encontrará toda la información necesaria referente a la inicialización y uso del menú definiciones, de manera que usted esté informado de todas las funcionalidades de este menú para que pueda trabajar
+en toda su potencialidad.
+
+Veremos los siguientes puntos:
+
+  # Atributos
+  # Ubicaciones
+
+==1. Atributos==
+En este menú atributos veremos los siguientes puntos:
+
+  * 1.1. Pertenece a factura
+    * a. Crear tipo de pago.
+  * 1.2 Pertenece a contacto
+    * a. Crear atributo de distrito.
+  * 1.3 Pertenece a producto
+    * a. Crear atributo clase.
+    * b. Crear atributo marca.
+    * c. Crear atributo arranque.
+    * d. Crear atributo color.
+    * e. Crear atributo combustible.
+    * f. Crear atributo freno
+  * 1.4 Crear tipo de comprobante para caja chica.
+  * 1.5 Borrar seleccionado.
+  * 1.6 Crear tipo de comprobante.
+  * 1.7 Exportar
+
+===1.1 Pertenece a factura===
+
+===a. Crear tipo de pago===
+El tipo de pago le ayudará a crear los nombres de los distintos documentos que sirven para realizar un pago respectivo.
+Para crear un pago usted debe ingresar a crear tipo de pago que se encuentra en la opción acción, inmediatamente le mostrará
+la ventana ventana *crear tipo de pago* en donde ingresará la información correspondiente en los campos obligatorios y secundarios:
+
+  * Obligatorio: valor, es el nombre a ingresarse para la identificación del atributo.
+  * Secundario: descripción, es la descripción del atributo.
+
+===1.2 Pertenece a contacto===
+
+===a. Crear atributo de distrito===
+Para crear distrito usted debe ingresar a crear atributo de distrito que se encuentra en la opción acción, inmediatamente le aparecerá la
+ventana *crear atributo de distrito* en donde ingresará la información correspondiente en los campos obligatorios y secundarios:
+
+  * Obligatorio: valor, es el nombre a ingresarse para la identificación del atributo.
+  * Secundario: descripción, es la descripción del atributo.
+
+===1.3 Pertenece producto===
+
+===a. Crear atributo clase===
+Para crear una clase usted debe ingresar a crear atributo de clase que se encuentra en la opción acción, inmediatamente
+le aparecerá la ventana *crear atributo de clase* donde ingresará la información correspondiente a cada campo obligatorio y secundario,
+
+  * Obligatorio: valor, es el nombre a ingresarse para la identificación del atributo.
+  * Secundario: descripción, es la descripción del atributo.
+
+===b. Crear atributo marca===
+Para crear una marca usted debe ingresar a crear atributo de distrito que se encuentra en la opción acción, inmediatamente
+le aparecerá la ventana crear atributo de marca donde ingresará la información correspondiente a cada campo obligatorio y secundario,
+
+Obligatorio: valor, es el nombre a ingresarse para la identificación del atributo.
+
+Secundario: descripción, es la descripción del atributo.
+
+===c. Crear atributo arranque===
+Para crear arranque usted debe ingresar a crear atributo arranque, que se encuentra en la opción acción, inmediatamente le aparecerá la ventana crear atributo arranque donde ingresará la información correspondiente a cada campo obligatorio y secundario,
+
+  * Obligatorio: valor, es el nombre a ingresarse para la identificación del atributo.
+  * Secundario: descripción, es la descripción del atributo.
+
+===d. Crear atributo color===
+Para crear un color usted debe ingresar a crear atributo color, que se encuentra en la opción acción, inmediatamente le aparecerá la ventana crear atributo color donde ingresará la información correspondiente a cada campo obligatorio y secundario,
+
+  * Obligatorio: valor, es el nombre a ingresarse para la identificación del atributo.
+  * Secundario: descripción, es la descripción del atributo.
+
+===e. Crear atributo combustible===
+Para crear combustible usted debe ingresar a crear atributo combustible, que se encuentra en la opción acción, inmediatamente le aparecerá la ventana crear atributo combustible donde ingresará la información correspondiente a cada campo obligatorio y secundario,
+
+  * Obligatorio: valor, es el nombre a ingresarse para la identificación del atributo.
+  * Secundario: descripción, es la descripción del atributo.
+
+===f. Crear atributo freno===
+Para crear el atributo usted debe ingresar a crear atributo freno, que se encuentra en la opción acción, inmediatamente le aparecerá la ventana crear atributo freno donde ingresará la información correspondiente a cada campo obligatorio y secundario,
+
+  * Obligatorio: valor, es el nombre a ingresarse para la identificación del atributo.
+  * Secundario: descripción, es la descripción del atributo.
+
+===1.4 Crear tipo de comprobante para caja chica===
+El comprobante para caja chica le ayudará a crear los nombres de los distintos documentos para que aparezcan en un combo(véase [./org.efaps.wiki.sales.Showadministration.wiki#2.2.1_Caja_chica Caja chica] y
+de esta manera sea seleccionado. Para crear caja chica usted debe ingresar a crear tipo de comprobante para caja chica que
+se encuentra en la opción acción, inmediatamente le aparecerá la ventana *crear tipo de comprobante para caja chica* en donde
+ingresará la información correspondiente en los campos obligatorios y secundarios:
+
+  * Obligatorio: valor, es el nombre a ingresarse para la identificación del atributo.
+  * Secundario: descripción, es la descripción del atributo.
+
+===1.5 Borrar seleccionado===
+Seleccionar uno o varios atributos, dirigirse a la opción acción y elegir borrar seleccionado.
+
+===1.6 Crear tipo de comprobante===
+El tipo de comprobante le sirve para documentos externos. Para crear un comprobante usted debe ingresar a crear tipo de comprobante que se encuentra en la opción acción, inmediatamente le aparecerá la ventana crear tipo de comprobante donde ingresará la información correspondiente a cada campo obligatorio y secundario:
+
+  * Obligatorio: valor, es el nombre a ingresarse para la identificación del atributo.
+  * Secundario: descripción, es la descripción del atributo.
+
+===1.7 Exportar===
+Le sirve para poder imprimir una o varias hojas con todos los datos que se encuentran en el menú, en dos tipos de formatos PDF o XLS.
+
+
+==2. Ubicación==
+Con este menú va poder ingresar los departamentos, provincias y distritos, los cuales son utilizados al momento de crear un contacto(véase [./org.efaps.wiki.contacts.Contacts.wiki Contacto]).
+
+A continuación se mostrarán los siguientes puntos:
+
+  * 2.1 Crear
+  * 2.2 Eliminar
+  * 2.3 Exportar
+
+===2.1 Crear===
+Para crear una ubicación principal debe dirigirse a acción y seleccionar crear, inmediatamente le aparecerá la ventana crear nueva ubicación en donde ingresará la información correspondiente en el campo nombre.
+
+===2.2 Eliminar===
+Seleccionar uno o mas atributos haciendo un check en sus casilleros, dirigirse a la opción acción y elegir eliminar.
+
+===2.3 Exportar===
+Le sirve para poder imprimir una o varias hojas con todos los datos que se encuentran en el menú, en dos tipos de formatos PDF o XLS.
+
+
+
+
+
+
+
+
+

@@ -77,6 +77,11 @@
 
              <!-- ERP_AttributeAbstractMyDesk, Admin_Common_MyDesk -->
             update.add2Menu("9427d507-4793-4751-83e8-f08dbf2df55d", "8d9aae87-fa36-4b62-aba0-dbd9c0ca273a", 1);
+
+
+
+            <!-- Definicion_Administration, Admin_Help_MainMenu -->
+            update.add2Help("2982d0b5-5eea-41f6-8f18-472458458b18", "dead549e-5cc6-49f9-9a79-8e33aa139f6d", -1);
         </script>
     </version>
 </install>

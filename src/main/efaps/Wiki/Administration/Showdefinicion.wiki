@@ -1,0 +1,99 @@
+<wiki:comment>
+@eFapsPackage  org.efaps.wiki.administration
+@eFapsUUID     4738610f-fe33-44a5-b2a7-52653212047a
+@eFapsRevision $Rev: 6513 $
+</wiki:comment>
+
+
+
+
+#summary Acceso a definiciones
+<wiki:toc max_depth="3"/>
+
+----
+
+En este Manual de Usuario encontrará todo el contenido de estos dos menús:
+
+  # Acceso a atributos
+  # Acceso a ubicaciones
+
+==1. Acceso a atributos ==
+Cuando ingresa a cualquiera de los datos registrados en el sistema, verá su información y sus opciones, los cuales son editar y exportar.
+  * Editar: le brinda la facilidad de corregir la información ingresada en los campos valor y descripción.
+  * Exportar: le sirve para poder imprimir una o varias hojas con todos los datos que se encuentran en el menú, en dos tipos de formatos PDF o XLS.
+
+
+==2. Acceso a ubicaciones==
+Para ingresar usted debe de hacer clic en el nombre de la ubicación para poder ver su información correspondiente.
+
+|| *Tipo* || *Nombre* ||
+|| Ubicación principal || *Lima Departamento* ||
+
+Ahora podrá ver los siguientes puntos:
+
+  * 2.1 Acción
+  * 2.2 Exportar
+  * 2.3 Hijos
+  * 2.4 Ingresar a un Hijo
+
+===2.1 Acción===
+Cuenta con la opción editar, la cual le va ayudar a modificar la información ingresada anteriormente.
+
+===2.2 Exportar===
+Le sirve para poder imprimir una o varias hojas con todos los datos que se encuentran en el menú, en dos tipos de formatos PDF o XLS.
+
+===2.3 Hijos===
+Mostraremos los siguientes puntos:
+
+  * 2.3.1 Acción
+  * 2.3.2 Exportar
+  * 2.3.3 Eliminar
+
+====2.3.1 Acción====
+Para crear una ubicación principal debe dirigirse a acción y seleccionar crear, inmediatamente le aparecerá la ventana crear nueva ubicación en donde ingresará la información correspondiente en el campo nombre.
+
+====2.3.2 Exportar====
+Le sirve para poder imprimir una o varias hojas con todos los datos que se encuentran en el menú, en dos tipos de formatos PDF o XLS.
+
+====2.3.3 Eliminar====
+Seleccionar uno o mas atributos haciendo un check en sus casilleros, dirigirse a la opción acción y elegir eliminar.
+
+===2.4 Ingresar a un hijo===
+Para ingresar usted debe de hacer clic en el nombre de la ubicación para poder ver su información correspondiente.
+
+|| *Tipo* || *Nombre* ||
+|| Ubicación principal || *Lima Provincia* ||
+
+Ahora podrá ver los siguientes puntos:
+
+  * 2.1 Acción
+  * 2.2 Exportar
+  * 2.3 Hijos
+
+===2.1 Acción===
+Cuenta con la opción editar, la cual le va ayudar a modificar la información ingresada anteriormente.
+
+===2.2 Exportar===
+Le sirve para poder imprimir una o varias hojas con todos los datos que se encuentran en el menú, en dos tipos de formatos PDF o XLS.
+
+===2.3 Hijos===
+
+|| *Tipo* || *Nombre* ||
+|| Ubicación principal || *San Isidro Distrito* ||
+
+
+Mostraremos los siguientes puntos:
+
+  * 2.3.1 Acción
+  * 2.3.2 Exportar
+  * 2.3.3 Eliminar
+
+====2.3.1 Acción====
+Para crear una ubicación principal debe dirigirse a acción y seleccionar crear, inmediatamente le aparecerá la ventana crear nueva ubicación en donde ingresará la información correspondiente en el campo nombre.
+
+====2.3.2 Exportar====
+Le sirve para poder imprimir una o varias hojas con todos los datos que se encuentran en el menú, en dos tipos de formatos PDF o XLS.
+
+====2.3.3 Eliminar====
+Seleccionar uno o mas atributos haciendo un check en sus casilleros, dirigirse a la opción acción y elegir eliminar.
+
