@@ -80,8 +80,8 @@
 
 
 
-            <!-- Definicion_Administration, Admin_Help_MainMenu -->
-            update.add2Help("2982d0b5-5eea-41f6-8f18-472458458b18", "dead549e-5cc6-49f9-9a79-8e33aa139f6d", -1);
+            <!-- Definitions_Definitions, Admin_Help_MainMenu -->
+            update.add2Help("10c1efaf-af0a-4602-b6b5-8a5aff4ae38d", "dead549e-5cc6-49f9-9a79-8e33aa139f6d", -1);
         </script>
     </version>
 </install>

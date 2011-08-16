@@ -1,0 +1,26 @@
+<wiki:comment>
+@eFapsPackage  org.efaps.wiki.definitions
+@eFapsUUID     7f5cf28f-1a14-4913-aeff-ad5d77d037ff
+@eFapsRevision $Rev: 6420 $
+</wiki:comment>
+
+
+
+
+#summary Ingresando a Definiciones
+<wiki:toc max_depth="3"/>
+
+----
+
+El menú administración puede brindar un control a todos los datos que interactúan o que son utilizados por los demás
+menús.
+A continuación mostraremos lo que contiene este menú,
+
+  # Atributos
+
+==1. Atributos==
+Cuando ingrese a cualquiera de los datos registrados en el sistema, se le mostrará la información y las opciones, que son:
+
+  * Editar: le brinda la facilidad de corregir la información ingresada en los campos valor y descripción.
+  * Exportar: le sirve para poder imprimir una o varias hojas con todos los datos que se encuentran en el menú, en dos tipos de formato PDF o XLS.
+
