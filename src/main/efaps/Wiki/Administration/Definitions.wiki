@@ -43,10 +43,9 @@ la ventana *crear tipo de pago* en donde ingresara la respectiva información en
   * Secundario: descripción, es la descripción del atributo.
 
 ===1.2 Crear tipo de comprobante para caja chica===
-El comprobante para caja chica le ayudara a crear los nombres de los distintos documentos para que aparezcan en un combo y
-de esta manera sea seleccionado. Para crear caja chica usted debe de ingresar a crear tipo de comprobante para caja chica, que
-se encuentra en la opción acción y en la ventana *crear tipo de comprobante para caja chica* se le mostrarán los campos
-obligatorios y secundarios:
+El comprobante para caja chica le ayudará a crear los nombres de los distintos documentos para que aparezcan en un combo y
+de esta manera sean seleccionados. Para crear caja chica usted debe de ingresar a crear tipo de comprobante para caja chica, que
+se encuentra en la opción acción,inmediatamente le mostrará la ventana *crear tipo de comprobante para caja chica* en donde ingresará la información correspondiente en los campos obligatorios y secundarios:
 
   * Obligatorio: valor, es el nombre a ingresarse para la identificación del atributo.
   * Secundario: descripción, es la descripción del atributo.
