@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -172,6 +173,44 @@ public abstract class CommonDocument_Base
             }
         };
         return field.dropDownFieldValue(_parameter);
+    }
+
+    /**
+     * Get a "eFapsSetFieldValue" Javascript line.
+     * @param _idx          index of the field
+     * @param _fieldName    name of the field
+     * @param _value        value
+     * @return StringBuilder
+     */
+    protected StringBuilder getSetFieldValue(final int _idx,
+                                             final String _fieldName,
+                                             final String _value)
+    {
+        return getSetFieldValue(_idx, _fieldName, _value, true);
+    }
+
+    /**
+     * Get a "eFapsSetFieldValue" Javascript line.
+     * @param _idx          index of the field
+     * @param _fieldName    name of the field
+     * @param _value        value
+     * @param _escape       must the value be escaped
+     * @return StringBuilder
+     */
+    protected StringBuilder getSetFieldValue(final int _idx,
+                                             final String _fieldName,
+                                             final String _value,
+                                             final boolean _escape)
+    {
+        final StringBuilder ret = new StringBuilder();
+        ret.append("eFapsSetFieldValue(").append(_idx).append(",'").append(_fieldName).append("',");
+        if (_escape) {
+            ret.append("'").append(StringEscapeUtils.escapeJavaScript(_value)).append("'");
+        } else {
+            ret.append(_value);
+        }
+        ret.append(");");
+        return ret;
     }
 
     /**
