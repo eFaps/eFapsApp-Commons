@@ -189,7 +189,7 @@ public abstract class Contacts_Base
         final Field field = (Field) _parameter.get(ParameterValues.UIOBJECT);
         final String fieldName = field.getName();
         final String value = _parameter.getParameterValue(fieldName);
-        final Instance instance = value.contains(".")  ? Instance.get(_parameter.getParameterValue("contact"))
+        final Instance instance = value.contains(".")  ? Instance.get(value)
                         : Instance.get(CIContacts.Contact.getType(), value);
 
         final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
