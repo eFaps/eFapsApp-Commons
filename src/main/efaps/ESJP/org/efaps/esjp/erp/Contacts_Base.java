@@ -230,12 +230,16 @@ public abstract class Contacts_Base
         print.addSelect("class[Contacts_ClassOrganisation].attribute[TaxNumber]");
         print.addSelect("class[Contacts_ClassPerson].attribute[IdentityCard]");
         print.addSelect("class[Contacts_ClassLocation].attribute[LocationAdressStreet]");
+        addNewSelect(print);
         print.execute();
         final String taxnumber = print.<String>getSelect("class[Contacts_ClassOrganisation].attribute[TaxNumber]");
         final String idcard = print.<String>getSelect("class[Contacts_ClassPerson].attribute[IdentityCard]");
         final boolean dni = taxnumber == null || (taxnumber.length() < 1 && idcard != null && idcard.length() > 1);
         final String street = print.getSelect("class[Sales_Contacts_ClassClient].attribute[BillingAdressStreet]");
-        final String locStreet = print.getSelect("class[Contacts_ClassLocation].attribute[LocationAdressStreet]");
+        String locStreet = print.getSelect("class[Contacts_ClassLocation].attribute[LocationAdressStreet]");
+        if (locStreet.equals("")) {
+            locStreet = getNewSelect(print);
+        }
 
         final StringBuilder strBldr = new StringBuilder();
         strBldr.append(dni ? DBProperties.getProperty("Contacts_ClassPerson/IdentityCard.Label")
@@ -246,4 +250,11 @@ public abstract class Contacts_Base
                .append(street.length() > 0 ? street : locStreet);
         return strBldr.toString();
     }
+
+    //for to add a new select
+    protected String getNewSelect(PrintQuery _print) throws EFapsException{
+        return "";
+    }
+    //for to get a new select
+    protected void addNewSelect(PrintQuery _print) throws EFapsException{}
 }
