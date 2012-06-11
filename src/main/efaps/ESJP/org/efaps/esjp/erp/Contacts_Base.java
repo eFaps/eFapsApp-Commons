@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -225,8 +226,14 @@ public abstract class Contacts_Base
     protected String getFieldValue4Contact(final Instance _instance)
         throws EFapsException
     {
+        boolean hasStreet = false;
+        if (Type.get("Sales_Contacts_ClassClient") != null) {
+            hasStreet = true;
+        }
         final PrintQuery print = new PrintQuery(_instance);
-        print.addSelect("class[Sales_Contacts_ClassClient].attribute[BillingAdressStreet]");
+        if (hasStreet) {
+            print.addSelect("class[Sales_Contacts_ClassClient].attribute[BillingAdressStreet]");
+        }
         print.addSelect("class[Contacts_ClassOrganisation].attribute[TaxNumber]");
         print.addSelect("class[Contacts_ClassPerson].attribute[IdentityCard]");
         print.addSelect("class[Contacts_ClassLocation].attribute[LocationAdressStreet]");
@@ -235,7 +242,10 @@ public abstract class Contacts_Base
         final String taxnumber = print.<String>getSelect("class[Contacts_ClassOrganisation].attribute[TaxNumber]");
         final String idcard = print.<String>getSelect("class[Contacts_ClassPerson].attribute[IdentityCard]");
         final boolean dni = taxnumber == null || (taxnumber.length() < 1 && idcard != null && idcard.length() > 1);
-        final String street = print.getSelect("class[Sales_Contacts_ClassClient].attribute[BillingAdressStreet]");
+        String street = "";
+        if (hasStreet) {
+            street  = print.getSelect("class[Sales_Contacts_ClassClient].attribute[BillingAdressStreet]");
+        }
         String locStreet = print.getSelect("class[Contacts_ClassLocation].attribute[LocationAdressStreet]");
         if (locStreet.equals("")) {
             locStreet = getNewSelect(print);
@@ -244,9 +254,11 @@ public abstract class Contacts_Base
         final StringBuilder strBldr = new StringBuilder();
         strBldr.append(dni ? DBProperties.getProperty("Contacts_ClassPerson/IdentityCard.Label")
                            : DBProperties.getProperty("Contacts_ClassOrganisation/TaxNumber.Label"))
-               .append(": ").append(dni ? idcard : taxnumber).append("  -  ")
-               .append(DBProperties.getProperty("Sales_Contacts_ClassClient/BillingAdressStreet.Label"))
-               .append(": ")
+               .append(": ").append(dni ? idcard : taxnumber).append("  -  ");
+        if (hasStreet) {
+            strBldr.append(DBProperties.getProperty("Sales_Contacts_ClassClient/BillingAdressStreet.Label"));
+        }
+        strBldr.append(": ")
                .append(street.length() > 0 ? street : locStreet);
         return strBldr.toString();
     }
