@@ -38,7 +38,7 @@
             <table-name>T_ERPPAY</table-name>
             <parent-table>T_ERPDOC</parent-table>
             <!-- columns -->
-            <column name="AMOUNT"          type="DECIMAL"                           length="12" scale="2"/>
+            <column name="AMOUNT"          type="DECIMAL"                           length="10" scale="2"/>
             <column name="CURRENCYID"      type="INTEGER"/>
             <foreign name="T_ERPPAY_FK_CURRENCYID" key="CURRENCYID"    reference="T_ERPCUR(ID)"/>
         </database>
