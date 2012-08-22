@@ -56,6 +56,7 @@
             <property name="Label">ERP_DocumentAbstract/Salesperson.Label</property>
         </field>
         <field name="status">
+            <property name="FilterType">PICKER</property>
             <property name="ModeSearch">READONLY</property>
             <property name="Attribute">StatusAbstract</property>
             <property name="Label">ERP_DocumentAbstract/StatusAbstract.Label</property>
