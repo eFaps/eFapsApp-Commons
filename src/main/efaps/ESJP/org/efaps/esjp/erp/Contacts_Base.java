@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.efaps.admin.datamodel.Classification;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter;
@@ -36,6 +37,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.db.AttributeQuery;
 import org.efaps.db.Instance;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
@@ -101,66 +103,85 @@ public abstract class Contacts_Base
      * @throws EFapsException on error.
      */
     public Return autoComplete4Contact(final Parameter _parameter)
-        throws EFapsException
+                    throws EFapsException
     {
         final String input = (String) _parameter.get(ParameterValues.OTHERS);
         final List<Map<String, String>> list = new ArrayList<Map<String, String>>();
         final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-        final String type = properties.containsKey("Type")
-            ? (String) properties.get("Type") : CIContacts.Contact.getType().getName();
-        final String keyStr = properties.containsKey("Key") ? (String) properties.get("Key") : "OID";
+        final String classesStr = (String) properties.get("Classifications");
+        String[] classes = new String[0];
+        if (classesStr != null) {
+            classes = classesStr.split(";");
+        }
+        final String key = properties.containsKey("Key") ? (String) properties.get("Key") : "OID";
         final Map<String, Map<String, String>> tmpMap = new TreeMap<String, Map<String, String>>();
         if (input.length() > 0) {
+            final QueryBuilder queryBldr = new QueryBuilder(CIContacts.Contact);
+            if (classes.length > 0) {
+                final Classification[] classTypes = new Classification[classes.length];
+                for (int i = 0; i < classes.length; i++) {
+                    classTypes[i] = (Classification) Type.get(classes[i]);
+                }
+                queryBldr.addWhereClassification(classTypes);
+            }
             final boolean nameSearch = !Character.isDigit(input.charAt(0));
             if (nameSearch) {
-                final QueryBuilder queryBldr = new QueryBuilder(CIContacts.Contact);
                 queryBldr.addWhereAttrMatchValue(CIContacts.Contact.Name, input + "*").setIgnoreCase(true);
                 final MultiPrintQuery multi = queryBldr.getPrint();
-                multi.addAttribute(CIContacts.Contact.Name);
-                multi.addAttribute(keyStr);
+                multi.addAttribute("Name", key);
                 multi.execute();
                 while (multi.next()) {
-                    final String name = multi.<String>getAttribute(CIContacts.Contact.Name);
-                    final Object key = multi.getAttribute(keyStr);
+                    final String name =  multi.<String>getAttribute("Name");
+                    final String keyVal = multi.getAttribute(key).toString();
                     final Map<String, String> map = new HashMap<String, String>();
-                    map.put(EFapsKey.AUTOCOMPLETE_KEY.getKey(), key.toString());
+                    map.put(EFapsKey.AUTOCOMPLETE_KEY.getKey(), keyVal);
                     map.put(EFapsKey.AUTOCOMPLETE_VALUE.getKey(), name);
                     map.put(EFapsKey.AUTOCOMPLETE_CHOICE.getKey(), name);
                     tmpMap.put(name, map);
                 }
             } else {
-                final QueryBuilder queryBldr = new QueryBuilder(CIContacts.ClassOrganisation);
-                queryBldr.addWhereAttrMatchValue(CIContacts.ClassOrganisation.TaxNumber, input + "*");
-                final MultiPrintQuery multi = queryBldr.getPrint();
-                multi.addAttribute(CIContacts.ClassOrganisation.ContactId, CIContacts.ClassOrganisation.TaxNumber);
-                multi.execute();
                 final Map<String, Instance> tax2instances = new TreeMap<String, Instance>();
+                final QueryBuilder orgQueryBldr = new QueryBuilder(CIContacts.ClassOrganisation);
+                orgQueryBldr.addWhereAttrMatchValue(CIContacts.ClassOrganisation.TaxNumber, input + "*");
+                if (classes.length > 0) {
+                    final AttributeQuery attrQuery = queryBldr.getAttributeQuery(CIContacts.Contact.ID);
+                    orgQueryBldr.addWhereAttrInQuery(CIContacts.ClassOrganisation.ContactId, attrQuery);
+                }
+                final MultiPrintQuery multi = orgQueryBldr.getPrint();
+                multi.addAttribute(CIContacts.ClassOrganisation.TaxNumber,
+                                   CIContacts.ClassOrganisation.ContactId);
+                multi.execute();
                 while (multi.next()) {
                     tax2instances.put(multi.<String>getAttribute(CIContacts.ClassOrganisation.TaxNumber),
-                            Instance.get(type,
+                                Instance.get(CIContacts.Contact.getType(),
                                         multi.<Long>getAttribute(CIContacts.ClassOrganisation.ContactId).toString()));
                 }
 
-                final QueryBuilder queryBldr2 = new QueryBuilder(CIContacts.ClassPerson);
-                queryBldr2.addWhereAttrMatchValue(CIContacts.ClassPerson.IdentityCard, input + "*");
-                final MultiPrintQuery multi2 = queryBldr2.getPrint();
-                multi2.addAttribute(CIContacts.ClassPerson.ContactId, CIContacts.ClassPerson.IdentityCard);
+                final QueryBuilder persQueryBldr = new QueryBuilder(CIContacts.ClassPerson);
+                persQueryBldr.addWhereAttrMatchValue(CIContacts.ClassPerson.IdentityCard, input + "*");
+                if (classes.length > 0) {
+                    final AttributeQuery attrQuery = queryBldr.getAttributeQuery(CIContacts.Contact.ID);
+                    persQueryBldr.addWhereAttrInQuery(CIContacts.ClassPerson.ContactId, attrQuery);
+                }
+                final MultiPrintQuery multi2 = persQueryBldr.getPrint();
+                multi2.addAttribute(CIContacts.ClassPerson.IdentityCard, CIContacts.ClassPerson.ContactId);
                 multi2.execute();
                 while (multi2.next()) {
-                    tax2instances.put(multi2.<String>getAttribute(CIContacts.ClassPerson.IdentityCard),
-                            Instance.get(type, multi2.<Long>getAttribute(CIContacts.ClassPerson.ContactId).toString()));
+                    tax2instances.put(multi.<String>getAttribute(CIContacts.ClassPerson.IdentityCard),
+                                Instance.get(CIContacts.Contact.getType(),
+                                        multi.<Long>getAttribute(CIContacts.ClassPerson.ContactId).toString()));
                 }
 
                 for (final Entry<String, Instance> entry : tax2instances.entrySet()) {
                     if (entry.getValue().isValid()) {
                         final PrintQuery print = new PrintQuery(entry.getValue());
                         print.addAttribute(CIContacts.Contact.Name);
-                        print.addAttribute(keyStr);
+                        print.addAttribute(key);
                         if (print.execute()) {
                             final Map<String, String> map = new HashMap<String, String>();
                             final String choice = entry.getKey() + " - "
                                                                  + print.<String>getAttribute(CIContacts.Contact.Name);
-                            map.put(EFapsKey.AUTOCOMPLETE_KEY.getKey(), print.getAttribute(keyStr).toString());
+                            map.put(EFapsKey.AUTOCOMPLETE_KEY.getKey(), print.getAttribute(key).toString());
                             map.put(EFapsKey.AUTOCOMPLETE_VALUE.getKey(),
                                             print.<String>getAttribute(CIContacts.Contact.Name));
                             map.put(EFapsKey.AUTOCOMPLETE_CHOICE.getKey(), choice);
@@ -170,7 +191,6 @@ public abstract class Contacts_Base
                 }
             }
         }
-
         final Return retVal = new Return();
         list.addAll(tmpMap.values());
         retVal.put(ReturnValues.VALUES, list);
@@ -264,9 +284,9 @@ public abstract class Contacts_Base
     }
 
     //for to add a new select
-    protected String getNewSelect(PrintQuery _print) throws EFapsException{
+    protected String getNewSelect(final PrintQuery _print) throws EFapsException{
         return "";
     }
     //for to get a new select
-    protected void addNewSelect(PrintQuery _print) throws EFapsException{}
+    protected void addNewSelect(final PrintQuery _print) throws EFapsException{}
 }
