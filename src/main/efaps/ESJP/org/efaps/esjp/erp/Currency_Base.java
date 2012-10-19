@@ -84,9 +84,14 @@ public abstract class Currency_Base
             final Attribute attr = (Attribute) entry.getKey();
             name2Value.put(attr.getName(), (Object[]) entry.getValue());
         }
-        final Long curId = Long.parseLong((String) name2Value.get(CIERP.CurrencyRateAbstract.CurrencyLink.name)[0]);
-        final DateTime validFrom = new DateTime(name2Value.get(CIERP.CurrencyRateAbstract.ValidFrom.name)[0]);
-        final DateTime validUntil = new DateTime(name2Value.get(CIERP.CurrencyRateAbstract.ValidUntil.name)[0]);
+        final Object curIdObj = name2Value.get(CIERP.CurrencyRateAbstract.CurrencyLink.name)[0];
+        final Long curId = curIdObj instanceof Long ? (Long) curIdObj : Long.parseLong((String) curIdObj);
+        final Object validFromObj = name2Value.get(CIERP.CurrencyRateAbstract.ValidFrom.name)[0];
+        final DateTime validFrom = validFromObj instanceof DateTime
+                        ? (DateTime) validFromObj : new DateTime(validFromObj);
+        final Object validUntilObj = name2Value.get(CIERP.CurrencyRateAbstract.ValidUntil.name)[0];
+        final DateTime validUntil = validUntilObj instanceof DateTime
+                        ? (DateTime) validUntilObj : new DateTime(validUntilObj);
         update(_parameter, curId, validFrom, validUntil, rateInstance);
         return new Return();
     }
