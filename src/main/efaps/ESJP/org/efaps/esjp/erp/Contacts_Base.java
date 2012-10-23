@@ -167,9 +167,11 @@ public abstract class Contacts_Base
                 multi2.addAttribute(CIContacts.ClassPerson.IdentityCard, CIContacts.ClassPerson.ContactId);
                 multi2.execute();
                 while (multi2.next()) {
-                    tax2instances.put(multi.<String>getAttribute(CIContacts.ClassPerson.IdentityCard),
-                                Instance.get(CIContacts.Contact.getType(),
+                    final String idcard = multi.<String>getAttribute(CIContacts.ClassPerson.IdentityCard);
+                    if (idcard != null) {
+                        tax2instances.put(idcard, Instance.get(CIContacts.Contact.getType(),
                                         multi.<Long>getAttribute(CIContacts.ClassPerson.ContactId).toString()));
+                    }
                 }
 
                 for (final Entry<String, Instance> entry : tax2instances.entrySet()) {
