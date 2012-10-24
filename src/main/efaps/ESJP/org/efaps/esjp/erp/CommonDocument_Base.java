@@ -221,7 +221,7 @@ public abstract class CommonDocument_Base
         /**
          * Instance of the newly created doc.
          */
-        private final Instance instance;
+        private Instance instance;
 
         /**
          * Positions of the created Document.
@@ -234,12 +234,21 @@ public abstract class CommonDocument_Base
         private final Map<String, Object> values = new HashMap<String, Object>();
 
         /**
+         *
+         */
+        public CreatedDoc()
+        {
+        }
+
+
+        /**
          * @param _instance Instance of the Document
          */
         public CreatedDoc(final Instance _instance)
         {
             this.instance = _instance;
         }
+
         /**
          * Getter method for the instance variable {@link #values}.
          *
@@ -260,6 +269,17 @@ public abstract class CommonDocument_Base
         }
 
         /**
+         * Setter method for instance variable {@link #instance}.
+         *
+         * @param _instance value for instance variable {@link #instance}
+         */
+
+        public void setInstance(final Instance _instance)
+        {
+            this.instance = _instance;
+        }
+
+        /**
          * Getter method for the instance variable {@link #positions}.
          *
          * @return value of instance variable {@link #positions}
@@ -275,6 +295,5 @@ public abstract class CommonDocument_Base
         {
             this.positions.add(_instance);
         }
-
     }
 }
