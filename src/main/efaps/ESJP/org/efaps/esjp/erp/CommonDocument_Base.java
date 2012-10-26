@@ -26,20 +26,26 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.efaps.admin.datamodel.Status;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.AttributeQuery;
 import org.efaps.db.Context;
+import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.QueryBuilder;
+import org.efaps.esjp.ci.CIERP;
 import org.efaps.util.EFapsException;
 
 /**
@@ -211,6 +217,86 @@ public abstract class CommonDocument_Base
         }
         ret.append(");");
         return ret;
+    }
+
+
+    /**
+     * @param _parameter    Parameter as passed by the eFaps API
+     * @param _insert       insert to add to
+     * @param _createdDoc   document created
+     * @throws EFapsException on error
+     */
+    protected void addStatus2DocCreate(final Parameter _parameter,
+                                       final Insert _insert,
+                                       final CreatedDoc _createdDoc)
+        throws EFapsException
+    {
+        final Map<?, ?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+
+        Status status = null;
+        if (props.containsKey("StatusGroup")) {
+            status = Status.find((String) props.get("StatusGroup"), (String) props.get("Status"));
+        }
+
+        if (status != null) {
+            _insert.add(getType4DocCreate(_parameter).getStatusAttribute(), status.getId());
+        }
+    }
+
+    /**
+     * Get the type used to create the new Payment Document.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return Type use for the insert
+     * @throws EFapsException on error
+     */
+    protected Type getType4DocCreate(final Parameter _parameter)
+        throws EFapsException
+    {
+        final AbstractCommand command = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
+        return command.getTargetCreateType();
+    }
+
+    /**
+     * Method is called in the process of creation of a Document.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _insert   insert to add to
+     * @param _createdDoc   document created
+     * @throws EFapsException on error
+     */
+    protected void add2DocCreate(final Parameter _parameter,
+                                 final Insert _insert,
+                                 final CreatedDoc _createdDoc)
+        throws EFapsException
+    {
+        // used by implementation
+    }
+
+
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _attributeName attributerName the FieldName is wanted for
+     * @return fieldname
+     * @throws EFapsException on error
+     */
+    protected String getFieldName4Attribute(final Parameter _parameter,
+                                            final String _attributeName)
+        throws EFapsException
+    {
+        return StringUtils.uncapitalize(_attributeName);
+    }
+
+    /**
+     * Get the name for the document on creation.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return new Name
+     * @throws EFapsException on error
+     */
+    protected String getDocName4Create(final Parameter _parameter)
+        throws EFapsException
+    {
+        return _parameter.getParameterValue(getFieldName4Attribute(_parameter,
+                        CIERP.DocumentAbstract.Name.name));
     }
 
     /**
