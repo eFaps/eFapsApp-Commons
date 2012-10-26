@@ -21,7 +21,9 @@
 package org.efaps.esjp.erp;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -104,31 +106,51 @@ public abstract class Currency_Base
         throws EFapsException
     {
         // first correct the validFrom
-        final QueryBuilder queryBldr = new QueryBuilder(_rateInstance.getType());
+        List<Instance> lstInst = new ArrayList<Instance>();
+        QueryBuilder queryBldr = new QueryBuilder(_rateInstance.getType());
         queryBldr.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.CurrencyLink, _curId);
         queryBldr.addWhereAttrLessValue(CIERP.CurrencyRateAbstract.ValidFrom, _validFrom);
         queryBldr.addWhereAttrGreaterValue(CIERP.CurrencyRateAbstract.ValidUntil, _validFrom);
-        final InstanceQuery query = queryBldr.getQuery();
+        InstanceQuery query = queryBldr.getQuery();
         query.execute();
-        while (query.next()) {
-            if (!_rateInstance.equals(query.getCurrentValue())) {
-                final Update update = new Update(query.getCurrentValue());
-                update.add(CIERP.CurrencyRateAbstract.ValidUntil, _validFrom);
+        lstInst.addAll(query.getValues());
+
+        queryBldr = new QueryBuilder(_rateInstance.getType());
+        queryBldr.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.CurrencyLink, _curId);
+        queryBldr.addWhereAttrLessValue(CIERP.CurrencyRateAbstract.ValidFrom, _validFrom);
+        queryBldr.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.ValidUntil, _validFrom);
+        query = queryBldr.getQuery();
+        query.execute();
+        lstInst.addAll(query.getValues());
+        for (final Instance inst : lstInst) {
+            if (!_rateInstance.equals(inst)) {
+                final Update update = new Update(inst);
+                update.add(CIERP.CurrencyRateAbstract.ValidUntil, _validFrom.minusSeconds(1));
                 update.executeWithoutTrigger();
             }
         }
 
         // correct the ValidUntil
-        final QueryBuilder queryBldr2 = new QueryBuilder(_rateInstance.getType());
+        lstInst = new ArrayList<Instance>();
+        QueryBuilder queryBldr2 = new QueryBuilder(_rateInstance.getType());
         queryBldr2.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.CurrencyLink, _curId);
         queryBldr2.addWhereAttrLessValue(CIERP.CurrencyRateAbstract.ValidFrom, _validUntil);
         queryBldr2.addWhereAttrGreaterValue(CIERP.CurrencyRateAbstract.ValidUntil, _validUntil);
-        final InstanceQuery query2 = queryBldr2.getQuery();
+        InstanceQuery query2 = queryBldr2.getQuery();
         query2.execute();
-        while (query2.next()) {
-            if (!_rateInstance.equals(query2.getCurrentValue())) {
-                final Update update = new Update(query2.getCurrentValue());
-                update.add(CIERP.CurrencyRateAbstract.ValidFrom, _validUntil);
+        lstInst.addAll(query2.getValues());
+
+        queryBldr2 = new QueryBuilder(_rateInstance.getType());
+        queryBldr2.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.CurrencyLink, _curId);
+        queryBldr2.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.ValidFrom, _validUntil);
+        queryBldr2.addWhereAttrGreaterValue(CIERP.CurrencyRateAbstract.ValidUntil, _validUntil);
+        query2 = queryBldr2.getQuery();
+        query2.execute();
+        lstInst.addAll(query2.getValues());
+        for (final Instance inst : lstInst) {
+            if (!_rateInstance.equals(inst)) {
+                final Update update = new Update(inst);
+                update.add(CIERP.CurrencyRateAbstract.ValidFrom, _validUntil.plusDays(1));
                 update.executeWithoutTrigger();
             }
         }
