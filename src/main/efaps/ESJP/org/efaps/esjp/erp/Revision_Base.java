@@ -70,10 +70,12 @@ public abstract class Revision_Base
     {
         if (reviseable(_parameter.getInstance())) {
             final Instance newInst = copyDoc(_parameter);
-            updateRevision(_parameter, newInst);
-            copyRelations(_parameter, newInst);
-            connectRevision(_parameter, newInst);
-            setStati(_parameter, newInst);
+            if (newInst != null && newInst.isValid()) {
+                updateRevision(_parameter, newInst);
+                copyRelations(_parameter, newInst);
+                connectRevision(_parameter, newInst);
+                setStati(_parameter, newInst);
+            }
         }
         return new Return();
     }
