@@ -38,8 +38,12 @@
             <table-name>T_ERPPAY</table-name>
             <parent-table>T_ERPDOC</parent-table>
             <!-- columns -->
-            <column name="AMOUNT"          type="DECIMAL"                           length="10" scale="2"/>
+            <column name="AMOUNT"          type="DECIMAL"       length="10" scale="2"/>
             <column name="CURRENCYID"      type="INTEGER"/>
+            <column name="RATE"            type="DECIMAL"       length="14" scale="6"/>
+            <column name="RATEDENOM"       type="DECIMAL"       length="14" scale="6" />
+            <column name="RATECURRENCYID"  type="INTEGER"/>
+            <column name="CODE"            type="STRING_SHORT"  length="128" />
             <foreign name="T_ERPPAY_FK_CURRENCYID" key="CURRENCYID"    reference="T_ERPCUR(ID)"/>
         </database>
     </definition>
