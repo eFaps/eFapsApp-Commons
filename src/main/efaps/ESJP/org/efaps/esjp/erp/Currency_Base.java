@@ -45,6 +45,7 @@ import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIERP;
+import org.efaps.esjp.common.uiform.Field;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 
@@ -267,5 +268,45 @@ public abstract class Currency_Base
             ret.put(ReturnValues.VALUES, _parameter.getInstance().getId());
         }
         return ret;
+    }
+
+
+    /**
+     * Extension of the standard DropDown Field mechanism to select a default currency.
+     * @param _parameter    Parameter as passed by the eFaps APi
+     * @return  Return containing html snippet
+     * @throws EFapsException on error
+     */
+    public Return getCurrencyDropDownFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Field field = new Field()
+        {
+
+            @Override
+            protected DropDownPosition getDropDownPosition(final Parameter _parameter,
+                                                           final Object _value,
+                                                           final Object _option)
+                throws EFapsException
+            {
+                final DropDownPosition position = super.getDropDownPosition(_parameter, _value, _option);
+                // Sales-Configuration
+                final SystemConfiguration config = SystemConfiguration.get(UUID
+                                .fromString("c9a1cbc3-fd35-4463-80d2-412422a3802f"));
+                if (config != null) {
+                    final Instance inst = config.getLink("Currency4ProductPrice");
+                    if (inst.isValid()) {
+                        // check if the value is long, and assume that it is the id
+                        if (position.getValue() instanceof Long) {
+                            position.setSelected(inst.getId() == (Long) position.getValue());
+                        } else {
+                            position.setSelected(inst.getOid().equals(String.valueOf(position.getValue())));
+                        }
+                    }
+                }
+                return position;
+            }
+        };
+        return field.dropDownFieldValue(_parameter);
     }
 }
