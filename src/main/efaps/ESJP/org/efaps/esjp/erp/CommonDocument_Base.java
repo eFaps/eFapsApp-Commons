@@ -344,6 +344,26 @@ public abstract class CommonDocument_Base
         {
             return this.values;
         }
+
+        /**
+         * @param _key key
+         * @return value
+         */
+        public Object getValue(final String _key)
+        {
+            return this.values.get(_key);
+        }
+
+        /**
+         * @param _key  key
+         * @param _value value
+         */
+        public void addValue(final String _key,
+                             final Object _value)
+        {
+            this.values.put(_key, _value);
+        }
+
         /**
          * Getter method for the instance variable {@link #instance}.
          *
