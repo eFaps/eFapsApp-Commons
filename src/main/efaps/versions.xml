@@ -56,12 +56,11 @@
             import org.efaps.esjp.admin.ui.UIUpdate;
             import org.efaps.importer.DataImport;
 
-            EFAPS_LOGGER.info("Importing Data for eFapsApp-Contacts");
+            EFAPS_LOGGER.info("Importing Data for eFapsApp-Commons");
 
             RunLevel.init("shell");
             RunLevel.execute();
 
-            EFAPS_LOGGER.info("    Check if JAASKEY for Role ADMIN_REST must be imported");
             // Admin_User_JAASKey
             QueryBuilder queryBldr = new QueryBuilder(UUID.fromString("0e7650c6-8ec3-4c63-b377-f3eb5fb85f16"));
             queryBldr.addWhereAttrEqValue("Key", "ERP_CurrencyAdmin");
