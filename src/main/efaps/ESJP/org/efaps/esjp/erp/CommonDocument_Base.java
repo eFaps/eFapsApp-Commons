@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
@@ -211,7 +211,7 @@ public abstract class CommonDocument_Base
         final StringBuilder ret = new StringBuilder();
         ret.append("eFapsSetFieldValue(").append(_idx).append(",'").append(_fieldName).append("',");
         if (_escape) {
-            ret.append("'").append(StringEscapeUtils.escapeJavaScript(_value)).append("'");
+            ret.append("'").append(StringEscapeUtils.escapeEcmaScript(_value)).append("'");
         } else {
             ret.append(_value);
         }
