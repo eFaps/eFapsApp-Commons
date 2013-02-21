@@ -2,7 +2,7 @@
 
 <!--
 
-  Copyright 2003 - 2010 The eFaps Team
+  Copyright 2003 - 2013 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -29,17 +29,12 @@
         <dependency order="0">
             <groupId>org.efaps</groupId>
             <artifactId>efaps-kernel-install</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
+            <version>3.0.0-SNAPSHOT</version>
         </dependency>
         <dependency order="1">
             <groupId>org.efaps</groupId>
             <artifactId>efaps-webapp-install</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
-        </dependency>
-        <dependency order="2">
-            <groupId>org.efaps.apps</groupId>
-            <artifactId>contacts</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
+            <version>3.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <version number="1" reloadCache="false" login="true" compile="true">
@@ -73,24 +68,11 @@
 
             UIUpdate update = new UIUpdate();
 
-            <!-- ERP_Contacts_ContactMyDesk_Menu_Action_MoveDocuments2Contacts, Contacts_ContactMyDesk_Menu_Action -->
-            update.add2Menu("31854e2f-a6ab-4c91-aaf0-30cd112e8995", "f54e5a23-4760-4322-9600-756ee787cff5", 1);
-
-             <!-- ERP_AttributeAbstractMyDesk, Admin_Common_MyDesk -->
+            <!-- ERP_AttributeAbstractMyDesk, Admin_Common_MyDesk -->
             update.add2Menu("9427d507-4793-4751-83e8-f08dbf2df55d", "8d9aae87-fa36-4b62-aba0-dbd9c0ca273a", 1);
 
             <!-- Definitions_Definitions, Admin_Help_MainMenu -->
             update.add2Help("10c1efaf-af0a-4602-b6b5-8a5aff4ae38d", "dead549e-5cc6-49f9-9a79-8e33aa139f6d", -1);
-
-
-            <!-- Admin_Common_Version -->
-            QueryBuilder bldr = new QueryBuilder(UUID.fromString("1bb051f3-b664-43db-b409-c0c4009f5972"));
-            bldr.addWhereAttrEqValue("Name", "eFapsLocalizations-Ubicaciones");
-            InstanceQuery instQuery = bldr.getQuery();
-            if (!instQuery.execute().isEmpty()) {
-                <!-- Ubicaciones_UbicacionMyDesk , ERP_AttributeAbstractMyDesk -->
-                update.add2Menu("b1a580bd-c4a3-4d06-9b98-2e3b62e06254", "9427d507-4793-4751-83e8-f08dbf2df55d", 1);
-            }
 
         </script>
     </version>
