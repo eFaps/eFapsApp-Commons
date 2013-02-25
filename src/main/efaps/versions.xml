@@ -62,8 +62,16 @@
             InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (!query.next()) {
-                DataImport.readFile(new URL(EFAPS_ROOTURL, "Data/IMPORT_Currency.xml")).updateInDB();
                 DataImport.readFile(new URL(EFAPS_ROOTURL, "Data/IMPORT_UserJAASKey.xml")).updateInDB();
+            }
+
+            // ERP_Currency
+            queryBldr = new QueryBuilder(UUID.fromString("6981ff18-6d4a-4146-9d58-478d8154735d"));
+            queryBldr.addWhereAttrEqValue("UUID", "691758fc-a060-4bd5-b1fa-b33296638126");
+            query = queryBldr.getQuery();
+            query.executeWithoutAccessCheck();
+            if (!query.next()) {
+                DataImport.readFile(new URL(EFAPS_ROOTURL, "Data/IMPORT_Currency.xml")).updateInDB();
             }
 
             UIUpdate update = new UIUpdate();
