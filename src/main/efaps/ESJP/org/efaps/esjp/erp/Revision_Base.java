@@ -355,7 +355,7 @@ public abstract class Revision_Base
         for (final Attribute attr : _update.getInstance().getType().getAttributes().values()) {
             final boolean noAdd = attr.getAttributeType().isAlwaysUpdate()
                 || attr.getAttributeType().isCreateUpdate()
-                ||  attr.getParent().getTypeAttribute().getName().equals(attr.getName())
+                || (attr.getParent().getTypeAttribute() != null && attr.getParent().getTypeAttribute().getName().equals(attr.getName()))
                 || attr.getAttributeType().getDbAttrType() instanceof OIDType
                 || _added.contains(attr.getSqlColNames().toString())
                 || attr.getParent().getMainTable().getSqlColId().equals(attr.getSqlColNames().get(0));
