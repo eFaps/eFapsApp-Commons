@@ -24,9 +24,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.efaps.admin.common.NumberGenerator;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
@@ -46,6 +49,8 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.QueryBuilder;
 import org.efaps.esjp.ci.CIERP;
+import org.efaps.esjp.erp.util.ERP;
+import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
 
 /**
@@ -295,8 +300,20 @@ public abstract class CommonDocument_Base
     protected String getDocName4Create(final Parameter _parameter)
         throws EFapsException
     {
-        return _parameter.getParameterValue(getFieldName4Attribute(_parameter,
-                        CIERP.DocumentAbstract.Name.name));
+        final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+        final boolean useNumGen = "true".equalsIgnoreCase((String) properties.get("UseNumberGenerator4Name"));
+        String ret;
+        if (useNumGen) {
+            final Type type = getType4DocCreate(_parameter);
+            final Properties props = ERP.getSysConfig()
+                            .getAttributeValueAsProperties(ERPSettings.NUMBERGENERATOR, true);
+            final String uuid = props.getProperty(type.getName());
+            final NumberGenerator numGen = NumberGenerator.get(UUID.fromString(uuid));
+            ret = numGen.getNextVal();
+        } else {
+            ret = _parameter.getParameterValue(getFieldName4Attribute(_parameter, CIERP.DocumentAbstract.Name.name));
+        }
+        return ret;
     }
 
     /**
