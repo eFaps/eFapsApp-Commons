@@ -49,6 +49,7 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.QueryBuilder;
 import org.efaps.esjp.ci.CIERP;
+import org.efaps.esjp.common.uiform.Create;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
@@ -315,6 +316,42 @@ public abstract class CommonDocument_Base
         }
         return ret;
     }
+
+
+    public void executeProcess(final Parameter _parameter,
+                               final CreatedDoc _createdDoc) throws EFapsException
+    {
+        final Create create = new Create() {
+            @Override
+            protected void add2ProcessMap(final Parameter _parameter,
+                                          final Instance _instance,
+                                          final Map<String, Object> _params)
+                throws EFapsException
+            {
+                CommonDocument_Base.this.add2ProcessMap(_parameter, _createdDoc, _params);
+            }
+        };
+        create.executeProcess(_parameter, _createdDoc.getInstance());
+    }
+
+
+    /**
+     * Add additional values to the map passed to the process prior to
+     * execution.
+     *
+     * @param _parameter Parameter as passed by the eFasp API
+     * @param _instance Insert the values can be added to
+     * @param _params Map passed to the Process
+     * @throws EFapsException on error
+     */
+    protected void add2ProcessMap(final Parameter _parameter,
+                                  final CreatedDoc _createdDoc,
+                                  final Map<String, Object> _params)
+        throws EFapsException
+    {
+
+    }
+
 
     /**
      * Class is used as the return value for the internal Create methods.
