@@ -188,6 +188,130 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * A Script that removes the table rows,
+     * but lives if functional for editing via script etc.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _tableName name of the table to be removed
+     * @return StringBuilder containing the javascript
+     */
+    protected StringBuilder getTableRemoveScript(final Parameter _parameter,
+                                                 final String _tableName)
+    {
+        return getTableRemoveScript(_parameter, _tableName, false, false);
+    }
+
+    /**
+     * A Script that removes the table rows,
+     * but lives if functional for editing via script etc.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _tableName name of the table to be removed
+     * @param _onDomReady add onDomReady script part
+     * @param _wrapInTags wrap in script tags
+     * @return StringBuilder containing the javascript
+     */
+    protected StringBuilder getTableRemoveScript(final Parameter _parameter,
+                                                 final String _tableName,
+                                                 final boolean _onDomReady,
+                                                 final boolean _wrapInTags)
+    {
+        final StringBuilder ret = new StringBuilder();
+        if (_wrapInTags) {
+            ret.append("<script type=\"text/javascript\">");
+        }
+        if (_onDomReady) {
+            ret.append("require([\"dojo/domReady!\"], function(){");
+        }
+        ret.append("require([\"dojo/_base/lang\",\"dojo/dom\", \"dojo/query\",\"dojo/NodeList-traverse\"], ")
+                .append("function(lang, dom, query){\n")
+            .append("  tableName = \"").append(_tableName).append("\";\n")
+            .append("  for (i = 100;i < 10000; i = i + 100) {\n")
+            .append("    if( lang.exists(\"eFapsTable\" + i) ){\n")
+            .append("      var asas = window[\"eFapsTable\" + i];\n")
+            .append("      if (asas.tableName == tableName) {\n")
+            .append("        tableBody = dom.byId(asas.bodyID);\n")
+            .append("        query(\".eFapsTableRemoveRowCell\", tableBody).parent().forEach(function(node){\n")
+            .append("          dojo.destroy(node);\n")
+            .append("        });\n")
+            .append("        query(\"div\", tableBody).style({ display:\"none\" });")
+            .append("      }\n")
+            .append("    } else {\n")
+            .append("      break;\n")
+            .append("    }\n")
+            .append("  }\n")
+            .append("});");
+
+        if (_onDomReady) {
+            ret.append("});");
+        }
+
+        if (_wrapInTags) {
+            ret.append("</script>");
+        }
+        return ret;
+    }
+
+    /**
+     * A Script that deactivates the table by hiding the add and remove buttons,
+     * but lives if functional for editing via script etc.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _tableName name of the table to be removed
+     * @return StringBuilder containing the javascript
+     */
+    protected StringBuilder getTableDeactivateScript(final Parameter _parameter,
+                                                     final String _tableName)
+    {
+        return getTableDeactivateScript(_parameter, _tableName, false, false);
+    }
+
+    /**
+     * A Script that deactivates the table by hiding the add and remove buttons,
+     * but lives if functional for editing via script etc.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _tableName name of the table to be removed
+     * @param _onDomReady add onDomReady script part
+     * @param _wrapInTags wrap in script tags
+     * @return StringBuilder containing the javascript
+     */
+    protected StringBuilder getTableDeactivateScript(final Parameter _parameter,
+                                                     final String _tableName,
+                                                     final boolean _onDomReady,
+                                                     final boolean _wrapInTags)
+    {
+        final StringBuilder ret = new StringBuilder();
+        if (_wrapInTags) {
+            ret.append("<script type=\"text/javascript\">");
+        }
+        if (_onDomReady) {
+            ret.append("require([\"dojo/domReady!\"], function(){");
+        }
+        ret.append("require([\"dojo/_base/lang\",\"dojo/dom\", \"dojo/query\",\"dojo/NodeList-traverse\"], ")
+                .append("function(lang, dom, query){\n")
+            .append("  tableName = \"").append(_tableName).append("\";\n")
+            .append("  for (i=100;i<10000;i=i+100) {\n")
+            .append("    if( lang.exists(\"eFapsTable\" + i) ){\n")
+            .append("      var asas = window[\"eFapsTable\" + i];\n")
+            .append("      if (asas.tableName == tableName) {\n")
+            .append("        tableBody = dom.byId(asas.bodyID);\n")
+            .append("        query(\".eFapsTableRemoveRowCell > *\", tableBody).style({ display:\"none\" });\n")
+            .append("          query(\"div\", tableBody).at(-1).style({ display:\"none\" });\n")
+            .append("        }\n")
+            .append("      } else {\n")
+            .append("        break;\n")
+            .append("      }\n")
+            .append("  }\n")
+            .append("});");
+
+        if (_onDomReady) {
+            ret.append("});");
+        }
+
+        if (_wrapInTags) {
+            ret.append("</script>");
+        }
+        return ret;
+    }
+
+    /**
      * Get a "eFapsSetFieldValue" Javascript line.
      * @param _idx          index of the field
      * @param _fieldName    name of the field
