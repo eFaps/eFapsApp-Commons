@@ -21,10 +21,13 @@
 package org.efaps.esjp.erp;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -310,6 +313,87 @@ public abstract class CommonDocument_Base
         }
         return ret;
     }
+
+    /**
+     * A Script adds new Rows to the given table and fills it with values.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _tableName name of the table to be removed
+     * @param _values values to be used
+     * @param _onComplete script to be added on complete
+     * @return StringBuilder containing the javascript
+     */
+    protected StringBuilder getTableAddNewRowsScript(final Parameter _parameter,
+                                                     final String _tableName,
+                                                     final Collection<Map<String, String>> _values,
+                                                     final StringBuilder _onComplete)
+    {
+        return getTableAddNewRowsScript(_parameter, _tableName, _values, _onComplete, false, false, null);
+    }
+
+    /**
+     * A Script adds new Rows to the given table and fills it with values.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _tableName name of the table to be removed
+     * @param _values values to be used
+     * @param _onComplete script to be added on complete
+     * @param _onDomReady add onDomReady script part
+     * @param _wrapInTags wrap in script tags
+     * @param _nonEscapeFields set of fields for which the escape must not apply
+     * @return StringBuilder containing the javascript
+     */
+    protected StringBuilder getTableAddNewRowsScript(final Parameter _parameter,
+                                                     final String _tableName,
+                                                     final Collection<Map<String, String>> _values,
+                                                     final StringBuilder _onComplete,
+                                                     final boolean _onDomReady,
+                                                     final boolean _wrapInTags,
+                                                     final Set<String> _nonEscapeFields)
+    {
+        final StringBuilder ret = new StringBuilder();
+        if (_wrapInTags) {
+            ret.append("<script type=\"text/javascript\">");
+        }
+        if (_onDomReady) {
+            ret.append("require([\"dojo/domReady!\"], function(){");
+        }
+        ret.append(" addNewRows_").append(_tableName).append("(").append(_values.size()).append(",function(){")
+            .append(getSetFieldValuesScript(_parameter, _values, _nonEscapeFields));
+        if (_onComplete != null) {
+            ret.append(_onComplete);
+        }
+        ret.append("}, null);");
+        if (_onDomReady) {
+            ret.append("});");
+        }
+        if (_wrapInTags) {
+            ret.append("</script>");
+        }
+        return ret;
+    }
+
+    /**
+     * A Script that sets values.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _values values to be used
+     * @param _nonEscapeFields set of fields for which the escape must not apply
+     * @return StringBuilder containing the javascript
+     */
+    protected StringBuilder getSetFieldValuesScript(final Parameter _parameter,
+                                                    final Collection<Map<String, String>> _values,
+                                                    final Set<String> _nonEscapeFields)
+    {
+        final StringBuilder ret = new StringBuilder();
+        int i = 0;
+        for (final Map<String, String> values : _values) {
+            for (final Entry<String, String> entry : values.entrySet()) {
+                ret.append(getSetFieldValue(i, entry.getKey(), entry.getValue(), _nonEscapeFields == null ? true
+                                : _nonEscapeFields.contains(entry.getKey())));
+            }
+            i++;
+        }
+        return ret;
+    }
+
 
     /**
      * Get a "eFapsSetFieldValue" Javascript line.
