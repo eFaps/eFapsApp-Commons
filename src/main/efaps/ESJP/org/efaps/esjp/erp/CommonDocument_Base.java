@@ -354,14 +354,14 @@ public abstract class CommonDocument_Base
             ret.append("<script type=\"text/javascript\">");
         }
         if (_onDomReady) {
-            ret.append("require([\"dojo/domReady!\"], function(){");
+            ret.append("require([\"dojo/domReady!\"], function(){\n");
         }
-        ret.append(" addNewRows_").append(_tableName).append("(").append(_values.size()).append(",function(){")
+        ret.append(" addNewRows_").append(_tableName).append("(").append(_values.size()).append(",function(){\n")
             .append(getSetFieldValuesScript(_parameter, _values, _nonEscapeFields));
         if (_onComplete != null) {
             ret.append(_onComplete);
         }
-        ret.append("}, null);");
+        ret.append("}, null);\n");
         if (_onDomReady) {
             ret.append("});");
         }
@@ -387,7 +387,7 @@ public abstract class CommonDocument_Base
         for (final Map<String, String> values : _values) {
             for (final Entry<String, String> entry : values.entrySet()) {
                 ret.append(getSetFieldValue(i, entry.getKey(), entry.getValue(), _nonEscapeFields == null ? true
-                                : _nonEscapeFields.contains(entry.getKey())));
+                                : !_nonEscapeFields.contains(entry.getKey()))).append("\n");
             }
             i++;
         }
