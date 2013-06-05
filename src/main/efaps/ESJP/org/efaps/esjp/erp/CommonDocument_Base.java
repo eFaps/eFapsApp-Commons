@@ -219,23 +219,22 @@ public abstract class CommonDocument_Base
     {
         final StringBuilder ret = new StringBuilder();
         if (_wrapInTags) {
-            ret.append("<script type=\"text/javascript\">");
+            ret.append("<script type=\"text/javascript\">\n");
         }
         if (_onDomReady) {
-            ret.append("require([\"dojo/domReady!\"], function(){");
+            ret.append("require([\"dojo/domReady!\"], function(){\n");
         }
-        ret.append("require([\"dojo/_base/lang\",\"dojo/dom\", \"dojo/query\",\"dojo/NodeList-traverse\"], ")
-                .append("function(lang, dom, query){\n")
+        ret.append("require([\"dojo/_base/lang\",\"dojo/dom\", \"dojo/dom-construct\",")
+                .append("\"dojo/query\",\"dojo/NodeList-traverse\", \"dojo/NodeList-dom\"],")
+                .append(" function(lang, dom, domConstruct, query){\n")
             .append("  tableName = \"").append(_tableName).append("\";\n")
             .append("  for (i = 100;i < 10000; i = i + 100) {\n")
             .append("    if( lang.exists(\"eFapsTable\" + i) ){\n")
-            .append("      var asas = window[\"eFapsTable\" + i];\n")
-            .append("      if (asas.tableName == tableName) {\n")
-            .append("        tableBody = dom.byId(asas.bodyID);\n")
-            .append("        query(\".eFapsTableRemoveRowCell\", tableBody).parent().forEach(function(node){\n")
-            .append("          dojo.destroy(node);\n")
-            .append("        });\n")
-            .append("        query(\"div\", tableBody).style({ display:\"none\" });")
+            .append("      var tO = window[\"eFapsTable\" + i];\n")
+            .append("      if (tO.tableName == tableName) {\n")
+            .append("        tableBody = dom.byId(tO.bodyID);\n")
+            .append("        query(\".eFapsTableRemoveRowCell\", tableBody).parent().forEach(domConstruct.destroy);\n")
+            .append("        query(\"div\", tableBody).style(\"display\", \"none\");")
             .append("      }\n")
             .append("    } else {\n")
             .append("      break;\n")
@@ -244,11 +243,11 @@ public abstract class CommonDocument_Base
             .append("});");
 
         if (_onDomReady) {
-            ret.append("});");
+            ret.append("});\n");
         }
 
         if (_wrapInTags) {
-            ret.append("</script>");
+            ret.append("</script>\n");
         }
         return ret;
     }
@@ -282,21 +281,21 @@ public abstract class CommonDocument_Base
     {
         final StringBuilder ret = new StringBuilder();
         if (_wrapInTags) {
-            ret.append("<script type=\"text/javascript\">");
+            ret.append("<script type=\"text/javascript\">\n");
         }
         if (_onDomReady) {
-            ret.append("require([\"dojo/domReady!\"], function(){");
+            ret.append("require([\"dojo/domReady!\"], function(){\n");
         }
-        ret.append("require([\"dojo/_base/lang\",\"dojo/dom\", \"dojo/query\",\"dojo/NodeList-traverse\"], ")
-                .append("function(lang, dom, query){\n")
+        ret.append("require([\"dojo/_base/lang\",\"dojo/dom\", \"dojo/query\",\"dojo/NodeList-traverse\", ")
+                .append("\"dojo/NodeList-dom\"], function(lang, dom, query){\n")
             .append("  tableName = \"").append(_tableName).append("\";\n")
             .append("  for (i=100;i<10000;i=i+100) {\n")
             .append("    if( lang.exists(\"eFapsTable\" + i) ){\n")
-            .append("      var asas = window[\"eFapsTable\" + i];\n")
-            .append("      if (asas.tableName == tableName) {\n")
-            .append("        tableBody = dom.byId(asas.bodyID);\n")
+            .append("      var tO = window[\"eFapsTable\" + i];\n")
+            .append("      if (tO.tableName == tableName) {\n")
+            .append("        tableBody = dom.byId(tO.bodyID);\n")
             .append("        query(\".eFapsTableRemoveRowCell > *\", tableBody).style({ display:\"none\" });\n")
-            .append("          query(\"div\", tableBody).at(-1).style({ display:\"none\" });\n")
+            .append("          query(\"div\", tableBody).at(-1).style(\"display\",\"none\");\n")
             .append("        }\n")
             .append("      } else {\n")
             .append("        break;\n")
@@ -305,11 +304,11 @@ public abstract class CommonDocument_Base
             .append("});");
 
         if (_onDomReady) {
-            ret.append("});");
+            ret.append("});\n");
         }
 
         if (_wrapInTags) {
-            ret.append("</script>");
+            ret.append("</script>\n");
         }
         return ret;
     }
@@ -351,7 +350,7 @@ public abstract class CommonDocument_Base
     {
         final StringBuilder ret = new StringBuilder();
         if (_wrapInTags) {
-            ret.append("<script type=\"text/javascript\">");
+            ret.append("<script type=\"text/javascript\">\n");
         }
         if (_onDomReady) {
             ret.append("require([\"dojo/domReady!\"], function(){\n");
@@ -361,12 +360,12 @@ public abstract class CommonDocument_Base
         if (_onComplete != null) {
             ret.append(_onComplete);
         }
-        ret.append("}, null);\n");
+        ret.append("\n}, null);\n");
         if (_onDomReady) {
-            ret.append("});");
+            ret.append("\n});\n");
         }
         if (_wrapInTags) {
-            ret.append("</script>");
+            ret.append("</script>\n");
         }
         return ret;
     }
