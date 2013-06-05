@@ -340,10 +340,10 @@ public abstract class Revision_Base
      * @param _added        already added attributes
      * @throws EFapsException on error
      */
-    protected void addAttributes(final Parameter _parameter,
-                                 final Instance _origInst,
-                                 final Update _update,
-                                 final Set<String> _added)
+    public void addAttributes(final Parameter _parameter,
+                              final Instance _origInst,
+                              final Update _update,
+                              final Set<String> _added)
         throws EFapsException
     {
         final PrintQuery print = new PrintQuery(_origInst);
@@ -354,11 +354,12 @@ public abstract class Revision_Base
 
         for (final Attribute attr : _update.getInstance().getType().getAttributes().values()) {
             final boolean noAdd = attr.getAttributeType().isAlwaysUpdate()
-                || attr.getAttributeType().isCreateUpdate()
-                || (attr.getParent().getTypeAttribute() != null && attr.getParent().getTypeAttribute().getName().equals(attr.getName()))
-                || attr.getAttributeType().getDbAttrType() instanceof OIDType
-                || _added.contains(attr.getSqlColNames().toString())
-                || attr.getParent().getMainTable().getSqlColId().equals(attr.getSqlColNames().get(0));
+                    || attr.getAttributeType().isCreateUpdate()
+                    || (attr.getParent().getTypeAttribute() != null
+                            && attr.getParent().getTypeAttribute().getName().equals(attr.getName()))
+                    || attr.getAttributeType().getDbAttrType() instanceof OIDType
+                    || _added.contains(attr.getSqlColNames().toString())
+                    || attr.getParent().getMainTable().getSqlColId().equals(attr.getSqlColNames().get(0));
             if (!noAdd) {
                 final Object object = print.getAttribute(attr);
                 _update.add(attr.getName(), object);
