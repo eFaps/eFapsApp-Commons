@@ -32,7 +32,6 @@
         <childs>
             <child>ERP_DocumentTypeMyDesk_Menu_Action_Create</child>
             <child>ERP_DocumentTypeMyDesk_Menu_Action_Delete</child>
-            <child>ERP_DocumentTypeMyDesk_Menu_Action_CopyTypes</child>
         </childs>
     </definition>
 </ui-menu>
