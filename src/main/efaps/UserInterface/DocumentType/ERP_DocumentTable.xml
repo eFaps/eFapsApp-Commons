@@ -46,6 +46,11 @@
             <property name="Select">linkto[DocumentLinkAbstract].attribute[Date]</property>
             <property name="Label">ERP_DocumentAbstract/Date.Label</property>
             <property name="ModeSearch">READONLY</property>
+            <property name="FilterType">FREETEXT</property>
+            <property name="FilterRequired">TRUE</property>
+            <property name="FilterBase">DATABASE</property>
+            <property name="FilterDefault">WEEK</property>
+            <property name="ClassNameUI">org.efaps.admin.datamodel.ui.DateUI</property>
         </field>
         <field name="vendorLink">
             <property name="Select">linkto[DocumentLinkAbstract].linkto[Salesperson].attribute[Name]</property>
