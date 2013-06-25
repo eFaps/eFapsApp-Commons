@@ -262,7 +262,7 @@ public abstract class Currency_Base
         final SystemConfiguration config = SystemConfiguration.get(
                         UUID.fromString("c9a1cbc3-fd35-4463-80d2-412422a3802f"));
         if (config != null) {
-            final Instance linkInst = config.getLink("CurrencyBase");
+            final Instance linkInst = config.getLink("org.efaps.sales.CurrencyBase");
             ret.put(ReturnValues.VALUES, linkInst.getId());
         } else {
             ret.put(ReturnValues.VALUES, _parameter.getInstance().getId());
