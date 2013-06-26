@@ -41,4 +41,14 @@ public interface ERPSettings
      * Set a NumberGenerator for a Type. Used for Common Documents.
      */
     String NUMBERGENERATOR = "org.efaps.erp.NumberGenerator4Type";
+
+    /**
+     * String with the name of the selected company.
+     */
+    String COMPANYNAME = "org.efaps.commons.CompanyName";
+
+    /**
+     * String with the tax number of the selected company.
+     */
+    String COMPANYTAX = "org.efaps.commons.CompanyTaxNumber";
 }
