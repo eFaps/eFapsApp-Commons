@@ -47,5 +47,11 @@ Set a NumberGenerator for a Type. Used for Common Documents in the calling comma
             <value>xxxxxxxxxxx</value>
             <description>Company should be setted if it's required.</description>
         </attribute>
+        <attribute>
+            <key>org.efaps.commons.JasperKey</key>
+            <value>to be implemented</value>
+            <description>Properties.
+Can be concatenated Set a JasperReport.</description>
+        </attribute>
     </definition>
 </common-systemconfiguration>

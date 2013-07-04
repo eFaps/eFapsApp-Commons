@@ -51,4 +51,11 @@ public interface ERPSettings
      * String with the tax number of the selected company.
      */
     String COMPANYTAX = "org.efaps.commons.CompanyTaxNumber";
+
+    /**
+     * Properties.<br/>
+     * Can be concatenated.<br/>
+     * Set a JasperReport for a Type. Used for Common Documents.
+     */
+    String JASPERKEY = "org.efaps.commons.JasperKey";
 }
