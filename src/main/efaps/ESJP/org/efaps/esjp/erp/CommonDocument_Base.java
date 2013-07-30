@@ -217,6 +217,25 @@ public abstract class CommonDocument_Base
                                                  final boolean _onDomReady,
                                                  final boolean _wrapInTags)
     {
+        return getTableRemoveScript(_parameter, _tableName, _onDomReady, _wrapInTags, true);
+    }
+
+
+    /**
+     * A Script that removes the table rows,
+     * but lives if functional for editing via script etc.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _tableName name of the table to be removed
+     * @param _onDomReady add onDomReady script part
+     * @param _wrapInTags wrap in script tags
+     * @return StringBuilder containing the javascript
+     */
+    protected StringBuilder getTableRemoveScript(final Parameter _parameter,
+                                                 final String _tableName,
+                                                 final boolean _onDomReady,
+                                                 final boolean _wrapInTags,
+                                                 final boolean _makeUneditable)
+    {
         final StringBuilder ret = new StringBuilder();
         if (_wrapInTags) {
             ret.append("<script type=\"text/javascript\">\n");
@@ -233,9 +252,13 @@ public abstract class CommonDocument_Base
             .append("      var tO = window[\"eFapsTable\" + i];\n")
             .append("      if (tO.tableName == tableName) {\n")
             .append("        tableBody = dom.byId(tO.bodyID);\n")
-            .append("        query(\".eFapsTableRemoveRowCell\", tableBody).parent().forEach(domConstruct.destroy);\n")
-            .append("        query(\"div\", tableBody).style(\"display\", \"none\");")
-            .append("      }\n")
+            .append("        query(\".eFapsTableRemoveRowCell\", tableBody).parent().forEach(domConstruct.destroy);\n");
+
+        if (_makeUneditable) {
+            ret.append("        query(\"div\", tableBody).style(\"display\", \"none\");");
+        }
+
+        ret.append("      }\n")
             .append("    } else {\n")
             .append("      break;\n")
             .append("    }\n")
@@ -314,6 +337,18 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * A Script adds one new empty Row to the given table.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _tableName name of the table the row will be added to
+     *
+     */
+    protected StringBuilder getTableAddNewRowScript(final Parameter _parameter,
+                                                     final String _tableName)
+    {
+        return getTableAddNewRowsScript(_parameter, _tableName, null, null);
+    }
+
+    /**
      * A Script adds new Rows to the given table and fills it with values.
      * @param _parameter Parameter as passed by the eFaps API
      * @param _tableName name of the table to be removed
@@ -355,8 +390,12 @@ public abstract class CommonDocument_Base
         if (_onDomReady) {
             ret.append("require([\"dojo/domReady!\"], function(){\n");
         }
-        ret.append(" addNewRows_").append(_tableName).append("(").append(_values.size()).append(",function(){\n")
-            .append(getSetFieldValuesScript(_parameter, _values, _nonEscapeFields));
+        if (_values == null) {
+            ret.append(" addNewRows_").append(_tableName).append("(").append(1).append(",function(){\n");
+        } else {
+            ret.append(" addNewRows_").append(_tableName).append("(").append(_values.size()).append(",function(){\n")
+                .append(getSetFieldValuesScript(_parameter, _values, _nonEscapeFields));
+        }
         if (_onComplete != null) {
             ret.append(_onComplete);
         }
