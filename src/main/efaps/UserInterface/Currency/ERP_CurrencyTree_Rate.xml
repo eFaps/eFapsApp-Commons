@@ -36,13 +36,14 @@
             <menu>ERP_CurrencyTree_Rate_Menu</menu>
             <table>ERP_CurrencyRateTable</table>
             <evaluate program="org.efaps.esjp.common.uitable.MultiPrint">
-                <property name="Types">ERP_CurrencyRateAbstract</property>
-                <property name="LinkFroms">CurrencyLink</property>
+                <property name="Type">ERP_CurrencyRateAbstract</property>
+                <property name="LinkFrom">CurrencyLink</property>
                 <property name="ExpandChildTypes">true</property>
             </evaluate>
         </target>
         <!-- properties -->
         <property name="Target">content</property>
+        <property name="TargetMode">view</property>
         <property name="TargetShowCheckBoxes">true</property>
     </definition>
 </ui-command>

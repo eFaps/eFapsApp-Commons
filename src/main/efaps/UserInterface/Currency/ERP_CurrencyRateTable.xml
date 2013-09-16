@@ -42,13 +42,29 @@
             <property name="Label">ERP_CurrencyRateAbstract/Type.Label</property>
         </field>
         <field name="rate">
+            <property name="ModePrint">NONE</property>
             <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
             <property name="Attribute">Rate</property>
             <property name="Label">ERP_CurrencyRateAbstract/Rate.Label</property>
         </field>
+        <field name="rate4Print">
+            <property name="ModePrint">READONLY</property>
+            <property name="ModeView">NONE</property>
+            <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+            <property name="Select">attribute[Rate].label</property>
+            <property name="Label">ERP_CurrencyRateAbstract/Rate.Label</property>
+        </field>
         <field name="rateSale">
+            <property name="ModePrint">NONE</property>
             <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
             <property name="Attribute">RateSale</property>
+            <property name="Label">ERP_CurrencyRateAbstract/RateSale.Label</property>
+        </field>
+        <field name="rateSale4Print">
+            <property name="ModePrint">READONLY</property>
+            <property name="ModeView">NONE</property>
+            <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+            <property name="Select">attribute[RateSale].label</property>
             <property name="Label">ERP_CurrencyRateAbstract/RateSale.Label</property>
         </field>
         <field name="validFrom">
