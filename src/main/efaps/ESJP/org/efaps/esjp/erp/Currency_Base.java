@@ -23,9 +23,11 @@ package org.efaps.esjp.erp;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import org.efaps.admin.common.SystemConfiguration;
@@ -39,6 +41,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.PrintQuery;
@@ -59,6 +62,11 @@ import org.joda.time.DateTime;
 @EFapsRevision("$Rev$")
 public abstract class Currency_Base
 {
+    /**
+     * Key used to access a Request map.
+     */
+    private static final String REQUEST_KEYRATE = Currency_Base.class + ".RequestKey4RateFieldValue";
+
 
     private final Map<Long, CurrencyInst> currencies = new HashMap<Long, CurrencyInst>();
 
@@ -166,6 +174,14 @@ public abstract class Currency_Base
         return print.<Long> getAttribute(CIERP.CurrencyRateAbstract.CurrencyLink);
     }
 
+    /**
+     * Method is used as attribute RATE_VALUE event.
+     *
+     * @param _parameter    Parameter as passed by the efasp API
+     * @return value for rate
+     * @throws EFapsException
+     */
+    @SuppressWarnings("unchecked")
     public Return getRateValue(final Parameter _parameter)
         throws EFapsException
     {
@@ -180,18 +196,33 @@ public abstract class Currency_Base
                 }
             }
         } else {
+            // to prevent that the values are inverted more than one in a request,
+            // the fieldvalues must be stored
+            Set<FieldValue> fieldValues;
+            if (Context.getThreadContext().containsRequestAttribute(Currency_Base.REQUEST_KEYRATE)) {
+                fieldValues = (Set<FieldValue>) Context.getThreadContext().getRequestAttribute(
+                                Currency_Base.REQUEST_KEYRATE);
+            } else {
+                fieldValues = new HashSet<FieldValue>();
+                Context.getThreadContext().setRequestAttribute(Currency_Base.REQUEST_KEYRATE, fieldValues);
+            }
             final FieldValue fieldValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
-            final Object value = fieldValue.getValue();
-            if (value instanceof Object[]) {
-                final Object[] values = (Object[]) value;
-                final CurrencyInst currencyInst = getCurrencyInst((Long) values[2]);
-                if (currencyInst.isInvert()) {
-                    final Object enomTmp = values[0];
-                    values[0] = values[1];
-                    values[1] = enomTmp;
-                    ret.put(ReturnValues.TRUE, true);
+            if (fieldValues.contains(fieldValue)) {
+                ret.put(ReturnValues.VALUES, fieldValue.getValue());
+            } else {
+                final Object value = fieldValue.getValue();
+                if (value instanceof Object[]) {
+                    final Object[] values = (Object[]) value;
+                    final CurrencyInst currencyInst = getCurrencyInst((Long) values[2]);
+                    if (currencyInst.isInvert()) {
+                        final Object enomTmp = values[0];
+                        values[0] = values[1];
+                        values[1] = enomTmp;
+                        ret.put(ReturnValues.TRUE, true);
+                    }
+                    ret.put(ReturnValues.VALUES, values);
                 }
-                ret.put(ReturnValues.VALUES, values);
+                fieldValues.add(fieldValue);
             }
         }
         return ret;

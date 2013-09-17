@@ -39,7 +39,7 @@
             <menu>ERP_CurrencyMyDesk_Menu</menu>
             <table>ERP_CurrencyTable</table>
             <evaluate program="org.efaps.esjp.common.uitable.MultiPrint">
-                <property name="Types">ERP_Currency</property>
+                <property name="Type">ERP_Currency</property>
             </evaluate>
         </target>
         <!-- properties -->
