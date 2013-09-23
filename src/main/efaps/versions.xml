@@ -74,6 +74,14 @@
                 DataImport.readFile(new URL(EFAPS_ROOTURL, "Data/IMPORT_Currency.xml")).updateInDB();
             }
 
+            // ERP_DocumentType
+            queryBldr = new QueryBuilder(UUID.fromString("90796449-0121-4fc1-9632-7d52f3adf85e"));
+            query = queryBldr.getQuery();
+            query.executeWithoutAccessCheck();
+            if (!query.next()) {
+                DataImport.readFile(new URL(EFAPS_ROOTURL, "Data/IMPORT_DocumentType.xml")).updateInDB();
+            }
+
             UIUpdate update = new UIUpdate();
 
             <!-- ERP_AttributeAbstractMyDesk, Admin_Common_MyDesk -->
