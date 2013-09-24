@@ -39,17 +39,20 @@
             <property name="Attribute">Type</property>
             <property name="ShowTypeIcon">true</property>
             <property name="Label">ERP_AttributeDefinitionAbstract/Type.Label</property>
+            <property name="ModeSearch">READONLY</property>
             <property name="FilterType">PickList</property>
         </field>
         <field name="name">
             <property name="Attribute">Value</property>
             <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
             <property name="Label">ERP_AttributeDefinitionAbstract/Value.Label</property>
+            <property name="ModeSearch">READONLY</property>
             <property name="ShowTypeIcon">true</property>
         </field>
         <field name="description">
             <property name="Attribute">Description</property>
             <property name="Label">ERP_AttributeDefinitionAbstract/Description.Label</property>
+            <property name="ModeSearch">READONLY</property>
         </field>
         <field name="buttonOpenInNewWindow">
             <icon>eFapsActionNewWindow</icon>
