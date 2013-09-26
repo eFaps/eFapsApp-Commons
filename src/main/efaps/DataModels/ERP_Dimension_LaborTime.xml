@@ -33,7 +33,7 @@
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>Time</name>
-        <description>Dimension used for the time in EmployeeReports.</description>
+        <description>Time</description>
         <uom>
             <base>true</base>
             <name>h</name>
