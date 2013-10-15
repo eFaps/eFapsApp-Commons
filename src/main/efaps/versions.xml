@@ -50,7 +50,9 @@
             import org.efaps.db.InstanceQuery;
             import org.efaps.esjp.admin.ui.UIUpdate;
             import org.efaps.importer.DataImport;
-
+            import org.efaps.esjp.data.ObjectImport;
+            import au.com.bytecode.opencsv.*;
+            
             EFAPS_LOGGER.info("Importing Data for eFapsApp-Commons");
 
             RunLevel.init("shell");
@@ -71,16 +73,19 @@
             query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (!query.next()) {
-                DataImport.readFile(new URL(EFAPS_ROOTURL, "Data/IMPORT_Currency.xml")).updateInDB();
+                ObjectImport objImport = new ObjectImport();
+                objImport.importFromFile(new URL(EFAPS_ROOTURL, "Data/DataImport_Currency.xml"));
             }
 
-            // ERP_DocumentType
+             // ERP_DocumentType
             queryBldr = new QueryBuilder(UUID.fromString("90796449-0121-4fc1-9632-7d52f3adf85e"));
             query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (!query.next()) {
-                DataImport.readFile(new URL(EFAPS_ROOTURL, "Data/IMPORT_DocumentType.xml")).updateInDB();
+                ObjectImport objImport = new ObjectImport();
+                objImport.importFromFile(new URL(EFAPS_ROOTURL, "Data/DataImport_DocumentType.xml"));
             }
+            
 
             UIUpdate update = new UIUpdate();
 
@@ -89,7 +94,7 @@
 
             <!-- Definitions_Definitions, Admin_Help_MainMenu -->
             update.add2Help("10c1efaf-af0a-4602-b6b5-8a5aff4ae38d", "dead549e-5cc6-49f9-9a79-8e33aa139f6d", -1);
-
+            
         </script>
     </version>
 </install>
