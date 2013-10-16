@@ -49,9 +49,8 @@
             import org.efaps.db.QueryBuilder;
             import org.efaps.db.InstanceQuery;
             import org.efaps.esjp.admin.ui.UIUpdate;
-            import org.efaps.importer.DataImport;
             import org.efaps.esjp.data.ObjectImport;
-            import au.com.bytecode.opencsv.*;
+            
             
             EFAPS_LOGGER.info("Importing Data for eFapsApp-Commons");
 
@@ -64,7 +63,8 @@
             InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (!query.next()) {
-                DataImport.readFile(new URL(EFAPS_ROOTURL, "Data/IMPORT_UserJAASKey.xml")).updateInDB();
+                ObjectImport objImport = new ObjectImport();
+                objImport.importFromFile(new URL(EFAPS_ROOTURL, "Data/DataImport_JAASKey.xml"));
             }
 
             // ERP_Currency
