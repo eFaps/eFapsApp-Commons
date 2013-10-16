@@ -31,11 +31,11 @@
     
     <definition name="ImportCurrency" file="Import_Currencies.csv">
         <type name="ERP_Currency">
-            <attribute name="Name" column="Name" />
-            <attribute name="Symbol" column="Symbol" />
-            <attribute name="ISOCode" column="ISOCode" />
-            <attribute name="UUID" column="UUID" />
-            <attribute name="Invert" column="Invert" />
+            <attribute name="Name" column="Name" validate="false"/>
+            <attribute name="Symbol" column="Symbol" validate="false"/>
+            <attribute name="ISOCode" column="ISOCode" validate="false"/>
+            <attribute name="UUID" column="UUID" validate="false"/>
+            <attribute name="Invert" column="Invert" validate="false"/>
         </type>
     </definition>
 </data-import>

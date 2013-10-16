@@ -31,8 +31,8 @@
     
     <definition name="ImportDocumentType" file="Import_DocumentTypes.csv">
         <type name="ERP_DocumentType">
-            <attribute name="Name" column="Name" />
-            <attribute name="Description" column="Description" />
+            <attribute name="Name" column="Name" validate="false"/>
+            <attribute name="Description" column="Description" validate="false"/>
         </type>
     </definition>
 </data-import>
