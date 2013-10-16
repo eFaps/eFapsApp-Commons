@@ -57,20 +57,10 @@
             RunLevel.init("shell");
             RunLevel.execute();
 
-            // Admin_User_JAASKey
-            QueryBuilder queryBldr = new QueryBuilder(UUID.fromString("0e7650c6-8ec3-4c63-b377-f3eb5fb85f16"));
-            queryBldr.addWhereAttrEqValue("Key", "ERP_CurrencyAdmin");
-            InstanceQuery query = queryBldr.getQuery();
-            query.executeWithoutAccessCheck();
-            if (!query.next()) {
-                ObjectImport objImport = new ObjectImport();
-                objImport.importFromFile(new URL(EFAPS_ROOTURL, "Data/DataImport_JAASKey.xml"));
-            }
-
             // ERP_Currency
-            queryBldr = new QueryBuilder(UUID.fromString("6981ff18-6d4a-4146-9d58-478d8154735d"));
+            QueryBuilder queryBldr = new QueryBuilder(UUID.fromString("6981ff18-6d4a-4146-9d58-478d8154735d"));
             queryBldr.addWhereAttrEqValue("UUID", "691758fc-a060-4bd5-b1fa-b33296638126");
-            query = queryBldr.getQuery();
+            InstanceQuery query = queryBldr.getQuery();
             query.executeWithoutAccessCheck();
             if (!query.next()) {
                 ObjectImport objImport = new ObjectImport();
