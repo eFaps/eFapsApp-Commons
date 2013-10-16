@@ -37,7 +37,7 @@
             <version>3.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-    <version number="1" reloadCache="false" login="true" compile="true">
+    <version number="1" reloadCache="true" login="true" compile="true">
         <description>Install ERP Basic Modul.</description>
         <script type="groovy">
             import java.io.File;
