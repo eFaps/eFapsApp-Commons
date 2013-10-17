@@ -38,7 +38,9 @@ Sales_ProductRequest=9bd0cebf-9b20-4744-bc48-7f8d34d4c642
 Sales_Quotation=edf432d0-d0b2-4bc1-a0e0-ed30ff187de0
 Sales_OrderInbound=8560c89c-3733-403c-a135-e0c63ff65279
 Sales_CostSheet=86a91aa4-fb3c-4db0-a4d7-5a3fb5d2c689
-Sales_RecievingTicket=89e1f319-95c7-43da-a5e4-66a74f56cebd</value>
+Sales_RecievingTicket=89e1f319-95c7-43da-a5e4-66a74f56cebd
+Sales_ReturnUsageReport=4c09175b-eb53-49b6-b8f0-625e0c30549a
+Sales_UsageReport=1fa9433d-1708-4b08-b140-952bf16a663e</value>
             <description>Properties.
 Can be concatenated
 Set a NumberGenerator for a Type. Used for Common Documents in the calling command using setting "UseNumberGenerator4Name"</description>
