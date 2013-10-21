@@ -42,6 +42,7 @@
             Sales_ReturnUsageReport=4c09175b-eb53-49b6-b8f0-625e0c30549a
             Sales_UsageReport=1fa9433d-1708-4b08-b140-952bf16a663e
             Sales_TransactionDocument=9d237191-adc7-4353-9992-b36ed6dfb78b
+            Sales_QuoteRequest=fe8cef47-1325-4c87-835d-be3a81189085
             </value>
     <description>Properties.
     can be concatenated
