@@ -217,7 +217,7 @@ public abstract class CommonDocument_Base
                                                  final boolean _onDomReady,
                                                  final boolean _wrapInTags)
     {
-        return getTableRemoveScript(_parameter, _tableName, _onDomReady, _wrapInTags, true);
+        return getTableRemoveScript(_parameter, _tableName, _onDomReady, _wrapInTags, false);
     }
 
 
