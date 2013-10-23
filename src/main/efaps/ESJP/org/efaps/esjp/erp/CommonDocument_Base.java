@@ -472,16 +472,19 @@ public abstract class CommonDocument_Base
     }
 
 
-    public StringBuilder getSetDrowpDown(final Parameter _parameter, final String _idvalue, final String _field)
-                    throws EFapsException{
+    public StringBuilder getSetDrowpDown(final Parameter _parameter,
+                                         final String _idvalue,
+                                         final String _field)
+        throws EFapsException
+    {
         final StringBuilder js = new StringBuilder()
-        .append("require([\"dojo/query\", \"dojo/dom-construct\"], function(query, domConstruct) {")
-        .append("query(\" select[name='").append(_field).append("'] *\").forEach(function(node){")
-        .append("if (node.value!='").append(_idvalue).append("') {")
-        .append("domConstruct.destroy(node);")
-        .append("}")
-        .append("});")
-        .append("});");
+                        .append("require([\"dojo/query\", \"dojo/dom-construct\"], function(query, domConstruct) {")
+                        .append("query(\" select[name='").append(_field).append("'] *\").forEach(function(node){")
+                        .append("if (node.value!='").append(_idvalue).append("') {")
+                        .append("domConstruct.destroy(node);")
+                        .append("}")
+                        .append("});")
+                        .append("});");
         return js;
     }
 
