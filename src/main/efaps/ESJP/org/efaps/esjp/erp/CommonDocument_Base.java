@@ -52,6 +52,7 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.QueryBuilder;
 import org.efaps.esjp.ci.CIERP;
+import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.uiform.Create;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.erp.util.ERPSettings;
@@ -66,6 +67,7 @@ import org.efaps.util.EFapsException;
 @EFapsUUID("e47df65d-4c5e-423f-b2cc-815c3007b19f")
 @EFapsRevision("$Rev$")
 public abstract class CommonDocument_Base
+    extends AbstractCommon
 {
     /**
      * @param _parameter    Parameter as passed by the eFasp API
