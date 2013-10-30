@@ -31,12 +31,13 @@ import org.efaps.admin.program.esjp.EFapsUUID;
  * This class must be replaced for customization, therefore it is left empty.
  * Functional description can be found in the related "<code>_base</code>"
  * class.
- *
+ * @deprecated replaced {@link Byte} RateInfo
  * @author The eFaps Team
  * @version $Id$
  */
 @EFapsUUID("5c118791-bf38-4c20-b606-b825058570a5")
 @EFapsRevision("$Rev$")
+@Deprecated
 public class Rate
     extends Rate_Base
 {

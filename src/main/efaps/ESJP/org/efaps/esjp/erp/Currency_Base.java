@@ -30,7 +30,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -49,6 +48,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.db.SelectBuilder;
 import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.uiform.Field;
@@ -365,6 +365,7 @@ public abstract class Currency_Base
         final RateInfo curr2tar;
         if (_targetCurrencyInst.equals(_currentCurrencyInst)) {
             curr2tar = RateInfo.getDummyRateInfo();
+            curr2tar.setInstance4Currency(null);
         } else {
             curr2tar = new RateInfo();
             curr2tar.setRate(targetRateInfo.getRate().divide(currentRateInfo.getRate(), BigDecimal.ROUND_HALF_DOWN));
@@ -397,7 +398,9 @@ public abstract class Currency_Base
         queryBldr.addWhereAttrGreaterValue(CIERP.CurrencyRateAbstract.ValidUntil, _date.minusSeconds(1));
 
         final CachedMultiPrintQuery multi = queryBldr.getCachedPrint(Currency_Base.CACHEKEY4RATE);
-        multi.addAttribute(CIERP.CurrencyRateClient.Rate, CIERP.CurrencyRateClient.RateSale);
+        final SelectBuilder sel = SelectBuilder.get().linkto(CIERP.CurrencyRateAbstract.CurrencyLink).instance();
+        multi.addSelect(sel);
+        multi.addAttribute(CIERP.CurrencyRateAbstract.Rate, CIERP.CurrencyRateAbstract.RateSale);
         multi.execute();
         RateInfo ret = new RateInfo();
         if (multi.next()) {
@@ -405,6 +408,7 @@ public abstract class Currency_Base
             ret.setRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.Rate), true));
             ret.setSaleRate(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.RateSale), false));
             ret.setSaleRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.RateSale), true));
+            ret.setInstance4Currency(multi.<Instance>getSelect(sel));
         } else {
             ret = RateInfo.getDummyRateInfo();
         }
@@ -459,156 +463,4 @@ public abstract class Currency_Base
         };
         return field.dropDownFieldValue(_parameter);
     }
-
-
-    public static class RateInfo
-    {
-
-        /**
-         * Scale for the BigDecimal values.
-         */
-        private int scale = 12;
-
-        /**
-         * Buy Rate for calculation use.
-         */
-        private BigDecimal rate;
-
-        /**
-         * Buy Rate for use in UserInterface.
-         * (equals rate if currency is not inverse)
-         */
-        private BigDecimal rateUI;
-
-        /**
-         * Sales Rate for calculation use.
-         */
-        private BigDecimal saleRate;
-
-        /**
-         * Sale Rate for use in UserInterface.
-         * (equals saleRate if currency is not inverse)
-         */
-        private BigDecimal saleRateUI;
-
-        /**
-         * Setter method for instance variable {@link #rate}.
-         *
-         * @param _rate value for instance variable {@link #rate}
-         */
-        public void setRate(final BigDecimal _rate)
-        {
-            this.rate = _rate;
-        }
-
-        /**
-         * Setter method for instance variable {@link #rateUI}.
-         *
-         * @param _rate value for instance variable {@link #rateUI}
-         */
-        public void setRateUI(final BigDecimal _rate)
-        {
-            this.rateUI = _rate;
-        }
-
-        /**
-         * Getter method for the instance variable {@link #rate}.
-         *
-         * @return value of instance variable {@link #rate}
-         */
-        public BigDecimal getRate()
-        {
-            return this.rate.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
-        }
-
-        /**
-         * Getter method for the instance variable {@link #rateUI}.
-         *
-         * @return value of instance variable {@link #rateUI}
-         */
-        public BigDecimal getRateUI()
-        {
-            return this.rateUI.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
-        }
-
-        /**
-         * Getter method for the instance variable {@link #saleRate}.
-         *
-         * @return value of instance variable {@link #saleRate}
-         */
-        public BigDecimal getSaleRate()
-        {
-            return this.saleRate.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
-        }
-
-        /**
-         * Setter method for instance variable {@link #saleRate}.
-         *
-         * @param _saleRate value for instance variable {@link #saleRate}
-         */
-        public void setSaleRate(final BigDecimal _saleRate)
-        {
-            this.saleRate = _saleRate;
-        }
-
-        /**
-         * Getter method for the instance variable {@link #saleRateUI}.
-         *
-         * @return value of instance variable {@link #saleRateUI}
-         */
-        public BigDecimal getSaleRateUI()
-        {
-            return this.saleRateUI.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
-        }
-
-        /**
-         * Setter method for instance variable {@link #saleRateUI}.
-         *
-         * @param _saleRateUI value for instance variable {@link #saleRateUI}
-         */
-        public void setSaleRateUI(final BigDecimal _saleRateUI)
-        {
-            this.saleRateUI = _saleRateUI;
-        }
-
-        /**
-         * Getter method for the instance variable {@link #scale}.
-         *
-         * @return value of instance variable {@link #scale}
-         */
-        public int getScale()
-        {
-            return this.scale;
-        }
-
-        /**
-         * Setter method for instance variable {@link #scale}.
-         *
-         * @param _scale value for instance variable {@link #scale}
-         */
-        public void setScale(final int _scale)
-        {
-            this.scale = _scale;
-        }
-
-        /**
-         * @return RateInfo with all values set to BigDecimal.ONE
-         */
-        public static RateInfo getDummyRateInfo()
-        {
-            final RateInfo ret = new RateInfo();
-            ret.setRate(BigDecimal.ONE);
-            ret.setRateUI(BigDecimal.ONE);
-            ret.setSaleRate(BigDecimal.ONE);
-            ret.setSaleRateUI(BigDecimal.ONE);
-            return ret;
-        }
-
-        @Override
-        public String toString()
-        {
-            return ToStringBuilder.reflectionToString(this);
-        }
-    }
-
 }

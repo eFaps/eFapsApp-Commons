@@ -32,9 +32,11 @@ import org.efaps.admin.program.esjp.EFapsUUID;
  *
  * @author The eFaps Team
  * @version $Id$
+ * @deprecated replaced {@link Byte} RateInfo
  */
 @EFapsUUID("23338189-9272-4d3e-997e-ac41215d9487")
 @EFapsRevision("$Rev$")
+@Deprecated
 public abstract class Rate_Base
 {
     private final BigDecimal value;
