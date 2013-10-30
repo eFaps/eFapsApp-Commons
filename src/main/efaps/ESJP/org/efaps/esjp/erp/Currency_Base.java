@@ -30,8 +30,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.Parameter;
@@ -41,6 +43,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
+import org.efaps.db.CachedMultiPrintQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
@@ -51,6 +54,8 @@ import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.uiform.Field;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -63,12 +68,21 @@ import org.joda.time.DateTime;
 public abstract class Currency_Base
 {
     /**
+     * CacheKey for ExchangeRates.
+     */
+    public static String CACHEKEY4RATE = Currency.class.getName()+ ".CacheKey4Rate";
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(Currency.class);
+
+
+    /**
      * Key used to access a Request map.
      */
     private static final String REQUEST_KEYRATE = Currency_Base.class + ".RequestKey4RateFieldValue";
 
-
-    private final Map<Long, CurrencyInst> currencies = new HashMap<Long, CurrencyInst>();
 
     public Return getValidUntilUI(final Parameter _parameter)
         throws EFapsException
@@ -270,14 +284,7 @@ public abstract class Currency_Base
      */
     protected CurrencyInst getCurrencyInst(final long _currencyId)
     {
-        CurrencyInst ret;
-        if (this.currencies.containsKey(_currencyId)) {
-            ret = this.currencies.get(_currencyId);
-        } else {
-            ret = new CurrencyInst(Instance.get(CIERP.Currency.getType(), _currencyId));
-            this.currencies.put(_currencyId, ret);
-        }
-        return ret;
+        return new CurrencyInst(Instance.get(CIERP.Currency.getType(), _currencyId));
     }
 
     /**
@@ -301,6 +308,118 @@ public abstract class Currency_Base
         return ret;
     }
 
+    /**
+     * @return the base currency for eFaps
+     * @throws EFapsException on error
+     */
+    protected Instance getBaseCurrency()
+        throws EFapsException
+    {
+        // Sales-Configuration
+        final SystemConfiguration config = SystemConfiguration.get(
+                        UUID.fromString("c9a1cbc3-fd35-4463-80d2-412422a3802f"));
+        final Instance ret = config.getLink("org.efaps.sales.CurrencyBase");
+        if (ret == null) {
+            Currency_Base.LOG.error("There must be an BaseCurrency defined to calculate rates.");
+        }
+        return ret;
+    }
+
+    /**
+     * Returns an Array of RateInfo with following content.:<br/>
+     * <ul>
+     * <li>[0]: RateInfo for <code>_currentCurrencyInst</code> against the Base Currency</li>
+     * <li>[1]: RateInfo for <code>_targetCurrencyInst</code> against the Base Currency</li>
+     * <li>[2]: RateInfo for <code>_currentCurrencyInst</code> against the <code>_targetCurrencyInst</code></li>
+     * </ul>
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _date     date the rate must be evaluated for
+     * @param _currentCurrencyInst instance of the currency the rate is wanted for
+     * @param _targetCurrencyInst instance of the currency the rate is wanted for
+     * @return RateInfo
+     * @throws EFapsException on error
+     */
+    public RateInfo[] evaluateRateInfos(final Parameter _parameter,
+                                        final DateTime _date,
+                                        final Instance _currentCurrencyInst,
+                                        final Instance _targetCurrencyInst)
+        throws EFapsException
+    {
+
+        final Instance baseInst = getBaseCurrency();
+
+        final RateInfo currentRateInfo;
+        if (_currentCurrencyInst.equals(baseInst)) {
+            currentRateInfo = RateInfo.getDummyRateInfo();
+        } else {
+            currentRateInfo = evaluateRateInfo(_parameter, _date, _currentCurrencyInst);
+        }
+
+        final RateInfo targetRateInfo;
+        if (_targetCurrencyInst.equals(baseInst)) {
+            targetRateInfo = RateInfo.getDummyRateInfo();
+        } else {
+            targetRateInfo = evaluateRateInfo(_parameter, _date, _targetCurrencyInst);
+        }
+
+        final RateInfo curr2tar;
+        if (_targetCurrencyInst.equals(_currentCurrencyInst)) {
+            curr2tar = RateInfo.getDummyRateInfo();
+        } else {
+            curr2tar = new RateInfo();
+            curr2tar.setRate(targetRateInfo.getRate().divide(currentRateInfo.getRate(), BigDecimal.ROUND_HALF_DOWN));
+            curr2tar.setRateUI(targetRateInfo.getRateUI().divide(currentRateInfo.getRateUI(),
+                            BigDecimal.ROUND_HALF_DOWN));
+            curr2tar.setSaleRate(targetRateInfo.getSaleRate().divide(currentRateInfo.getSaleRate(),
+                            BigDecimal.ROUND_HALF_DOWN));
+            curr2tar.setSaleRateUI(targetRateInfo.getSaleRateUI().divide(currentRateInfo.getSaleRateUI(),
+                            BigDecimal.ROUND_HALF_DOWN));
+        }
+        return new RateInfo[] { currentRateInfo, targetRateInfo, curr2tar };
+    }
+
+
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _date     date the rate must be evaluated for
+     * @param _currentCurrencyInst instance of the currency the rate is wanted for
+     * @return RateInfo
+     * @throws EFapsException on error
+     */
+    public RateInfo evaluateRateInfo(final Parameter _parameter,
+                                     final DateTime _date,
+                                     final Instance _currentCurrencyInst)
+        throws EFapsException
+    {
+        final QueryBuilder queryBldr = new QueryBuilder(getType4ExchangeRate(_parameter));
+        queryBldr.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.CurrencyLink, _currentCurrencyInst.getId());
+        queryBldr.addWhereAttrLessValue(CIERP.CurrencyRateAbstract.ValidFrom, _date.plusSeconds(1));
+        queryBldr.addWhereAttrGreaterValue(CIERP.CurrencyRateAbstract.ValidUntil, _date.minusSeconds(1));
+
+        final CachedMultiPrintQuery multi = queryBldr.getCachedPrint(Currency_Base.CACHEKEY4RATE);
+        multi.addAttribute(CIERP.CurrencyRateClient.Rate, CIERP.CurrencyRateClient.RateSale);
+        multi.execute();
+        RateInfo ret = new RateInfo();
+        if (multi.next()) {
+            ret.setRate(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.Rate), false));
+            ret.setRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.Rate), true));
+            ret.setSaleRate(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.RateSale), false));
+            ret.setSaleRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.RateSale), true));
+        } else {
+            ret = RateInfo.getDummyRateInfo();
+        }
+        return ret;
+    }
+
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return RateInfo type for the exchange rate
+     * @throws EFapsException on error
+     */
+    protected Type getType4ExchangeRate(final Parameter _parameter)
+    {
+        return CIERP.CurrencyRateClient.getType();
+    }
 
     /**
      * Extension of the standard DropDown Field mechanism to select a default currency.
@@ -340,4 +459,156 @@ public abstract class Currency_Base
         };
         return field.dropDownFieldValue(_parameter);
     }
+
+
+    public static class RateInfo
+    {
+
+        /**
+         * Scale for the BigDecimal values.
+         */
+        private int scale = 12;
+
+        /**
+         * Buy Rate for calculation use.
+         */
+        private BigDecimal rate;
+
+        /**
+         * Buy Rate for use in UserInterface.
+         * (equals rate if currency is not inverse)
+         */
+        private BigDecimal rateUI;
+
+        /**
+         * Sales Rate for calculation use.
+         */
+        private BigDecimal saleRate;
+
+        /**
+         * Sale Rate for use in UserInterface.
+         * (equals saleRate if currency is not inverse)
+         */
+        private BigDecimal saleRateUI;
+
+        /**
+         * Setter method for instance variable {@link #rate}.
+         *
+         * @param _rate value for instance variable {@link #rate}
+         */
+        public void setRate(final BigDecimal _rate)
+        {
+            this.rate = _rate;
+        }
+
+        /**
+         * Setter method for instance variable {@link #rateUI}.
+         *
+         * @param _rate value for instance variable {@link #rateUI}
+         */
+        public void setRateUI(final BigDecimal _rate)
+        {
+            this.rateUI = _rate;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #rate}.
+         *
+         * @return value of instance variable {@link #rate}
+         */
+        public BigDecimal getRate()
+        {
+            return this.rate.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
+        }
+
+        /**
+         * Getter method for the instance variable {@link #rateUI}.
+         *
+         * @return value of instance variable {@link #rateUI}
+         */
+        public BigDecimal getRateUI()
+        {
+            return this.rateUI.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
+        }
+
+        /**
+         * Getter method for the instance variable {@link #saleRate}.
+         *
+         * @return value of instance variable {@link #saleRate}
+         */
+        public BigDecimal getSaleRate()
+        {
+            return this.saleRate.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
+        }
+
+        /**
+         * Setter method for instance variable {@link #saleRate}.
+         *
+         * @param _saleRate value for instance variable {@link #saleRate}
+         */
+        public void setSaleRate(final BigDecimal _saleRate)
+        {
+            this.saleRate = _saleRate;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #saleRateUI}.
+         *
+         * @return value of instance variable {@link #saleRateUI}
+         */
+        public BigDecimal getSaleRateUI()
+        {
+            return this.saleRateUI.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
+        }
+
+        /**
+         * Setter method for instance variable {@link #saleRateUI}.
+         *
+         * @param _saleRateUI value for instance variable {@link #saleRateUI}
+         */
+        public void setSaleRateUI(final BigDecimal _saleRateUI)
+        {
+            this.saleRateUI = _saleRateUI;
+        }
+
+        /**
+         * Getter method for the instance variable {@link #scale}.
+         *
+         * @return value of instance variable {@link #scale}
+         */
+        public int getScale()
+        {
+            return this.scale;
+        }
+
+        /**
+         * Setter method for instance variable {@link #scale}.
+         *
+         * @param _scale value for instance variable {@link #scale}
+         */
+        public void setScale(final int _scale)
+        {
+            this.scale = _scale;
+        }
+
+        /**
+         * @return RateInfo with all values set to BigDecimal.ONE
+         */
+        public static RateInfo getDummyRateInfo()
+        {
+            final RateInfo ret = new RateInfo();
+            ret.setRate(BigDecimal.ONE);
+            ret.setRateUI(BigDecimal.ONE);
+            ret.setSaleRate(BigDecimal.ONE);
+            ret.setSaleRateUI(BigDecimal.ONE);
+            return ret;
+        }
+
+        @Override
+        public String toString()
+        {
+            return ToStringBuilder.reflectionToString(this);
+        }
+    }
+
 }

@@ -21,10 +21,12 @@
 
 package org.efaps.esjp.erp;
 
-import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.db.CachedPrintQuery;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.esjp.ci.CIERP;
@@ -40,13 +42,7 @@ import org.efaps.util.EFapsException;
 @EFapsUUID("a848745e-417f-4148-9f24-7429cb445572")
 @EFapsRevision("$Rev$")
 public class CurrencyInst_Base
-    implements Serializable
 {
-    /**
-     * Needed for serialization.
-     */
-    private static final long serialVersionUID = 1L;
-
     /**
      * Instance for this Currency.
      */
@@ -115,7 +111,7 @@ public class CurrencyInst_Base
         throws EFapsException
     {
         if (!this.initialized) {
-            final PrintQuery print = new PrintQuery(this.instance);
+            final PrintQuery print = new CachedPrintQuery(this.instance).setLifespan(1).setLifespanUnit(TimeUnit.HOURS);
             print.addAttribute(CIERP.Currency.Symbol, CIERP.Currency.Name, CIERP.Currency.Invert);
             print.execute();
             this.symbol = print.<String>getAttribute(CIERP.Currency.Symbol);
@@ -200,9 +196,14 @@ public class CurrencyInst_Base
      *
      * @param _initialized value for instance variable {@link #initialized}
      */
-
     public void setInitialized(final boolean _initialized)
     {
         this.initialized = _initialized;
+    }
+
+    @Override
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this);
     }
 }
