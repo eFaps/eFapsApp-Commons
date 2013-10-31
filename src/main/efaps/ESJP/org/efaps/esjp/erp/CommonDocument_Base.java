@@ -473,20 +473,115 @@ public abstract class CommonDocument_Base
         return ret;
     }
 
+    /**
+     * JavaScript Snipplet that removes from all SELECT with
+     * <code>fieldname</code> all other options except the one
+     * identified by the given <code>_idvalue</code>
+     * @param _parameter    Parameter as passed by the eFaps API
+     * @param _idvalue      value that will be set for the dropdown
+     * @param _field        fieldname
+     * @return JavaScript
+     * @throws EFapsException on error
+     */
+    public StringBuilder getSetDropDownScript(final Parameter _parameter,
+                                              final String _field,
+                                              final String _idvalue)
+        throws EFapsException
+    {
+        return getSetDropDownScript(_parameter, _field, _idvalue, null);
+    }
 
-    public StringBuilder getSetDrowpDown(final Parameter _parameter,
-                                         final String _idvalue,
-                                         final String _field)
+    /**
+     * JavaScript Snipplet that removes from the  SELECT with
+     * <code>fieldname</code> and index <code>_idx</code> (if null from all)
+     * the other options except the one identified by the given
+     * <code>_idvalue</code>.
+     * @param _parameter    Parameter as passed by the eFaps API
+     * @param _idvalue      value that will be set for the dropdown
+     * @param _field        fieldname
+     * @return JavaScript
+     * @throws EFapsException on error
+     */
+    public StringBuilder getSetDropDownScript(final Parameter _parameter,
+                                              final String _field,
+                                              final String _idvalue,
+                                              final Integer _idx)
         throws EFapsException
     {
         final StringBuilder js = new StringBuilder()
-                        .append("require([\"dojo/query\", \"dojo/dom-construct\"], function(query, domConstruct) {")
-                        .append("query(\" select[name='").append(_field).append("'] *\").forEach(function(node){")
-                        .append("if (node.value!='").append(_idvalue).append("') {")
-                        .append("domConstruct.destroy(node);")
-                        .append("}")
-                        .append("});")
-                        .append("});");
+            .append("require([\"dojo/query\", \"dojo/dom-construct\",\"dojo/dom-class\"], ")
+                .append("function(query, domConstruct, domClass) {")
+            .append("var nl = query(\" select[name='").append(_field).append("']\")");
+
+        if (_idx == null) {
+            js.append("nl.addClass(\"eFapsReadOnly\");")
+                .append("query(\" select[name='").append(_field).append("'] *\").forEach(function(node){")
+                .append("if (node.value!='").append(_idvalue).append("') {")
+                .append("domConstruct.destroy(node);")
+                .append("}")
+                .append("});");
+        } else {
+            js.append("if (nl[").append(_idx).append("]!=undefined) {")
+                .append("domClass.add(nl[").append(_idx).append("], \"eFapsReadOnly\");")
+                .append("query(\"*\", nl[").append(_idx).append("]).forEach(function(node){")
+                .append("if (node.value!='").append(_idvalue).append("') {")
+                .append("domConstruct.destroy(node);")
+                .append("}")
+                .append("});")
+                .append("}");
+        }
+        js.append("});");
+        return js;
+    }
+
+    /**
+     * JavaScript Snipplet that sets all INPUTS or TEXTARES
+     * with name <code>fieldname</code> to readOnly and assigns class
+     * eFapsReadOnly.
+     * @param _parameter    Parameter as passed by the eFaps API
+     * @param _field        fieldnames
+     * @return JavaScript
+     * @throws EFapsException on error
+     */
+    public StringBuilder getSetFieldReadOnlyScript(final Parameter _parameter,
+                                                   final String... _field)
+        throws EFapsException
+    {
+        return getSetFieldReadOnlyScript(_parameter, null, _field);
+    }
+
+    /**
+     * JavaScript Snipplet that sets INPUTS or TEXTARES
+     * with name <code>fieldname</code> and Index <code>_idx</code>
+     * to readOnly and assigns class eFapsReadOnly. If <code>_idx</code> all
+     * are are set.
+     * @param _parameter    Parameter as passed by the eFaps API
+     * @param _idx          index of the field to be set to readonly
+     * @param _field        fieldnames
+     * @return JavaScript
+     * @throws EFapsException on error
+     */
+    public StringBuilder getSetFieldReadOnlyScript(final Parameter _parameter,
+                                                   final Integer _idx,
+                                                   final String... _field)
+        throws EFapsException
+    {
+        final StringBuilder js = new StringBuilder()
+            .append("require([\"dojo/query\"], function(query) {\n");
+
+        for (final String field : _field) {
+            js.append("var nl = query(\" input[name='").append(field).append("'], textarea[name='")
+                .append(field).append("']\");");
+            if (_idx == null) {
+                js.append("nl.forEach(\"item.readOnly = true;\");\n");
+            } else {
+                js.append("if (nl[").append(_idx).append("]!=undefined) {")
+                    .append("nl[").append(_idx).append("].readOnly = true;")
+                    .append("}\n");
+            }
+        }
+        js.append("query(\" input[readonly=''], textarea[readonly='']\").addClass(\"eFapsReadOnly\")")
+            .append("});");
         return js;
     }
 
