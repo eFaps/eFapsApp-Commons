@@ -44,6 +44,8 @@
             Sales_TransactionDocument=9d237191-adc7-4353-9992-b36ed6dfb78b
             Sales_QuoteRequest=fe8cef47-1325-4c87-835d-be3a81189085
             Sales_Reservation=65fcff78-abaa-4a3e-8526-50b97db18245
+            Assets_MaintenanceOrder=f51d882e-778f-4692-b5e5-e088b64c1822
+            Assets_MaintenanceRequest=48181024-d9fe-4721-b0e7-4461e685e5f5
             </value>
     <description>Properties.
     can be concatenated
