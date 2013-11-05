@@ -33,6 +33,8 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.NumberGenerator;
+import org.efaps.admin.datamodel.Dimension;
+import org.efaps.admin.datamodel.Dimension.UoM;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
@@ -57,6 +59,7 @@ import org.efaps.esjp.common.uiform.Create;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * TODO comment!
@@ -585,6 +588,39 @@ public abstract class CommonDocument_Base
         return js;
     }
 
+
+    protected String getUoMFieldStr(final long _selected,
+                                    final long _dimId)
+        throws CacheReloadException
+    {
+        final Dimension dim = Dimension.get(_dimId);
+        final StringBuilder js = new StringBuilder();
+
+        js.append("new Array('").append(_selected).append("'");
+
+        for (final UoM uom : dim.getUoMs()) {
+            js.append(",'").append(uom.getId()).append("','").append(uom.getName()).append("'");
+        }
+        js.append(")");
+        return js.toString();
+    }
+
+    protected String getUoMFieldStr(final long _dimId)
+        throws CacheReloadException
+    {
+        final Dimension dim = Dimension.get(_dimId);
+        return getUoMFieldStr(dim.getBaseUoM().getId(), _dimId);
+    }
+
+    /**
+     * @param _uoMId id of the UoM
+     * @return Field String
+     */
+    protected String getUoMFieldStrByUoM(final long _uoMId)
+        throws CacheReloadException
+    {
+        return getUoMFieldStr(_uoMId, Dimension.getUoM(_uoMId).getDimId());
+    }
 
     /**
      * @param _parameter    Parameter as passed by the eFaps API

@@ -52,6 +52,7 @@ import org.efaps.db.SelectBuilder;
 import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.uiform.Field;
+import org.efaps.ui.wicket.util.DateUtil;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -325,6 +326,17 @@ public abstract class Currency_Base
         return ret;
     }
 
+    public RateInfo[] evaluateRateInfos(final Parameter _parameter,
+                                        final String _dateStr,
+                                        final Instance _currentCurrencyInst,
+                                        final Instance _targetCurrencyInst)
+        throws EFapsException
+    {
+        return evaluateRateInfos(_parameter, _dateStr != null && _dateStr.length() > 0
+                        ? DateUtil.getDateFromParameter(_dateStr) : new DateTime(), _currentCurrencyInst,
+                                        _targetCurrencyInst);
+    }
+
     /**
      * Returns an Array of RateInfo with following content.:<br/>
      * <ul>
@@ -379,11 +391,27 @@ public abstract class Currency_Base
         return new RateInfo[] { currentRateInfo, targetRateInfo, curr2tar };
     }
 
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _dateStr date the rate must be evaluated for
+     * @param _currentCurrencyInst instance of the currency the rate is wanted for
+     * @return RateInfo
+     * @throws EFapsException on error
+     */
+    public RateInfo evaluateRateInfo(final Parameter _parameter,
+                                     final String _dateStr,
+                                     final Instance _currentCurrencyInst)
+        throws EFapsException
+    {
+        return evaluateRateInfo(_parameter, _dateStr != null && _dateStr.length() > 0
+                        ? DateUtil.getDateFromParameter(_dateStr) : new DateTime(), _currentCurrencyInst);
+    }
 
     /**
      * @param _parameter Parameter as passed by the eFaps API
-     * @param _date     date the rate must be evaluated for
-     * @param _currentCurrencyInst instance of the currency the rate is wanted for
+     * @param _date date the rate must be evaluated for
+     * @param _currentCurrencyInst instance of the currency the rate is wanted
+     *            for
      * @return RateInfo
      * @throws EFapsException on error
      */

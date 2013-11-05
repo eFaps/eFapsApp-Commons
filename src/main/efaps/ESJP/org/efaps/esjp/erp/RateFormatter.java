@@ -39,7 +39,7 @@ import org.efaps.util.EFapsException;
 @EFapsRevision("$Rev$")
 public class RateFormatter
 {
-
+    private static RateFormatter FORMATTER;
     private DecimalFormat frmt4Rate;
     private DecimalFormat frmt4RateUI;
     private DecimalFormat frmt4SaleRate;
@@ -146,6 +146,14 @@ public class RateFormatter
     public void setFrmt4SaleRateUI(final DecimalFormat _frmt4SaleRateUI)
     {
         this.frmt4SaleRateUI = _frmt4SaleRateUI;
+    }
+
+    public static RateFormatter get()
+    {
+        if (RateFormatter.FORMATTER == null) {
+            RateFormatter.FORMATTER = new RateFormatter();
+        }
+        return RateFormatter.FORMATTER;
     }
 
 }
