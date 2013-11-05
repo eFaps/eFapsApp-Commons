@@ -20,12 +20,16 @@
 
 package org.efaps.esjp.erp;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Properties;
 
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Context;
+import org.efaps.esjp.erp.util.ERP;
+import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
 
 /**
@@ -39,10 +43,29 @@ import org.efaps.util.EFapsException;
 @EFapsRevision("$Rev$")
 public class RateFormatter
 {
+    /**
+     * Static access.
+     */
     private static RateFormatter FORMATTER;
+
+    /**
+     * Format for Rate.
+     */
     private DecimalFormat frmt4Rate;
+
+    /**
+     * Format for rateUI.
+     */
     private DecimalFormat frmt4RateUI;
+
+    /**
+     * Format for SaleRate.
+     */
     private DecimalFormat frmt4SaleRate;
+
+    /**
+     * Format for SaleRateUI.
+     */
     private DecimalFormat frmt4SaleRateUI;
 
     /**
@@ -52,16 +75,26 @@ public class RateFormatter
         throws EFapsException
     {
         if (this.frmt4Rate == null) {
-            this.frmt4Rate = getDefaultFormat();
+            this.frmt4Rate = getDefaultFormat("Rate");
         }
         return this.frmt4Rate;
     }
 
-    protected DecimalFormat getDefaultFormat()
+    /**
+     * @param _key key the default format is wanted for
+     * @return DecimalFormat
+     * @throws EFapsException on error
+     */
+    protected DecimalFormat getDefaultFormat(final String _key)
         throws EFapsException
     {
         final DecimalFormat ret = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext().getLocale());
         ret.setParseBigDecimal(true);
+        ret.setRoundingMode(RoundingMode.HALF_UP);
+        final Properties props = ERP.getSysConfig().getAttributeValueAsProperties(ERPSettings.RATEFRMT);
+        if (props.containsKey(_key)) {
+            ret.applyPattern(props.getProperty(_key));
+        }
         return ret;
     }
 
@@ -84,7 +117,7 @@ public class RateFormatter
         throws EFapsException
     {
         if (this.frmt4RateUI == null) {
-            this.frmt4RateUI = getDefaultFormat();
+            this.frmt4RateUI = getDefaultFormat("RateUI");
         }
         return this.frmt4RateUI;
     }
@@ -108,7 +141,7 @@ public class RateFormatter
         throws EFapsException
     {
         if (this.frmt4SaleRate == null) {
-            this.frmt4SaleRate = getDefaultFormat();
+            this.frmt4SaleRate = getDefaultFormat("SaleRate");
         }
         return this.frmt4SaleRate;
     }
@@ -132,7 +165,7 @@ public class RateFormatter
         throws EFapsException
     {
         if (this.frmt4SaleRateUI == null) {
-            this.frmt4SaleRateUI = getDefaultFormat();
+            this.frmt4SaleRateUI = getDefaultFormat("SaleRateUI");
         }
         return this.frmt4SaleRateUI;
     }

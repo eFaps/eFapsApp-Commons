@@ -58,4 +58,17 @@ public interface ERPSettings
      * Set a JasperReport for a Type. Used for Common Documents.
      */
     String JASPERKEY = "org.efaps.commons.JasperKey";
+
+    /**
+     * Properties.<br/>
+     * Can be concatenated.<br/>
+     * Set Formatting information for numbers.
+     */
+    String NUMBERFRMT = "org.efaps.commons.NumberFormatter";
+
+    /**
+     * Properties.<br/>
+     * Set Formatting information for rates.
+     */
+    String RATEFRMT = "org.efaps.commons.RateFormatter";
 }

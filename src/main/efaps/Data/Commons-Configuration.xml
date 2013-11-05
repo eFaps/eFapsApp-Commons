@@ -52,6 +52,24 @@
     Set a NumberGenerator for a Type. Used for Common Documents in the calling command using setting "UseNumberGenerator4Name"
     </description>
         </attribute>
+        <attribute>
+            <key>org.efaps.commons.RateFormatter</key>
+            <value>Rate=0.000000000000
+RateUI=0.000
+SaleRate=0.000000000000
+SaleRateUI=0.000</value>
+            <description> Properties.Set Formatting information for rates.</description>
+         </attribute>
+         <attribute>
+            <key>org.efaps.commons.NumberFormatter</key>
+            <value>Sales_DocumentAbstract.Frmt4UnitPrice=#,##0.00
+Sales_DocumentAbstract.Frmt4Quantity=#,##0.##
+Sales_DocumentAbstract.Frmt4Total=#,##0.00
+Sales_DocumentAbstract.Frmt4Discount=#,##0.00
+</value>
+            <description> Properties.Can be concatenated.Set Formatting information for numbers.</description>
+         </attribute>
+         
          <attribute>         
             <key>org.efaps.erp.NumberGenerator4Type01</key>
             <value>to be implemented</value>
