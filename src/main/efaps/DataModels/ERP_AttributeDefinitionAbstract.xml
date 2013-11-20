@@ -57,11 +57,17 @@
             <sqltable>ERP_AttributeDefinitionSQLTable</sqltable>
             <sqlcolumn>VALUE</sqlcolumn>
         </attribute>
-         <attribute>
+        <attribute>
             <name>Description</name>
             <type>String</type>
             <sqltable>ERP_AttributeDefinitionSQLTable</sqltable>
             <sqlcolumn>DESCR</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>MappingKey</name>
+            <type>String</type>
+            <sqltable>ERP_AttributeDefinitionSQLTable</sqltable>
+            <sqlcolumn>MAPKEY</sqlcolumn>
         </attribute>
         <attribute>
             <name>Creator</name>
