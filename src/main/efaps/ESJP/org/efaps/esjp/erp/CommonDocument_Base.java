@@ -570,7 +570,7 @@ public abstract class CommonDocument_Base
         throws EFapsException
     {
         final StringBuilder js = new StringBuilder()
-            .append("require([\"dojo/query\"], function(query) {\n");
+            .append("require([\"dojo/query\", \"dojo/NodeList-dom\"], function(query) {\n");
 
         for (final String field : _field) {
             js.append("var nl = query(\" input[name='").append(field).append("'], textarea[name='")
