@@ -46,6 +46,7 @@
             Sales_Reservation=65fcff78-abaa-4a3e-8526-50b97db18245
             Assets_MaintenanceOrder=f51d882e-778f-4692-b5e5-e088b64c1822
             Assets_MaintenanceRequest=48181024-d9fe-4721-b0e7-4461e685e5f5
+            Sales_PaymentSchedule=f1a20ea4-e7d8-4401-9b85-84b91c3119c3
             </value>
     <description>Properties.
     can be concatenated
@@ -69,8 +70,8 @@ Sales_DocumentAbstract.Frmt4Discount=#,##0.00
 </value>
             <description> Properties.Can be concatenated.Set Formatting information for numbers.</description>
          </attribute>
-         
-         <attribute>         
+
+         <attribute>
             <key>org.efaps.erp.NumberGenerator4Type01</key>
             <value>to be implemented</value>
             <description>Properties.
