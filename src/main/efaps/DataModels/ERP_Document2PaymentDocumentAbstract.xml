@@ -83,10 +83,33 @@
             <typelink>ERP_Currency</typelink>
             <sqltable>ERP_Document2PaymentDocumentAbstractSQLTable</sqltable>
             <sqlcolumn>CURRENCYID</sqlcolumn>
-            <trigger event="RANGE_VALUE" name="Accounting_PaymentAbstract.CurrencyLink.RANGE_VALUE" program="org.efaps.esjp.admin.datamodel.RangesValue">
+            <trigger program="org.efaps.esjp.admin.datamodel.RangesValue"
+                name="ERP_Document2PaymentDocumentAbstract.CurrencyLink.RANGE_VALUE" event="RANGE_VALUE">
                 <property name="Value">Name</property>
                 <property name="Type">ERP_Currency</property>
             </trigger>
+        </attribute>
+        <attribute>
+            <name>RateCurrencyLink</name>
+            <type>LinkWithRanges</type>
+            <typelink>ERP_Currency</typelink>
+            <sqltable>ERP_Document2PaymentDocumentAbstractSQLTable</sqltable>
+            <sqlcolumn>RATECURRENCYID</sqlcolumn>
+            <trigger program="org.efaps.esjp.admin.datamodel.RangesValue"
+                name="ERP_Document2PaymentDocumentAbstract.RateCurrencyLink.RANGE_VALUE" event="RANGE_VALUE">
+                <property name="Value">Name</property>
+                <property name="Type">ERP_Currency</property>
+            </trigger>
+        </attribute>
+        <attribute>
+            <name>Rate</name>
+            <type>Rate</type>
+            <sqltable>ERP_Document2PaymentDocumentAbstractSQLTable</sqltable>
+            <sqlcolumn>RATE,RATEDENOM</sqlcolumn>
+            <trigger program="org.efaps.esjp.erp.Currency" method="getRateValue"
+                name="ERP_Document2PaymentDocumentAbstract.Rate.RATE_VALUE" event="RATE_VALUE"/>
+            <property name="CurrencyAttribute4Rate">RateCurrencyLink</property>
+            <property name="TargetCurrencyAttribute4Rate">CurrencyLink</property>
         </attribute>
         <attribute>
             <name>Amount</name>
