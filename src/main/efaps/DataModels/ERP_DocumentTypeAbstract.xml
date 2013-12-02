@@ -61,6 +61,12 @@
             <sqlcolumn>DESCR</sqlcolumn>
         </attribute>
         <attribute>
+            <name>IntValue</name>
+            <type>Integer</type>
+            <sqltable>ERP_DocumentTypeSQLTable</sqltable>
+            <sqlcolumn>INTV</sqlcolumn>
+        </attribute>
+        <attribute>
             <name>Creator</name>
             <type>CreatorLink</type>
             <sqltable>ERP_DocumentTypeSQLTable</sqltable>
