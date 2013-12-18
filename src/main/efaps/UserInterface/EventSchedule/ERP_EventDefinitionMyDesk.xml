@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
-<!--
-
- Copyright 2003 - 2011 The eFaps Team
+ Copyright 2003 - 2013 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,26 +20,24 @@
  Last Changed By: $Author$
 
 -->
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-<ui-command xmlns="http://www.efaps.org/xsd"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-
-    <uuid>1c506850-7e64-439f-ad65-9c82dc762db8</uuid>
-    <file-application>eFapsApp-Commons</file-application>
+    <uuid>dd9ca4e6-fc0c-4c69-a6d1-c8fe2d85c2f5</uuid>
+    <file-application>eFapsApp-BPM</file-application>
     <file-revision>$Rev$</file-revision>
+
     <definition>
         <version-expression>(version==latest)</version-expression>
-        <name>ERP_AttributeDefinitionMyDesk</name>
+        <name>ERP_EventDefinitionMyDesk</name>
         <access>
-            <role>ERP_AttributeDefinitionAdmin</role>
+            <role>Administration</role>
         </access>
-
         <target>
-            <menu>ERP_AttributeDefinitionMyDesk_Menu</menu>
-            <table>ERP_AttributeDefinitionTable</table>
+            <menu>ERP_EventDefinitionMyDesk_Menu</menu>
+            <table>ERP_EventDefinitionTable</table>
             <evaluate program="org.efaps.esjp.common.uitable.MultiPrint">
-                <property name="Type">ERP_AttributeDefinitionAbstract</property>
+                <property name="Type">ERP_EventDefinitionAbstract</property>
                 <property name="ExpandChildTypes">true</property>
             </evaluate>
         </target>

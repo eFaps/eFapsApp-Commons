@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
-<!--
-
- Copyright 2003 - 2012 The eFaps Team
+ Copyright 2003 - 2013 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,100 +15,88 @@
  limitations under the License.
 
  Author:          The eFaps Team
- Revision:        $Rev: 6018 $
- Last Changed:    $Date: 2011-01-04 13:49:04 -0500 (mar, 04 ene 2011) $
- Last Changed By: $Author: jan@moxter.net $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
-
 <datamodel-type xmlns="http://www.efaps.org/xsd"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-    <uuid>f7c8ccce-03a5-4d6f-a863-f1bd4be3e4ae</uuid>
+    <uuid>847cf68b-c23a-4826-a154-dc38ff7f76fd</uuid>
     <file-application>eFapsApp-Commons</file-application>
-    <file-revision>$Rev: 6018 $</file-revision>
+    <file-revision>$Rev$</file-revision>
     <definition>
         <version-expression>(version==latest)</version-expression>
-        <name>ERP_EventScheduleAbstract</name>
-        <purpose abstract="true"/>
+        <name>ERP_EventDefinitionAbstract</name>
+        <purpose abstract="true" />
         <attribute>
             <name>Type</name>
             <type>Type</type>
-            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
             <sqlcolumn>TYPEID</sqlcolumn>
         </attribute>
         <attribute>
             <name>OID</name>
             <type>OID</type>
-            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
             <sqlcolumn>TYPEID,ID</sqlcolumn>
         </attribute>
         <attribute>
             <name>ID</name>
             <type>Long</type>
-            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
             <sqlcolumn>ID</sqlcolumn>
         </attribute>
         <attribute>
             <name>Company</name>
             <type>CompanyLink</type>
-            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
             <sqlcolumn>COMPANYID</sqlcolumn>
-        </attribute>
-        <attribute>
-            <name>DefinitionLinkAbstract</name>
-            <type>Link</type>
-            <typelink>ERP_EventDefinitionAbstract</typelink>
-            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
-            <sqlcolumn>DEFID</sqlcolumn>
         </attribute>
         <attribute>
             <name>Name</name>
             <type>String</type>
-            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
             <sqlcolumn>NAME</sqlcolumn>
         </attribute>
         <attribute>
-            <name>Date</name>
-            <type>Date</type>
-            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
-            <sqlcolumn>DATE</sqlcolumn>
+            <name>Description</name>
+            <type>String</type>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
+            <sqlcolumn>DESCR</sqlcolumn>
+        </attribute>
+        <attribute>
+            <name>Active</name>
+            <type>Boolean</type>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
+            <sqlcolumn>ACTIVE</sqlcolumn>
+            <defaultvalue>true</defaultvalue>
         </attribute>
         <attribute>
             <name>Creator</name>
             <type>CreatorLink</type>
-            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
             <sqlcolumn>CREATOR</sqlcolumn>
         </attribute>
         <attribute>
             <name>Created</name>
             <type>Created</type>
-            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
             <sqlcolumn>CREATED</sqlcolumn>
         </attribute>
         <attribute>
             <name>Modifier</name>
             <type>ModifierLink</type>
-            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
             <sqlcolumn>MODIFIER</sqlcolumn>
         </attribute>
         <attribute>
             <name>Modified</name>
             <type>Modified</type>
-            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
             <sqlcolumn>MODIFIED</sqlcolumn>
-        </attribute>
-        <attribute>
-            <name>StatusAbstract</name>
-            <type>Status</type>
-            <typelink>Admin_DataModel_StatusAbstract</typelink>
-            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
-            <sqlcolumn>STATUS</sqlcolumn>
-            <trigger program="org.efaps.esjp.admin.datamodel.StatusValue"
-                    name="ERP_EventSchedule.StatusAbstract.RANGE_VALUE"
-                    event="RANGE_VALUE">
-            </trigger>
         </attribute>
     </definition>
 </datamodel-type>

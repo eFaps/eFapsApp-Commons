@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
  Copyright 2003 - 2013 The eFaps Team
 
@@ -17,40 +15,37 @@
  limitations under the License.
 
  Author:          The eFaps Team
- Revision:        $Rev: 7342 $
- Last Changed:    $Date: 2012-01-10 12:50:31 -0500 (mar, 10 ene 2012) $
- Last Changed By: $Author: m.aranya@moxter.net $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
-
 <datamodel-sqltable xmlns="http://www.efaps.org/xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-    <uuid>90fe61c2-f883-4524-b2ce-0c1fd7fdb3e2</uuid>
+    <uuid>503c9dfa-cb57-48bb-b3be-7771460ed615</uuid>
     <file-application>eFapsApp-Commons</file-application>
-    <file-revision>$Rev: 7342 $</file-revision>
+    <file-revision>$Rev$</file-revision>
 
     <definition>
         <version-expression>(version==latest)</version-expression>
-        <name>ERP_EventScheduleAbstractSQLTable</name>
+        <name>ERP_EventDefinitionSQLTable</name>
         <typeid-column>TYPEID</typeid-column>
         <database>
-            <table-name>T_ERPEVENTSCHEDULE</table-name>
-            <!-- columns -->
+            <table-name>T_ERPEVENTDEFINITION</table-name>
             <column name="TYPEID"     not-null="true" type="INTEGER"/>
             <column name="COMPANYID"  not-null="true" type="INTEGER"/>
-            <column name="DEFID"      not-null="true" type="INTEGER"/>
             <column name="NAME"       not-null="true" type="STRING_SHORT" length="128" />
-            <column name="DATE"       not-null="true" type="DATETIME"/>
-            <column name="STATUS"     not-null="true" type="INTEGER"/>
+            <column name="DESCR"                      type="STRING_SHORT" length="256" />
+            <column name="ACTIVE"     not-null="true" type="BOOLEAN"/>
             <column name="CREATOR"    not-null="true" type="INTEGER"/>
             <column name="CREATED"    not-null="true" type="DATETIME"/>
             <column name="MODIFIER"   not-null="true" type="INTEGER"/>
             <column name="MODIFIED"   not-null="true" type="DATETIME"/>
-            <foreign key="COMPANYID"  name="T_ERPEVENTSCHEDULE_FK_COMPANYID"  reference="T_USERABSTRACT(ID)"/>
-            <foreign key="CREATOR"    name="T_ERPEVENTSCHEDULE_FK_CRTR"       reference="T_USERPERSON(ID)"/>
-            <foreign key="MODIFIER"   name="T_ERPEVENTSCHEDULE_FK_MDFR"       reference="T_USERPERSON(ID)"/>
+            <foreign key="COMPANYID"  name="T_ERPEVENTDEFINITION_FK_COMPANYID"  reference="T_USERABSTRACT(ID)"/>
+            <foreign key="CREATOR"    name="T_ERPEVENTDEFINITION_FK_CRTR"       reference="T_USERPERSON(ID)"/>
+            <foreign key="MODIFIER"   name="T_ERPEVENTDEFINITION_FK_MDFR"       reference="T_USERPERSON(ID)"/>
         </database>
     </definition>
 </datamodel-sqltable>
