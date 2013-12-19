@@ -72,6 +72,12 @@ xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.
             <sqlcolumn>NAME</sqlcolumn>
         </attribute>
         <attribute>
+            <name>Description</name>
+            <type>String</type>
+            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
+            <sqlcolumn>DESCRIPTION</sqlcolumn>
+        </attribute>
+        <attribute>
             <name>Date</name>
             <type>Date</type>
             <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
