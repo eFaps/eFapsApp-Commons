@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
- Copyright 2003 - 2013 The eFaps Team
+ Copyright 2003 - 2009 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,30 +15,26 @@
  limitations under the License.
 
  Author:          The eFaps Team
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev: 5311 $
+ Last Changed:    $Date: 2010-08-16 10:52:24 -0500 (lun, 16 ago 2010) $
+ Last Changed By: $Author: miguel.a.aranya $
 
--->
-<ui-menu xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+--><ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-    <uuid>08cb81e5-50eb-49e8-8c44-d04c1f55028a</uuid>
+    <uuid>384163bc-a1ba-40d7-8676-55146eb3fa31</uuid>
     <file-application>eFapsApp-Commons</file-application>
-    <file-revision>$Rev$</file-revision>
+    <file-revision>$Rev: 5311 $</file-revision>
 
     <definition>
         <version-expression>(version==latest)</version-expression>
-        <name>ERP_EventDefinitionTree</name>
+        <name>ERP_EventDefinitionTree_Program_Menu_Action_Delete</name>
+
+        <!-- target definitions -->
         <target>
-            <menu>ERP_EventDefinitionTree_Menu</menu>
-            <form>ERP_EventDefinitionForm</form>
+            <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>
         </target>
-        <type>ERP_EventDefinitionAbstract</type>
-        <childs>
-            <child>ERP_EventDefinitionTree_Program</child>
-        </childs>
-        <property name="Target">content</property>
-        <property name="TargetMode">view</property>
+        <!-- properties -->
+        <property name="AskUser">true</property>
+        <property name="Submit">true</property>
     </definition>
-</ui-menu>
+</ui-command>

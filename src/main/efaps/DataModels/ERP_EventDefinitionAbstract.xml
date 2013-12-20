@@ -75,6 +75,13 @@
             <defaultvalue>true</defaultvalue>
         </attribute>
         <attribute>
+            <name>QuartzDefinitionLink</name>
+            <type>Link</type>
+            <typelink>Admin_Program_Java</typelink>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
+            <sqlcolumn>QUARTZDEFID</sqlcolumn>
+        </attribute>
+        <attribute>
             <name>Creator</name>
             <type>CreatorLink</type>
             <sqltable>ERP_EventDefinitionSQLTable</sqltable>

@@ -34,18 +34,19 @@
         <typeid-column>TYPEID</typeid-column>
         <database>
             <table-name>T_ERPEVENTDEFINITION</table-name>
-            <column name="TYPEID"     not-null="true" type="INTEGER"/>
-            <column name="COMPANYID"  not-null="true" type="INTEGER"/>
-            <column name="NAME"       not-null="true" type="STRING_SHORT" length="128" />
+            <column name="TYPEID"      not-null="true" type="INTEGER"/>
+            <column name="COMPANYID"   not-null="true" type="INTEGER"/>
+            <column name="NAME"        not-null="true" type="STRING_SHORT" length="128" />
             <column name="DESCR"                      type="STRING_SHORT" length="256" />
-            <column name="ACTIVE"     not-null="true" type="BOOLEAN"/>
-            <column name="CREATOR"    not-null="true" type="INTEGER"/>
-            <column name="CREATED"    not-null="true" type="DATETIME"/>
-            <column name="MODIFIER"   not-null="true" type="INTEGER"/>
-            <column name="MODIFIED"   not-null="true" type="DATETIME"/>
-            <foreign key="COMPANYID"  name="T_ERPEVENTDEFINITION_FK_COMPANYID"  reference="T_USERABSTRACT(ID)"/>
-            <foreign key="CREATOR"    name="T_ERPEVENTDEFINITION_FK_CRTR"       reference="T_USERPERSON(ID)"/>
-            <foreign key="MODIFIER"   name="T_ERPEVENTDEFINITION_FK_MDFR"       reference="T_USERPERSON(ID)"/>
+            <column name="ACTIVE"      not-null="true" type="BOOLEAN"/>
+            <column name="QUARTZDEFID" not-null="true" type="INTEGER"/>
+            <column name="CREATOR"     not-null="true" type="INTEGER"/>
+            <column name="CREATED"     not-null="true" type="DATETIME"/>
+            <column name="MODIFIER"    not-null="true" type="INTEGER"/>
+            <column name="MODIFIED"    not-null="true" type="DATETIME"/>
+            <foreign key="COMPANYID"   name="T_ERPEVENTDEFINITION_FK_COMPANYID"  reference="T_USERABSTRACT(ID)"/>
+            <foreign key="CREATOR"     name="T_ERPEVENTDEFINITION_FK_CRTR"       reference="T_USERPERSON(ID)"/>
+            <foreign key="MODIFIER"    name="T_ERPEVENTDEFINITION_FK_MDFR"       reference="T_USERPERSON(ID)"/>
         </database>
     </definition>
 </datamodel-sqltable>

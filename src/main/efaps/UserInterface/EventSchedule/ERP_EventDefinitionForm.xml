@@ -50,6 +50,22 @@
             <property name="Columns">80</property>
             <property name="Rows">5</property>
         </field>
+        <field name="quartzDefinition">
+            <property name="Attribute">QuartzDefinitionLink</property>
+            <property name="ModeEdit">EDITABLE</property>
+            <property name="ModeCreate">EDITABLE</property>
+            <property name="ModeView">NONE</property>
+            <trigger name="Admin_Common_QuartzTriggerMinutelyForm.esjp4NotView"
+                     event="UI_FIELD_VALUE" program="org.efaps.esjp.admin.event.ConnectEventToAbstract"
+                     method="getProgramsUI" />
+        </field>
+        <field name="quartzDefinition4View">
+            <property name="SelectAlternateOID">linkto[QuartzDefinitionLink].oid</property>
+            <property name="Select">linkto[QuartzDefinitionLink].attribute[Name]</property>
+            <property name="Label">ERP_EventDefinitionStandart/QuartzDefinitionLink.Label</property>
+            <property name="ModeEdit">NONE</property>
+            <property name="ModeCreate">NONE</property>
+        </field>
         <field name="active">
             <property name="Attribute">Active</property>
             <property name="ModeEdit">EDITABLE</property>
