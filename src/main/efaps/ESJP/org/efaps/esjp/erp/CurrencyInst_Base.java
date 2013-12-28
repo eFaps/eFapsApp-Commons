@@ -18,9 +18,9 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.esjp.erp;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -32,17 +32,18 @@ import org.efaps.db.PrintQuery;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.util.EFapsException;
 
-
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: CurrencyInst_Base.java 10707 2013-10-30 01:00:13Z
+ *          jan@moxter.net $
  */
 @EFapsUUID("a848745e-417f-4148-9f24-7429cb445572")
 @EFapsRevision("$Rev$")
 public class CurrencyInst_Base
 {
+
     /**
      * Instance for this Currency.
      */
@@ -68,10 +69,14 @@ public class CurrencyInst_Base
      */
     private boolean initialized;
 
+    /**
+     * UUID of this Currency.
+     */
+    private UUID uuid;
 
     /**
-     * Constructor when used as instance object. to access parameters from
-     * a currency.
+     * Constructor when used as instance object. to access parameters from a
+     * currency.
      *
      * @param _instance instance of the currency
      */
@@ -105,6 +110,7 @@ public class CurrencyInst_Base
 
     /**
      * Method used to read the related data from the database.
+     *
      * @throws EFapsException on error
      */
     private void initialize()
@@ -112,11 +118,12 @@ public class CurrencyInst_Base
     {
         if (!this.initialized) {
             final PrintQuery print = new CachedPrintQuery(this.instance).setLifespan(1).setLifespanUnit(TimeUnit.HOURS);
-            print.addAttribute(CIERP.Currency.Symbol, CIERP.Currency.Name, CIERP.Currency.Invert);
+            print.addAttribute(CIERP.Currency.Symbol, CIERP.Currency.Name, CIERP.Currency.Invert, CIERP.Currency.UUID);
             print.execute();
             this.symbol = print.<String>getAttribute(CIERP.Currency.Symbol);
             this.name = print.<String>getAttribute(CIERP.Currency.Name);
             this.invert = print.<Boolean>getAttribute(CIERP.Currency.Invert);
+            this.uuid = UUID.fromString(print.<String>getAttribute(CIERP.Currency.UUID));
             this.initialized = true;
         }
     }
@@ -131,7 +138,6 @@ public class CurrencyInst_Base
     {
         this.symbol = _symbol;
     }
-
 
     /**
      * Getter method for the instance variable {@link #name}.
@@ -201,9 +207,37 @@ public class CurrencyInst_Base
         this.initialized = _initialized;
     }
 
+    /**
+     * Getter method for the instance variable {@link #uuid}.
+     *
+     * @return value of instance variable {@link #uuid}
+     * @throws EFapsException on error
+     */
+    public UUID getUUID()
+        throws EFapsException
+    {
+        initialize();
+        return this.uuid;
+    }
+
+    /**
+     * Setter method for instance variable {@link #uuid}.
+     *
+     * @param _uuid value for instance variable {@link #uuid}
+     */
+    public void setUUID(final UUID _uuid)
+    {
+        this.uuid = _uuid;
+    }
+
     @Override
     public String toString()
     {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    public static CurrencyInst get(final Instance _instance)
+    {
+        return new CurrencyInst(_instance);
     }
 }
