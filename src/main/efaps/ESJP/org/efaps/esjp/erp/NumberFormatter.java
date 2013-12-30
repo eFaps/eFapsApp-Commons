@@ -117,6 +117,7 @@ public class NumberFormatter
         if (_minFrac != null) {
             formater.setMinimumFractionDigits(_minFrac);
         }
+        formater.setMinimumIntegerDigits(1);
         formater.setRoundingMode(RoundingMode.HALF_UP);
         formater.setParseBigDecimal(true);
         return formater;
