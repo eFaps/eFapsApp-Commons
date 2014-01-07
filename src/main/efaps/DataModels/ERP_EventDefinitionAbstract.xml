@@ -77,7 +77,7 @@
         <attribute>
             <name>QuartzDefinitionLink</name>
             <type>Link</type>
-            <typelink>Admin_Program_Java</typelink>
+            <typelink>Admin_Common_QuartzTriggerAbstract</typelink>
             <sqltable>ERP_EventDefinitionSQLTable</sqltable>
             <sqlcolumn>QUARTZDEFID</sqlcolumn>
         </attribute>
