@@ -76,5 +76,11 @@
             <property name="ModeEdit">EDITABLE</property>
             <property name="Required">true</property>
         </field>
+        <field name="properties">
+            <property name="Attribute">Properties</property>
+            <property name="ModeEdit">EDITABLE</property>
+            <property name="Columns">80</property>
+            <property name="Rows">10</property>
+        </field>
     </definition>
 </ui-form>

@@ -37,7 +37,8 @@
             <column name="TYPEID"      not-null="true" type="INTEGER"/>
             <column name="COMPANYID"   not-null="true" type="INTEGER"/>
             <column name="NAME"        not-null="true" type="STRING_SHORT" length="128" />
-            <column name="DESCR"                      type="STRING_SHORT" length="256" />
+            <column name="DESCR"                       type="STRING_SHORT" length="256" />
+            <column name="PROPERTIES"                  type="CLOB" />
             <column name="ACTIVE"      not-null="true" type="BOOLEAN"/>
             <column name="QUARTZDEFID" not-null="true" type="INTEGER"/>
             <column name="CREATOR"     not-null="true" type="INTEGER"/>

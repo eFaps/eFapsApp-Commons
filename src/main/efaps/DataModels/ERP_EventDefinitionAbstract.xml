@@ -68,6 +68,12 @@
             <sqlcolumn>DESCR</sqlcolumn>
         </attribute>
         <attribute>
+            <name>Properties</name>
+            <type>String</type>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
+            <sqlcolumn>PROPERTIES</sqlcolumn>
+        </attribute>
+        <attribute>
             <name>Active</name>
             <type>Boolean</type>
             <sqltable>ERP_EventDefinitionSQLTable</sqltable>
