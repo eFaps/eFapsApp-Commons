@@ -38,13 +38,15 @@ import org.efaps.db.QueryBuilder;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.quartz.IEventDefinition;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
 import org.quartz.JobExecutionContext;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
+ * @version $Id: AbstractEventDefinition_Base.java 11608 2014-01-07 22:53:24Z
+ *          jan@moxter.net $
  */
 @EFapsUUID("e318cf5c-63aa-45d1-bed8-8729e305e9c0")
 @EFapsRevision("$Rev$")
@@ -84,8 +86,11 @@ public abstract class AbstractEventDefinition_Base
     }
 
     protected void add2QueryBlrd4initEvents(final QueryBuilder _queryBldr)
+        throws EFapsException
     {
-
+        final DateTime today = new DateTime().withTimeAtStartOfDay();
+        _queryBldr.addWhereAttrGreaterValue(CIERP.EventScheduleAbstract.Date, today.minusSeconds(1));
+        _queryBldr.addWhereAttrLessValue(CIERP.EventScheduleAbstract.Date, today.plusDays(1));
     }
 
     protected void initProperties(final Instance _defInstance)
@@ -107,6 +112,7 @@ public abstract class AbstractEventDefinition_Base
     protected EventSchedule getEventSchedule(final Instance _instance,
                                              final Company _company,
                                              final Long _statusId)
+        throws EFapsException
     {
         return new EventSchedule(_instance, _company, _statusId);
     }
@@ -129,6 +135,16 @@ public abstract class AbstractEventDefinition_Base
     public void setProperties(final Properties _properties)
     {
         this.properties = _properties;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #events}.
+     *
+     * @return value of instance variable {@link #events}
+     */
+    public List<EventSchedule> getEvents()
+    {
+        return this.events;
     }
 
     public static class EventSchedule
