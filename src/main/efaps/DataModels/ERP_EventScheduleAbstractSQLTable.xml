@@ -41,8 +41,8 @@
             <column name="TYPEID"       not-null="true" type="INTEGER"/>
             <column name="COMPANYID"    not-null="true" type="INTEGER"/>
             <column name="DEFID"                        type="INTEGER"/>
-            <column name="NAME"         not-null="true" type="STRING_SHORT" length="128" />
-            <column name="DESCRIPTION"                  type="STRING_SHORT" length="256" />
+            <column name="NAME"                         type="STRING_SHORT" length="128" />
+            <column name="DESCRIPTION"                  type="STRING_SHORT" length="1024" />
             <column name="DATE"         not-null="true" type="DATETIME"/>
             <column name="STATUS"       not-null="true" type="INTEGER"/>
             <column name="CREATOR"      not-null="true" type="INTEGER"/>
