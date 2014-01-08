@@ -22,6 +22,7 @@ package org.efaps.esjp.erp.eventdefinition;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -88,9 +89,18 @@ public abstract class AbstractEventDefinition_Base
     protected void add2QueryBlrd4initEvents(final QueryBuilder _queryBldr)
         throws EFapsException
     {
-        final DateTime today = new DateTime().withTimeAtStartOfDay();
-        _queryBldr.addWhereAttrGreaterValue(CIERP.EventScheduleAbstract.Date, today.minusSeconds(1));
-        _queryBldr.addWhereAttrLessValue(CIERP.EventScheduleAbstract.Date, today.plusDays(1));
+        final int eventOffsetDays = this.properties.getProperty("EventOffsetDays") != null
+                        ? Integer.parseInt(this.properties.getProperty("EventOffsetDays")) : 0;
+        final boolean eventDateIsTimespan = this.properties.getProperty("EventDateIsTimespan") != null
+                        ? Boolean.parseBoolean(this.properties.getProperty("EventDateIsTimespan")) : false;
+
+        final DateTime start = new DateTime().withTimeAtStartOfDay();
+        DateTime end = start;
+        if (eventDateIsTimespan) {
+            end = end.plusDays(new BigDecimal(eventOffsetDays).abs().intValue());
+        }
+        _queryBldr.addWhereAttrGreaterValue(CIERP.EventScheduleAbstract.Date, start.minusSeconds(1));
+        _queryBldr.addWhereAttrLessValue(CIERP.EventScheduleAbstract.Date, end.plusDays(1));
     }
 
     protected void initProperties(final Instance _defInstance)
