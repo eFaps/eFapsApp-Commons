@@ -29,6 +29,7 @@ import java.util.Properties;
 
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.erp.util.ERPSettings;
@@ -193,7 +194,16 @@ public class NumberFormatter
                                                final String _default)
         throws EFapsException
     {
-        if (!this.key2formatter.containsKey(_key)) {
+        final String storeKey;
+
+        final Company company = Context.getThreadContext().getCompany();
+        if (company == null) {
+            storeKey = _key;
+        } else {
+            storeKey = company.getId() + _key;
+        }
+
+        if (!this.key2formatter.containsKey(storeKey)) {
             final Properties properties = ERP.getSysConfig().getAttributeValueAsProperties(ERPSettings.NUMBERFRMT);
             DecimalFormat frmt;
             if (properties.containsKey(_key)) {
@@ -206,9 +216,9 @@ public class NumberFormatter
                 getFormatter();
                 frmt = this.key2formatter.get(_default);
             }
-            this.key2formatter.put(_key, frmt);
+            this.key2formatter.put(storeKey, frmt);
         }
-        return this.key2formatter.get(_key);
+        return this.key2formatter.get(storeKey);
     }
 
     /**
