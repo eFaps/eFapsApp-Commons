@@ -235,6 +235,7 @@ public abstract class CommonDocument_Base
      * @param _tableName name of the table to be removed
      * @param _onDomReady add onDomReady script part
      * @param _wrapInTags wrap in script tags
+     * @param _makeUneditable make the table uneditable
      * @return StringBuilder containing the javascript
      */
     protected StringBuilder getTableRemoveScript(final Parameter _parameter,
@@ -347,7 +348,7 @@ public abstract class CommonDocument_Base
      * A Script adds one new empty Row to the given table.
      * @param _parameter Parameter as passed by the eFaps API
      * @param _tableName name of the table the row will be added to
-     *
+     * @return StringBuilder containing the javascript
      */
     protected StringBuilder getTableAddNewRowScript(final Parameter _parameter,
                                                      final String _tableName)
@@ -481,7 +482,7 @@ public abstract class CommonDocument_Base
     /**
      * JavaScript Snipplet that removes from all SELECT with
      * <code>fieldname</code> all other options except the one
-     * identified by the given <code>_idvalue</code>
+     * identified by the given <code>_idvalue</code>.
      * @param _parameter    Parameter as passed by the eFaps API
      * @param _idvalue      value that will be set for the dropdown
      * @param _field        fieldname
@@ -504,6 +505,7 @@ public abstract class CommonDocument_Base
      * @param _parameter    Parameter as passed by the eFaps API
      * @param _idvalue      value that will be set for the dropdown
      * @param _field        fieldname
+     * @param _idx          index
      * @return JavaScript
      * @throws EFapsException on error
      */
@@ -590,7 +592,13 @@ public abstract class CommonDocument_Base
         return js;
     }
 
-
+    /**
+     * Get a String Array for UoM Field.
+     * @param _selected selected id
+     * @param _dimId    id of the Dimension
+     * @return String for UoM DropDown
+     * @throws CacheReloadException on error
+     */
     protected String getUoMFieldStr(final long _selected,
                                     final long _dimId)
         throws CacheReloadException
@@ -607,6 +615,12 @@ public abstract class CommonDocument_Base
         return js.toString();
     }
 
+    /**
+     * Get a String Array for UoM Field.
+     * @param _dimId    id of the Dimension
+     * @return String for UoM DropDown
+     * @throws CacheReloadException on error
+     */
     protected String getUoMFieldStr(final long _dimId)
         throws CacheReloadException
     {
@@ -617,6 +631,7 @@ public abstract class CommonDocument_Base
     /**
      * @param _uoMId id of the UoM
      * @return Field String
+     * @throws CacheReloadException on error
      */
     protected String getUoMFieldStrByUoM(final long _uoMId)
         throws CacheReloadException
@@ -767,11 +782,17 @@ public abstract class CommonDocument_Base
         return ret;
     }
 
-
+    /**
+     * @param _parameter Parameter as passed from the eFaps API.
+     * @param _createdDoc CreatedDoc the process must be executed for
+     * @throws EFapsException on error
+     */
     public void executeProcess(final Parameter _parameter,
-                               final CreatedDoc _createdDoc) throws EFapsException
+                               final CreatedDoc _createdDoc)
+        throws EFapsException
     {
-        final Create create = new Create() {
+        final Create create = new Create()
+        {
             @Override
             protected void add2ProcessMap(final Parameter _parameter,
                                           final Instance _instance,
@@ -790,7 +811,7 @@ public abstract class CommonDocument_Base
      * execution.
      *
      * @param _parameter Parameter as passed by the eFasp API
-     * @param _instance Insert the values can be added to
+     * @param _createdDoc CreatedDoc the process must be executed for
      * @param _params Map passed to the Process
      * @throws EFapsException on error
      */
@@ -907,6 +928,9 @@ public abstract class CommonDocument_Base
         }
     }
 
+    /**
+     * Class is used as the return value for the internal Edit methods.
+     */
     public static class EditedDoc
         extends CreatedDoc
     {
