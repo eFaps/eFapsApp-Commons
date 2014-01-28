@@ -326,6 +326,24 @@ public abstract class Currency_Base
         return ret;
     }
 
+    /**
+     * @param _parameter
+     * @param _rate
+     */
+    public RateInfo evaluateRateInfo(final Parameter _parameter,
+                                     final Object[] _rate)
+        throws EFapsException
+    {
+        final RateInfo ret = RateInfo.getDummyRateInfo();
+        if (_rate.length == 4) {
+            ret.setInstance4Currency(Instance.get(CIERP.Currency.getType(), (Long) _rate[2]));
+            ret.setRate(evalRate(_rate, false));
+            ret.setRateUI(evalRate(_rate, true));
+        }
+        return ret;
+    }
+
+
     public RateInfo[] evaluateRateInfos(final Parameter _parameter,
                                         final String _dateStr,
                                         final Instance _currentCurrencyInst,

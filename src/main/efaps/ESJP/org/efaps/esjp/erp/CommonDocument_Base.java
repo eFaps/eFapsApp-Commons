@@ -53,6 +53,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.QueryBuilder;
+import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.uiform.Create;
@@ -60,6 +61,7 @@ import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
+import org.jfree.util.Log;
 
 /**
  * TODO comment!
@@ -645,6 +647,43 @@ public abstract class CommonDocument_Base
         }
     }
 
+
+    /**
+     * @param _parameter    Parameter as passed by the eFaps API
+     * @param _update       insert to add to
+     * @param _editDoc      document edited
+     * @throws EFapsException on error
+     */
+    protected void addStatus2DocEdit(final Parameter _parameter,
+                                     final Update _update,
+                                     final EditedDoc _editDoc)
+        throws EFapsException
+    {
+        final Type type = _update.getInstance().getType();
+        if (type.isCheckStatus()) {
+            final String attrName = type.getStatusAttribute().getName();
+            final String fieldName = getFieldName4Attribute(_parameter, attrName);
+            final String statusTmp = _parameter.getParameterValue(fieldName);
+            final Instance inst = Instance.get(statusTmp);
+            Status status = null;
+            if (inst.isValid()) {
+                status = Status.get(inst.getId());
+            } else {
+                if (statusTmp != null && !statusTmp.isEmpty()) {
+                    try {
+                        final Long statusId = Long.valueOf(statusTmp);
+                        status = Status.get(statusId);
+                    } catch (final NumberFormatException e) {
+                        Log.warn("Catched NumberFormatException");
+                    }
+                }
+            }
+            if (status != null) {
+                _update.add(type.getStatusAttribute(), status);
+            }
+        }
+    }
+
     /**
      * Get the type used to create the new Payment Document.
      * @param _parameter Parameter as passed by the eFaps API
@@ -673,6 +712,21 @@ public abstract class CommonDocument_Base
         // used by implementation
     }
 
+
+    /**
+     * Method is called in the process of edit of a Document.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _update   update to add to
+     * @param _editDoc   document edited
+     * @throws EFapsException on error
+     */
+    protected void add2DocEdit(final Parameter _parameter,
+                               final Update _update,
+                               final EditedDoc _editDoc)
+        throws EFapsException
+    {
+        // used by implementation
+    }
 
     /**
      * @param _parameter Parameter as passed by the eFaps API
@@ -752,7 +806,7 @@ public abstract class CommonDocument_Base
     /**
      * Class is used as the return value for the internal Create methods.
      */
-    public class CreatedDoc
+    public static class CreatedDoc
     {
         /**
          * Instance of the newly created doc.
@@ -850,6 +904,18 @@ public abstract class CommonDocument_Base
         public void addPosition(final Instance _instance)
         {
             this.positions.add(_instance);
+        }
+    }
+
+    public static class EditedDoc
+        extends CreatedDoc
+    {
+        /**
+         * @param _instance Instance the document belongs to
+         */
+        public EditedDoc(final Instance _instance)
+        {
+            super(_instance);
         }
     }
 }
