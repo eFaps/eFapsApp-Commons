@@ -467,6 +467,7 @@ public abstract class Currency_Base
      * @throws EFapsException on error
      */
     protected Type getType4ExchangeRate(final Parameter _parameter)
+        throws EFapsException
     {
         return CIERP.CurrencyRateClient.getType();
     }
