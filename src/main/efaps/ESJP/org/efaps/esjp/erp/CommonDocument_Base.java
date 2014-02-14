@@ -41,6 +41,7 @@ import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractCommand;
@@ -780,6 +781,14 @@ public abstract class CommonDocument_Base
             ret = _parameter.getParameterValue(getFieldName4Attribute(_parameter, CIERP.DocumentAbstract.Name.name));
         }
         return ret;
+    }
+
+    public Return getJavaScript4EditMassiveTable(final Parameter _parameter)
+    {
+        final Return retVal = new Return();
+        retVal.put(ReturnValues.SNIPLETT,
+                        getTableDeactivateScript(_parameter, "inventoryTable", true, true).toString());
+        return retVal;
     }
 
     /**
