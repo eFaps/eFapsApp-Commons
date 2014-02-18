@@ -50,6 +50,7 @@
         <field name="status">
             <property name="Attribute">StatusAbstract</property>
             <property name="Label">ERP_DocumentAbstract/StatusAbstract.Label</property>
+            <property name="FilterType">PICKLIST</property>
             <property name="ModeSearch">READONLY</property>
         </field>
         <field name="buttonOpenInNewWindow">
