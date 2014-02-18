@@ -32,7 +32,7 @@
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_DocumentAbstract</name>
-        <purpose abstract="true"/>
+        <purpose abstract="true" />
         <attribute>
             <name>Type</name>
             <type>Type</type>
@@ -88,24 +88,23 @@
             <sqlcolumn>DUEDATE</sqlcolumn>
         </attribute>
         <attribute>
-            <!--  Will be replaced during installation of the contacts module. -->
+            <!-- Will be replaced during installation of the contacts module. -->
             <name>Contact</name>
             <type>Integer</type>
             <sqltable>ERP_DocumentAbstractSQLTable</sqltable>
             <sqlcolumn>CONTACTID</sqlcolumn>
         </attribute>
         <attribute>
-          <name>Salesperson</name>
-          <type>LinkWithRanges</type>
-          <typelink>Admin_User_Person</typelink>
-          <sqltable>ERP_DocumentAbstractSQLTable</sqltable>
-          <sqlcolumn>SALESPERS</sqlcolumn>
-          <trigger program="org.efaps.esjp.admin.datamodel.RangesValue"
-                   name="ERP_DocumentAbstract.Salesperson.RANGE_VALUE"
-                   event="RANGE_VALUE">
-            <property name="Value">$&lt;attribute[FirstName]&gt; $&lt;attribute[LastName]&gt;</property>
-            <property name="Type">Admin_User_Person</property>
-          </trigger>
+            <name>Salesperson</name>
+            <type>LinkWithRanges</type>
+            <typelink>Admin_User_Person</typelink>
+            <sqltable>ERP_DocumentAbstractSQLTable</sqltable>
+            <sqlcolumn>SALESPERS</sqlcolumn>
+            <trigger program="org.efaps.esjp.admin.datamodel.RangesValue" 
+                name="ERP_DocumentAbstract.Salesperson.RANGE_VALUE" event="RANGE_VALUE">
+                <property name="Value">$&lt;attribute[FirstName]&gt; $&lt;attribute[LastName]&gt;</property>
+                <property name="Type">Admin_User_Person</property>
+            </trigger>
         </attribute>
         <attribute>
             <name>Note</name>
@@ -127,8 +126,7 @@
             <sqltable>ERP_DocumentAbstractSQLTable</sqltable>
             <sqlcolumn>STATUS</sqlcolumn>
             <trigger program="org.efaps.esjp.admin.datamodel.StatusValue"
-                    name="Sales_DocumentStatus.Status.RANGE_VALUE"
-                    event="RANGE_VALUE">
+                name="ERP_DocumentAbstract.StatusAbstract.RANGE_VALUE" event="RANGE_VALUE">
             </trigger>
         </attribute>
         <attribute>
