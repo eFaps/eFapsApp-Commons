@@ -48,6 +48,7 @@
             Assets_MaintenanceOrder=f51d882e-778f-4692-b5e5-e088b64c1822
             Assets_MaintenanceRequest=48181024-d9fe-4721-b0e7-4461e685e5f5
             Sales_PaymentSchedule=f1a20ea4-e7d8-4401-9b85-84b91c3119c3
+            Sales_ServiceOrderOutbound=b9ca5585-87da-411d-9b26-2a8bc090373e
             </value>
     <description>Properties.
     can be concatenated
