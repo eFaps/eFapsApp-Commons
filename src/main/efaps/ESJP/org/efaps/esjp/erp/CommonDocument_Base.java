@@ -1,5 +1,6 @@
+
 /*
- * Copyright 2003 - 2011 The eFaps Team
+ * Copyright 2003 - 2014 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +21,8 @@
 
 package org.efaps.esjp.erp;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,6 +36,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.NumberGenerator;
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Dimension.UoM;
 import org.efaps.admin.datamodel.Status;
@@ -75,6 +79,48 @@ import org.jfree.util.Log;
 public abstract class CommonDocument_Base
     extends AbstractCommon
 {
+
+    /**
+     * @param _parameter Parameter as passed by the eFasp API
+     * @return scale corrected BigDecimal
+     */
+    public Return setScale4ReadValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final Object object = _parameter.get(ParameterValues.OTHERS);
+        if (object != null && object instanceof BigDecimal) {
+            int scale = 0;
+            final Object attr = _parameter.get(ParameterValues.CLASS);
+            if (attr instanceof Attribute) {
+                final Type type = ((Attribute) attr).getParent();
+                final String frmtKey = getProperty(_parameter, "Formatter");
+                final DecimalFormat formatter;
+                if ("total".equalsIgnoreCase(frmtKey)) {
+                    formatter = NumberFormatter.get().getFrmt4Total(type.getName());
+                } else if ("discount".equalsIgnoreCase(frmtKey)) {
+                    formatter = NumberFormatter.get().getFrmt4Discount(type.getName());
+                } else if ("quantity".equalsIgnoreCase(frmtKey)) {
+                    formatter = NumberFormatter.get().getFrmt4Quantity(type.getName());
+                } else if ("unit".equalsIgnoreCase(frmtKey)) {
+                    formatter = NumberFormatter.get().getFrmt4UnitPrice(type.getName());
+                } else {
+                    formatter = NumberFormatter.get().getFormatter();
+                }
+                if (formatter != null) {
+                    final int scaleTmp = ((BigDecimal) object).scale();
+                    if (scaleTmp > formatter.getMaximumFractionDigits()) {
+                        scale = formatter.getMaximumFractionDigits();
+                    } else if (scaleTmp < formatter.getMinimumFractionDigits()) {
+                        scale = formatter.getMinimumFractionDigits();
+                    }
+                }
+            }
+            ret.put(ReturnValues.VALUES, ((BigDecimal) object).setScale(scale, BigDecimal.ROUND_HALF_UP));
+        }
+        return ret;
+    }
+
     /**
      * @param _parameter    Parameter as passed by the eFasp API
      * @return Sales Person Field Value
