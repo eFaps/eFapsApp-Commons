@@ -110,9 +110,18 @@ public abstract class CommonDocument_Base
                 if (formatter != null) {
                     final int scaleTmp = ((BigDecimal) object).scale();
                     if (scaleTmp > formatter.getMaximumFractionDigits()) {
-                        scale = formatter.getMaximumFractionDigits();
+                        final BigDecimal decTmp = ((BigDecimal) object).stripTrailingZeros();
+                        if (decTmp.scale() <  formatter.getMinimumFractionDigits()) {
+                            scale = formatter.getMinimumFractionDigits();
+                        } else if (decTmp.scale() > formatter.getMaximumFractionDigits()) {
+                            scale = formatter.getMaximumFractionDigits();
+                        } else {
+                            scale = decTmp.scale();
+                        }
                     } else if (scaleTmp < formatter.getMinimumFractionDigits()) {
                         scale = formatter.getMinimumFractionDigits();
+                    } else {
+                        scale = scaleTmp;
                     }
                 }
             }

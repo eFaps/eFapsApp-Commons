@@ -27,10 +27,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
+import org.efaps.esjp.admin.common.IReloadCacheListener;
+import org.efaps.esjp.admin.common.ReloadCache_Base;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
@@ -40,14 +43,17 @@ import org.efaps.util.EFapsException;
  * "_Base" approach.
  *
  * @author The eFaps Team
- * @version $Id: NumberFormatter.java 10761 2013-11-05 02:45:51Z jan@moxter.net
- *          $
+ * @version $Id$
  */
 @EFapsUUID("999443c8-8f9f-47be-aad1-974a1b09421b")
 @EFapsRevision("$Rev$")
-public class NumberFormatter
+public final class NumberFormatter
+    implements IReloadCacheListener
 {
 
+    /**
+     * The singelton instance.
+     */
     private static NumberFormatter FORMATTER;
 
     /**
@@ -65,11 +71,17 @@ public class NumberFormatter
      */
     private static String ZEROFRMTKEY = NumberFormatter.class.getName() + ".ZeroDigitsFormatter";
 
-
     /**
-     * Formatter mapping
+     * Formatter mapping.
      */
     private final Map<String, DecimalFormat> key2formatter = new HashMap<String, DecimalFormat>();
+
+    /**
+     * Singelton constructor.
+     */
+    private NumberFormatter()
+    {
+    }
 
     /**
      * Method to get a formater.
@@ -228,7 +240,26 @@ public class NumberFormatter
     {
         if (NumberFormatter.FORMATTER == null) {
             NumberFormatter.FORMATTER = new NumberFormatter();
+            ReloadCache_Base.addListener(NumberFormatter.FORMATTER);
         }
         return NumberFormatter.FORMATTER;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onReloadSystemConfig(final Parameter _parameter)
+    {
+        NumberFormatter.FORMATTER.key2formatter.clear();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onReloadCache(final Parameter _parameter)
+    {
+        NumberFormatter.FORMATTER.key2formatter.clear();
     }
 }
