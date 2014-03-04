@@ -104,6 +104,8 @@ public abstract class CommonDocument_Base
                     formatter = NumberFormatter.get().getFrmt4Quantity(type.getName());
                 } else if ("unit".equalsIgnoreCase(frmtKey)) {
                     formatter = NumberFormatter.get().getFrmt4UnitPrice(type.getName());
+                } else if (frmtKey != null){
+                    formatter = NumberFormatter.get().getFrmt4Key(type.getName(), frmtKey);
                 } else {
                     formatter = NumberFormatter.get().getFormatter();
                 }

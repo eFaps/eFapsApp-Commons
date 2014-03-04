@@ -197,6 +197,18 @@ public final class NumberFormatter
     }
 
     /**
+     * @param _type TypeName
+     * @return DecimalFormat
+     * @throws EFapsException on error
+     */
+    public DecimalFormat getFrmt4Key(final String _type,
+                                     final String _key)
+        throws EFapsException
+    {
+        return getFrmtFromSysConf(_type + "." + _key, NumberFormatter.TWOFRMTKEY);
+    }
+
+    /**
      * @param _key key to the Formatter
      * @param _default default key for a formatter
      * @return DecimalFormat
