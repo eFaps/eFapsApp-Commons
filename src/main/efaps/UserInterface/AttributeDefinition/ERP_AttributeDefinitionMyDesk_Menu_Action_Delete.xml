@@ -34,6 +34,10 @@
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_AttributeDefinitionMyDesk_Menu_Action_Delete</name>
+        
+        <access>
+            <role>ERP_AttributeDefinitionAdmin</role>
+        </access>
 
         <!-- target definitions -->
         <target>
