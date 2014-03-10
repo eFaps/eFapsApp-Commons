@@ -50,10 +50,10 @@ public final class ERP
     {
         /** NONE. */
         NONE,
-        /** Incoming. */
-        INCOMING,
+        /** Docu. */
+        TAX,
         /** Outgoing. */
-        OUTGOING;
+        NOTAX;
 
         /**
          * {@inheritDoc}
