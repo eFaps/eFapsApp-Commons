@@ -24,6 +24,8 @@ package org.efaps.esjp.erp.util;
 import java.util.UUID;
 
 import org.efaps.admin.common.SystemConfiguration;
+import org.efaps.admin.datamodel.IBitEnum;
+import org.efaps.admin.datamodel.attributetype.BitEnumType;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.util.cache.CacheReloadException;
@@ -39,6 +41,39 @@ import org.efaps.util.cache.CacheReloadException;
 @EFapsRevision("$Rev$")
 public final class ERP
 {
+
+    /**
+     * Enum used for a multistate for Activation in ERP_DocumentType.
+     */
+    public enum DocTypeActivation
+        implements IBitEnum
+    {
+        /** NONE. */
+        NONE,
+        /** Incoming. */
+        INCOMING,
+        /** Outgoing. */
+        OUTGOING;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int getInt()
+        {
+            return BitEnumType.getInt4Index(ordinal());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int getBitIndex()
+        {
+            return ordinal();
+        }
+    }
+
     /**
      * Singelton.
      */
