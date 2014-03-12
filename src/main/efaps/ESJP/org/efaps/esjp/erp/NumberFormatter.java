@@ -228,7 +228,8 @@ public final class NumberFormatter
         }
 
         if (!this.key2formatter.containsKey(storeKey)) {
-            final Properties properties = ERP.getSysConfig().getAttributeValueAsProperties(ERPSettings.NUMBERFRMT);
+            final Properties properties = ERP.getSysConfig()
+                            .getAttributeValueAsProperties(ERPSettings.NUMBERFRMT, true);
             DecimalFormat frmt;
             if (properties.containsKey(_key)) {
                 frmt = getFormatter(null, null);
