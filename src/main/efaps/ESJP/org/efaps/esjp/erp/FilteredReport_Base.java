@@ -55,10 +55,18 @@ import org.joda.time.DateTime;
 public abstract class FilteredReport_Base
     extends AbstractCommon
 {
+    /**
+     * Key used to store the filters in the context.
+     */
+    public static final String KEY4SESSION = FilteredReport.class.getName() + ".Key4SessionContext";
 
-    public final static String KEY4SESSION = FilteredReport.class.getName() + ".Key4SessionContext";
-
-
+    /**
+     * Set the default filter in the context map. Must be called
+     * before any other access to work.
+     * @param _parameter Parameter as passed by the eFasp API
+     * @return empty Return
+     * @throws EFapsException on error
+     */
     public Return setDefaultFilter(final Parameter _parameter)
         throws EFapsException
     {
@@ -76,6 +84,13 @@ public abstract class FilteredReport_Base
         return new Return();
     }
 
+    /**
+     * Evaluate the properties of the event to get an default value.
+     * @param _parameter Parameter as passed by the eFasp API
+     * @param _type   type of filter
+     * @param _default default value
+     * @return default value for the context map
+     */
     protected Object getDefaultValue(final Parameter _parameter,
                                      final String _type,
                                      final String _default)
@@ -114,7 +129,12 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
-
+    /**
+     * Get the fieldvalue for the from dateField.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return value for the form
+     * @throws EFapsException on error
+     */
     public Return getDateFromFieldValue(final Parameter _parameter)
         throws EFapsException
     {
@@ -129,6 +149,12 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
+    /**
+     * Get the fieldvalue for the to dateField.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return value for the form
+     * @throws EFapsException on error
+     */
     public Return getDateToFieldValue(final Parameter _parameter)
         throws EFapsException
     {
@@ -143,7 +169,12 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
-
+    /**
+     * Get the filter map from the context.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return the mpa from the context
+     * @throws EFapsException on error
+     */
     protected Map<String, Object> getFilterMap(final Parameter _parameter)
         throws EFapsException
     {
@@ -157,6 +188,12 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
+    /**
+     * Get the basic map from the context.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return the map from the context
+     * @throws EFapsException on error
+     */
     @SuppressWarnings("unchecked")
     protected Map<String, Map<String, Object>> getCtxMap(final Parameter _parameter)
         throws EFapsException
@@ -172,6 +209,12 @@ public abstract class FilteredReport_Base
         return map;
     }
 
+    /**
+     * Get the filterkey used for storing the map in the context.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return the filterkey
+     * @throws EFapsException on error
+     */
     protected String getFilterKey(final Parameter _parameter)
         throws EFapsException
     {
@@ -186,6 +229,12 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
+    /**
+     * Set the filter in the Context. Executed on an execute event.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return new empty return
+     * @throws EFapsException on error
+     */
     public Return setFilter(final Parameter _parameter)
         throws EFapsException
     {
@@ -209,6 +258,12 @@ public abstract class FilteredReport_Base
         return new Return();
     }
 
+    /**
+     * Get a fieldvalue that show the current selected filter.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return Return containing html snipplet
+     * @throws EFapsException on error
+     */
     public Return getFilterFieldValue(final Parameter _parameter)
         throws EFapsException
     {
@@ -237,7 +292,8 @@ public abstract class FilteredReport_Base
                     final Object valueTmp = filters.get(entry.getValue());
                     if (valueTmp != null) {
                         if (valueTmp instanceof DateTime) {
-                            value = ((DateTime)valueTmp).toString("dd/MM/yyyy", Context.getThreadContext().getLocale());
+                            value = ((DateTime) valueTmp).toString("dd/MM/yyyy",
+                                            Context.getThreadContext().getLocale());
                         } else {
                             value = valueTmp.toString();
                         }
