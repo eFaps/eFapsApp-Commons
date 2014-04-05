@@ -21,6 +21,10 @@
 
 package org.efaps.esjp.erp;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -42,6 +46,7 @@ import org.efaps.admin.datamodel.Dimension.UoM;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -54,6 +59,7 @@ import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.db.AttributeQuery;
+import org.efaps.db.Checkin;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -61,6 +67,7 @@ import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.AbstractCommon;
+import org.efaps.esjp.common.jasperreport.StandartReport;
 import org.efaps.esjp.common.uiform.Create;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.erp.util.ERPSettings;
@@ -768,6 +775,32 @@ public abstract class CommonDocument_Base
     {
         final AbstractCommand command = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
         return command.getTargetCreateType();
+    }
+
+
+    protected File createReport(final Parameter _parameter,
+                                final CreatedDoc _createdDoc)
+        throws EFapsException
+    {
+        File ret = null;
+        final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+        if (properties.containsKey("JasperReport") || properties.containsKey("JasperKey")) {
+            try {
+                final StandartReport report = new StandartReport();
+                _parameter.put(ParameterValues.INSTANCE, _createdDoc.getInstance());
+                final String fileName = DBProperties.getProperty(_createdDoc.getInstance().getType().getLabelKey(),
+                                "es") + "_" + _createdDoc.getValue(CIERP.DocumentAbstract.Name.name);
+                report.setFileName(fileName);
+                ret = report.getFile(_parameter);
+                final InputStream input = new FileInputStream(ret);
+                final Checkin checkin = new Checkin(_createdDoc.getInstance());
+                checkin.execute(fileName + "." + properties.get("Mime"), input, ((Long) ret.length()).intValue());
+            } catch (final FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return ret;
     }
 
     /**
