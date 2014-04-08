@@ -295,9 +295,16 @@ public abstract class Revision_Base
                                      final Instance _newDoc)
         throws EFapsException
     {
+        return getNextRevision(_parameter, _parameter.getInstance(), _newDoc);
+    }
+
+    public Object getNextRevision(final Parameter _parameter,
+                                  final Instance _origDoc,
+                                  final Instance _newDoc)
+        throws EFapsException
+    {
         int ret;
-        final Instance origInst = _parameter.getInstance();
-        final PrintQuery print = new PrintQuery(origInst);
+        final PrintQuery print = new PrintQuery(_origDoc);
         print.addAttribute(getRevisionAttribute(_parameter, _newDoc));
         if (print.execute()) {
             final String value = print.<String>getAttribute(getRevisionAttribute(_parameter, _newDoc));
