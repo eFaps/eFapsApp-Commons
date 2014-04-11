@@ -40,6 +40,7 @@ import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.esjp.common.AbstractCommon;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.util.FilterDefault;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
@@ -221,9 +222,15 @@ public abstract class FilteredReport_Base
         String ret = getProperty(_parameter, "FilterKey");
         if (ret == null) {
             final Object callCmd = _parameter.get(ParameterValues.CALL_CMD);
-            if (callCmd != null && callCmd instanceof AbstractCommand) {
+            if (callCmd instanceof AbstractCommand) {
                 final AbstractCommand cmd = (AbstractCommand) callCmd;
                 ret = cmd.getProperty("FilterKey");
+            } else {
+                final Object uiForm = _parameter.get(ParameterValues.CLASS);
+                if (uiForm instanceof UIForm) {
+                    final AbstractCommand cmd = ((UIForm) uiForm).getCommand();
+                    ret = cmd.getProperty("FilterKey");
+                }
             }
         }
         return ret;
