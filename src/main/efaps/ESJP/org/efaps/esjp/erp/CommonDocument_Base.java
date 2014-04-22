@@ -431,7 +431,7 @@ public abstract class CommonDocument_Base
      */
     protected StringBuilder getTableAddNewRowsScript(final Parameter _parameter,
                                                      final String _tableName,
-                                                     final Collection<Map<String, String>> _values,
+                                                     final Collection<Map<String, Object>> _values,
                                                      final StringBuilder _onComplete)
     {
         return getTableAddNewRowsScript(_parameter, _tableName, _values, _onComplete, false, false, null);
@@ -450,7 +450,7 @@ public abstract class CommonDocument_Base
      */
     protected StringBuilder getTableAddNewRowsScript(final Parameter _parameter,
                                                      final String _tableName,
-                                                     final Collection<Map<String, String>> _values,
+                                                     final Collection<Map<String, Object>> _values,
                                                      final StringBuilder _onComplete,
                                                      final boolean _onDomReady,
                                                      final boolean _wrapInTags,
@@ -490,21 +490,30 @@ public abstract class CommonDocument_Base
      * @return StringBuilder containing the javascript
      */
     protected StringBuilder getSetFieldValuesScript(final Parameter _parameter,
-                                                    final Collection<Map<String, String>> _values,
+                                                    final Collection<Map<String, Object>> _values,
                                                     final Set<String> _nonEscapeFields)
     {
         final StringBuilder ret = new StringBuilder();
         int i = 0;
-        for (final Map<String, String> values : _values) {
-            for (final Entry<String, String> entry : values.entrySet()) {
-                ret.append(getSetFieldValue(i, entry.getKey(), entry.getValue(), _nonEscapeFields == null ? true
+        for (final Map<String, Object> values : _values) {
+            for (final Entry<String, Object> entry : values.entrySet()) {
+                final String value;
+                final String label;
+                if (entry.getValue() instanceof String[] && ((String[]) entry.getValue()).length == 2) {
+                    value = ((String[]) entry.getValue())[0];
+                    label = ((String[]) entry.getValue())[1];
+                } else {
+                    value = String.valueOf(entry.getValue());
+                    label = null;
+                }
+
+                ret.append(getSetFieldValue(i, entry.getKey(), value, label, _nonEscapeFields == null ? true
                                 : !_nonEscapeFields.contains(entry.getKey()))).append("\n");
             }
             i++;
         }
         return ret;
     }
-
 
     /**
      * Get a "eFapsSetFieldValue" Javascript line.
@@ -517,7 +526,24 @@ public abstract class CommonDocument_Base
                                              final String _fieldName,
                                              final String _value)
     {
-        return getSetFieldValue(_idx, _fieldName, _value, true);
+        return getSetFieldValue(_idx, _fieldName, _value, null, true);
+    }
+
+
+    /**
+     * Get a "eFapsSetFieldValue" Javascript line.
+     * @param _idx          index of the field
+     * @param _fieldName    name of the field
+     * @param _value        value of the field
+     * @param _label        visible value (label) of the field
+     * @return StringBuilder
+     */
+    protected StringBuilder getSetFieldValue(final int _idx,
+                                             final String _fieldName,
+                                             final String _value,
+                                             final String _label)
+    {
+        return getSetFieldValue(_idx, _fieldName, _value, _label, true);
     }
 
     /**
@@ -531,6 +557,7 @@ public abstract class CommonDocument_Base
     protected StringBuilder getSetFieldValue(final int _idx,
                                              final String _fieldName,
                                              final String _value,
+                                             final String _label,
                                              final boolean _escape)
     {
         final StringBuilder ret = new StringBuilder();
@@ -539,6 +566,13 @@ public abstract class CommonDocument_Base
             ret.append("'").append(StringEscapeUtils.escapeEcmaScript(_value)).append("'");
         } else {
             ret.append(_value);
+        }
+        if (_label != null) {
+            if (_escape) {
+                ret.append(",'").append(StringEscapeUtils.escapeEcmaScript(_label)).append("'");
+            } else {
+                ret.append(",").append(_label);
+            }
         }
         ret.append(");");
         return ret;
