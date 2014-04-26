@@ -319,16 +319,16 @@ public abstract class CommonDocument_Base
         ret.append("require([\"dojo/_base/lang\",\"dojo/dom\", \"dojo/dom-construct\",")
                 .append("\"dojo/query\",\"dojo/NodeList-traverse\", \"dojo/NodeList-dom\"],")
                 .append(" function(lang, dom, domConstruct, query){\n")
-            .append("  tableName = \"").append(_tableName).append("\";\n")
+            .append("  var tN = \"").append(_tableName).append("\";\n")
             .append("  for (i = 100;i < 10000; i = i + 100) {\n")
             .append("    if( lang.exists(\"eFapsTable\" + i) ){\n")
             .append("      var tO = window[\"eFapsTable\" + i];\n")
-            .append("      if (tO.tableName == tableName) {\n")
-            .append("        tableBody = dom.byId(tO.bodyID);\n")
-            .append("        query(\".eFapsTableRemoveRowCell\", tableBody).parent().forEach(domConstruct.destroy);\n");
+            .append("      if (tO.tableName == tN) {\n")
+            .append("         var tB = dom.byId(tO.bodyID);\n")
+            .append("        query(\".eFapsTableRemoveRowCell\", tB).parent().forEach(domConstruct.destroy);\n");
 
         if (_makeUneditable) {
-            ret.append("        query(\"div\", tableBody).style(\"display\", \"none\");");
+            ret.append("        query(\"div\", tB).style(\"display\", \"none\");");
         }
 
         ret.append("      }\n")
