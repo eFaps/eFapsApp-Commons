@@ -74,6 +74,8 @@ import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -86,10 +88,15 @@ import org.jfree.util.Log;
 public abstract class CommonDocument_Base
     extends AbstractCommon
 {
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(CommonDocument.class);
 
     /**
      * @param _parameter Parameter as passed by the eFasp API
      * @return scale corrected BigDecimal
+     * @throws EFapsException on error
      */
     public Return setScale4ReadValue(final Parameter _parameter)
         throws EFapsException
@@ -111,7 +118,7 @@ public abstract class CommonDocument_Base
                     formatter = NumberFormatter.get().getFrmt4Quantity(type.getName());
                 } else if ("unit".equalsIgnoreCase(frmtKey)) {
                     formatter = NumberFormatter.get().getFrmt4UnitPrice(type.getName());
-                } else if (frmtKey != null){
+                } else if (frmtKey != null) {
                     formatter = NumberFormatter.get().getFrmt4Key(type.getName(), frmtKey);
                 } else {
                     formatter = NumberFormatter.get().getFormatter();
@@ -551,6 +558,7 @@ public abstract class CommonDocument_Base
      * @param _idx          index of the field
      * @param _fieldName    name of the field
      * @param _value        value
+     * @param _label        shown value
      * @param _escape       must the value be escaped
      * @return StringBuilder
      */
@@ -812,6 +820,12 @@ public abstract class CommonDocument_Base
     }
 
 
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _createdDoc   document created
+     * @return the created file
+     * @throws EFapsException on error
+     */
     protected File createReport(final Parameter _parameter,
                                 final CreatedDoc _createdDoc)
         throws EFapsException
@@ -907,7 +921,13 @@ public abstract class CommonDocument_Base
         return ret;
     }
 
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return new Name
+     * @throws EFapsException on error
+     */
     public Return getJavaScript4EditMassiveTable(final Parameter _parameter)
+        throws EFapsException
     {
         final Return retVal = new Return();
         retVal.put(ReturnValues.SNIPLETT,
@@ -951,6 +971,74 @@ public abstract class CommonDocument_Base
     protected void add2ProcessMap(final Parameter _parameter,
                                   final CreatedDoc _createdDoc,
                                   final Map<String, Object> _params)
+        throws EFapsException
+    {
+
+    }
+
+    /**
+     * Add additional values to the map passed to the process prior to
+     * execution.
+     *
+     * @param _parameter Parameter as passed by the eFasp API
+     * @param _createdDoc CreatedDoc the process must be executed for
+     * @throws EFapsException on error
+     */
+    public void connect2Object(final Parameter _parameter,
+                               final CreatedDoc _createdDoc)
+        throws EFapsException
+    {
+        final Map<Integer, String> connectTypes = analyseProperty(_parameter, "ConnectType");
+        if (!connectTypes.isEmpty()) {
+            final Map<Integer, String> currentLinks = analyseProperty(_parameter, "ConnectCurrentLink");
+            final Map<Integer, String> foreignLinks = analyseProperty(_parameter, "ConnectForeignLink");
+            final Map<Integer, String> foreignFields = analyseProperty(_parameter, "ConnectForeignField");
+            // all must be of the same size
+            if (connectTypes.size() == currentLinks.size() && foreignLinks.size() == foreignFields.size()
+                            && connectTypes.size() == foreignLinks.size()) {
+                for (final Entry<Integer, String> entry: connectTypes.entrySet()) {
+                    final String[] foreigns = _parameter.getParameterValues(foreignFields.get(entry.getKey()));
+                    if (foreigns != null) {
+                        for (final String foreign : foreigns) {
+                            if (!foreign.isEmpty()) {
+                                final String typeStr = entry.getValue();
+                                Insert insert;
+                                if (isUUID(typeStr)) {
+                                    insert = new Insert(UUID.fromString(typeStr));
+                                } else {
+                                    insert = new Insert(typeStr);
+                                }
+                                insert.add(currentLinks.get(entry.getKey()), _createdDoc.getInstance());
+
+                                final Instance inst = Instance.get(foreign);
+                                if (inst.isValid()) {
+                                    insert.add(foreignLinks.get(entry.getKey()), inst);
+                                } else {
+                                    insert.add(foreignLinks.get(entry.getKey()), foreign);
+                                }
+                                add2connect2Object(_parameter, _createdDoc, insert);
+                                insert.execute();
+                            }
+                        }
+                    }
+                }
+            } else {
+                CommonDocument_Base.LOG.error("The properties must be of the same size!");
+            }
+        }
+    }
+
+    /**
+     * Add additional values to the Update generated by connect definition.
+     *
+     * @param _parameter    Parameter as passed by the eFasp API
+     * @param _createdDoc   CreatedDoc the process must be executed for
+     * @param _update       update 2 add to
+     * @throws EFapsException on error
+     */
+    protected void add2connect2Object(final Parameter _parameter,
+                                      final CreatedDoc _createdDoc,
+                                      final Update _update)
         throws EFapsException
     {
 
