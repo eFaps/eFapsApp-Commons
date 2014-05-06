@@ -38,6 +38,14 @@ public interface IWarning
 {
     /**
      * @return the message shown to the User
+     *  @throws EFapsException on error
      */
     String getMessage() throws EFapsException;
+
+    /**
+     * If set to true the warning dialog must not have the command to go along.
+     * @return true is it is an error, else false
+     * @throws EFapsException on error
+     */
+    boolean isError() throws EFapsException;
 }

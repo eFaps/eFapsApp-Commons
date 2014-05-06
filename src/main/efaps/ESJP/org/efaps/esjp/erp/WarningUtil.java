@@ -47,4 +47,10 @@ public class WarningUtil
     {
         return WarningUtil_Base.getHtml4Warning(_warnings);
     }
+
+    public static boolean hasError(final List<IWarning> _warnings)
+        throws EFapsException
+    {
+        return WarningUtil_Base.hasError(_warnings);
+    }
 }

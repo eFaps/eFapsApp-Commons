@@ -22,6 +22,8 @@
 package org.efaps.esjp.erp;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.efaps.admin.dbproperty.DBProperties;
@@ -42,7 +44,9 @@ public abstract class WarningUtil_Base
 {
 
     /**
-     * @param _warnings
+     * @param _warnings warnings to be rendered as Html
+     * @return StringBUildr containing the html
+     * @throws EFapsException on error
      */
     public static StringBuilder getHtml4Warning(final List<IWarning> _warnings)
         throws EFapsException
@@ -59,6 +63,21 @@ public abstract class WarningUtil_Base
             }
         }
         if (!posWarnings.isEmpty()) {
+            Collections.sort(posWarnings, new Comparator<IPositionWarning>()
+            {
+                @Override
+                public int compare(final IPositionWarning _o1,
+                                   final IPositionWarning _o2)
+                {
+                    int ret = 0;
+                    try {
+                        ret = Integer.valueOf(_o1.getPosition()).compareTo(Integer.valueOf(_o2.getPosition()));
+                    } catch (final EFapsException e) {
+                        e.printStackTrace();
+                    }
+                    return ret;
+                }
+            });
             html.append("<table class=\"eFapsWarningTable\">").append("<tr><th>")
                 .append(DBProperties.getProperty(WarningUtil.class.getName() + ".Header.Row"))
                 .append("</th><th>")
@@ -74,4 +93,21 @@ public abstract class WarningUtil_Base
         return html;
     }
 
+    /**
+     * @param _warnings warnings to be rendered as Html
+     * @return StringBUildr containing the html
+     * @throws EFapsException on error
+     */
+    public static boolean hasError(final List<IWarning> _warnings)
+        throws EFapsException
+    {
+        boolean ret = false;
+        for (final IWarning warning : _warnings) {
+            if (warning.isError()) {
+                ret = true;
+                break;
+            }
+        }
+        return ret;
+    }
 }

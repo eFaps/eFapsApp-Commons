@@ -48,6 +48,8 @@ public abstract class AbstractWarning_Base
 
     private String key;
 
+    private boolean error = false;
+
     /**
      * {@inheritDoc}
      */
@@ -115,6 +117,28 @@ public abstract class AbstractWarning_Base
     public IWarning setKey(final String _key)
     {
         this.key = _key;
+        return this;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #error}.
+     *
+     * @return value of instance variable {@link #error}
+     */
+    public boolean isError()
+    {
+        return this.error;
+    }
+
+    /**
+     * Setter method for instance variable {@link #error}.
+     *
+     * @param _error value for instance variable {@link #error}
+     * @return this for chaining
+     */
+    public IWarning setError(final boolean _error)
+    {
+        this.error = _error;
         return this;
     }
 }
