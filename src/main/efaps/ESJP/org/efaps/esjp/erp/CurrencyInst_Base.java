@@ -75,6 +75,11 @@ public class CurrencyInst_Base
     private UUID uuid;
 
     /**
+     * ISOCode of this Currency.
+     */
+    private String ISOCode;
+
+    /**
      * Constructor when used as instance object. to access parameters from a
      * currency.
      *
@@ -118,12 +123,14 @@ public class CurrencyInst_Base
     {
         if (!this.initialized) {
             final PrintQuery print = new CachedPrintQuery(this.instance).setLifespan(1).setLifespanUnit(TimeUnit.HOURS);
-            print.addAttribute(CIERP.Currency.Symbol, CIERP.Currency.Name, CIERP.Currency.Invert, CIERP.Currency.UUID);
+            print.addAttribute(CIERP.Currency.Symbol, CIERP.Currency.Name, CIERP.Currency.Invert, CIERP.Currency.UUID,
+                            CIERP.Currency.ISOCode);
             print.execute();
             this.symbol = print.<String>getAttribute(CIERP.Currency.Symbol);
             this.name = print.<String>getAttribute(CIERP.Currency.Name);
             this.invert = print.<Boolean>getAttribute(CIERP.Currency.Invert);
             this.uuid = UUID.fromString(print.<String>getAttribute(CIERP.Currency.UUID));
+            this.ISOCode =  print.<String>getAttribute(CIERP.Currency.ISOCode);
             this.initialized = true;
         }
     }
@@ -228,6 +235,29 @@ public class CurrencyInst_Base
     public void setUUID(final UUID _uuid)
     {
         this.uuid = _uuid;
+    }
+
+    /**
+     * Getter method for the instance variable {@link #iSOCode}.
+     *
+     * @return value of instance variable {@link #iSOCode}
+     *  @throws EFapsException on error
+     */
+    public String getISOCode()
+        throws EFapsException
+    {
+        initialize();
+        return this.ISOCode;
+    }
+
+    /**
+     * Setter method for instance variable {@link #iSOCode}.
+     *
+     * @param _iSOCode value for instance variable {@link #iSOCode}
+     */
+    public void setISOCode(final String _iSOCode)
+    {
+        this.ISOCode = _iSOCode;
     }
 
     @Override
