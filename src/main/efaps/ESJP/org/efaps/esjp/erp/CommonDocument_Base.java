@@ -681,13 +681,24 @@ public abstract class CommonDocument_Base
         throws EFapsException
     {
         final StringBuilder js = new StringBuilder()
-            .append("require([\"dojo/query\", \"dojo/NodeList-dom\"], function(query) {\n");
-
+            .append("require([\"dojo/query\", \"dijit/registry\",\"efaps/AutoComplete\",\"dojo/NodeList-dom\"],")
+            .append(" function(query, registry, AutoComplete) {\n");
         for (final String field : _field) {
             js.append("var nl = query(\" input[name='").append(field).append("'], textarea[name='")
                 .append(field).append("']\");");
             if (_idx == null) {
-                js.append("nl.forEach(\"item.readOnly = true;\");\n");
+                js.append("nl.forEach(function(node){")
+                    .append("if (node.type===\"hidden\") {")
+                    .append("var pW = registry.getEnclosingWidget(node);")
+                    .append("if (typeof(pW) !== \"undefined\") {")
+                    .append("if (pW.isInstanceOf(AutoComplete)) {")
+                    .append("pW.set('readOnly', true);")
+                    .append("}")
+                    .append("}")
+                    .append("} else {")
+                    .append("node.readOnly = true;")
+                    .append("}")
+                    .append("});\n");
             } else {
                 js.append("if (nl[").append(_idx).append("]!=undefined) {")
                     .append("nl[").append(_idx).append("].readOnly = true;")
