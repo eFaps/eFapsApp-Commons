@@ -28,12 +28,12 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.efaps.admin.event.Parameter;
+import org.efaps.admin.program.esjp.EFapsListener;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
 import org.efaps.esjp.admin.common.IReloadCacheListener;
-import org.efaps.esjp.admin.common.ReloadCache_Base;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
@@ -47,6 +47,7 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("999443c8-8f9f-47be-aad1-974a1b09421b")
 @EFapsRevision("$Rev$")
+@EFapsListener
 public final class NumberFormatter
     implements IReloadCacheListener
 {
@@ -253,7 +254,6 @@ public final class NumberFormatter
     {
         if (NumberFormatter.FORMATTER == null) {
             NumberFormatter.FORMATTER = new NumberFormatter();
-            ReloadCache_Base.addListener(NumberFormatter.FORMATTER);
         }
         return NumberFormatter.FORMATTER;
     }
@@ -274,5 +274,11 @@ public final class NumberFormatter
     public void onReloadCache(final Parameter _parameter)
     {
         NumberFormatter.FORMATTER.key2formatter.clear();
+    }
+
+    @Override
+    public int getWeight()
+    {
+        return 0;
     }
 }
