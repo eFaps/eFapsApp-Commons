@@ -69,6 +69,7 @@ import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.jasperreport.StandartReport;
 import org.efaps.esjp.common.uiform.Create;
+import org.efaps.esjp.common.util.InterfaceUtils;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
@@ -780,7 +781,6 @@ public abstract class CommonDocument_Base
         }
     }
 
-
     /**
      * @param _parameter    Parameter as passed by the eFaps API
      * @param _update       insert to add to
@@ -1055,6 +1055,16 @@ public abstract class CommonDocument_Base
 
     }
 
+    /**
+     * Method to evaluate the selected row.
+     *
+     * @param _parameter paaremter
+     * @return number of selected row.
+     */
+    public int getSelectedRow(final Parameter _parameter)
+    {
+         return InterfaceUtils.getSelectedRow(_parameter);
+    }
 
     /**
      * Class is used as the return value for the internal Create methods.
