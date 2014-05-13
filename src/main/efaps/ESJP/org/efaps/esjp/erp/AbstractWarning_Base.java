@@ -96,6 +96,19 @@ public abstract class AbstractWarning_Base
     }
 
     /**
+     * Getter method for the instance variable {@link #objects}.
+     *
+     * @return value of instance variable {@link #objects}
+     */
+    public IWarning addObject(final Object... _objects)
+    {
+        for (final Object object : _objects) {
+            this.objects.add(object);
+        }
+        return this;
+    }
+
+    /**
      * Getter method for the instance variable {@link #key}.
      *
      * @return value of instance variable {@link #key}
