@@ -71,4 +71,10 @@ public interface ERPSettings
      * Set Formatting information for rates.
      */
     String RATEFRMT = "org.efaps.commons.RateFormatter";
+
+    /**
+     * Properties. Can be concatenated.<br/>
+     * TYPENAME.Status
+     */
+    String DOCSTATUSCREATE = "org.efaps.commons.DocumentStatus4Create";
 }

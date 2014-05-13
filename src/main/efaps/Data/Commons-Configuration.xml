@@ -99,5 +99,9 @@ Sales_DocumentAbstract.Frmt4Discount=#,##0.00
             <description>Properties.
                Can be concatenated Set a JasperReport.</description>
          </attribute>
+         <attribute>
+            <key>org.efaps.commons.DocumentStatus4Create</key>
+            <value>Sales_IncomingInvoice.Status=Digitized</value>
+         </attribute>
     </definition>
 </common-systemconfiguration>

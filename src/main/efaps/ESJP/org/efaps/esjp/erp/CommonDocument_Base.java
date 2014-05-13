@@ -769,15 +769,27 @@ public abstract class CommonDocument_Base
                                        final CreatedDoc _createdDoc)
         throws EFapsException
     {
-        final Map<?, ?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-
         Status status = null;
-        if (props.containsKey("StatusGroup")) {
-            status = Status.find((String) props.get("StatusGroup"), (String) props.get("Status"));
+        // first check if set via properties
+        final List<Status> statusList = getStatusListFromProperties(_parameter);
+        if (!statusList.isEmpty()) {
+            status = statusList.get(0);
         }
 
+        // if not set via properties lookup the SystemConfiguration
+        if (status == null) {
+            final Properties properties = ERP.getSysConfig().getAttributeValueAsProperties(ERPSettings.DOCSTATUSCREATE,
+                            true);
+            final Type type = getType4DocCreate(_parameter);
+            if (type != null) {
+                final String key = properties.getProperty(type.getName() + ".Status");
+                if (key != null) {
+                    status = Status.find(type.getStatusAttribute().getLink().getUUID(), key);
+                }
+            }
+        }
         if (status != null) {
-            _insert.add(getType4DocCreate(_parameter).getStatusAttribute(), status.getId());
+            _insert.add(getType4DocCreate(_parameter).getStatusAttribute(), status);
         }
     }
 
