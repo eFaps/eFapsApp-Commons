@@ -90,6 +90,17 @@ public abstract class WarningUtil_Base
             }
             html.append("</table>");
         }
+        if (!msgWarnings.isEmpty()) {
+            html.append("<table class=\"eFapsMsgWarningTable\">").append("<tr><th>")
+                .append(DBProperties.getProperty(WarningUtil.class.getName() + ".Header.Msg"))
+                .append("</th></tr>");
+            for (final IWarning warning : msgWarnings) {
+                html.append("<tr><td>")
+                    .append(warning.getMessage())
+                    .append("</td></tr>");
+            }
+            html.append("</table>");
+        }
         return html;
     }
 
