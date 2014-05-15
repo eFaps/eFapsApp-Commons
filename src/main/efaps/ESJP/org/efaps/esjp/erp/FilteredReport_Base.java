@@ -20,15 +20,21 @@
 
 package org.efaps.esjp.erp;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.DateTimeUI;
 import org.efaps.admin.datamodel.ui.DateUI;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -36,10 +42,13 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.esjp.common.AbstractCommon;
+import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
+import org.efaps.esjp.common.uiform.Field_Base.ListType;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.util.FilterDefault;
 import org.efaps.util.EFapsException;
@@ -78,8 +87,8 @@ public abstract class FilteredReport_Base
             final Map<Integer, String> defaults = analyseProperty(_parameter, "FilterDefault");
 
             for (final Entry<Integer, String> field : fields.entrySet()) {
-                filterMap.put(field.getValue(),
-                                getDefaultValue(_parameter, types.get(field.getKey()), defaults.get(field.getKey())));
+                filterMap.put(field.getValue(), getDefaultValue(_parameter, field.getValue(),
+                                types.get(field.getKey()), defaults.get(field.getKey())));
             }
         }
         return new Return();
@@ -93,8 +102,9 @@ public abstract class FilteredReport_Base
      * @return default value for the context map
      */
     protected Object getDefaultValue(final Parameter _parameter,
+                                     final String _field,
                                      final String _type,
-                                     final String _default)
+                                     final String _default) throws EFapsException
     {
         Object ret = null;
         if ("DateTime".equalsIgnoreCase(_type)) {
@@ -124,8 +134,12 @@ public abstract class FilteredReport_Base
                     break;
             }
             ret = tmp;
-        } else {
-            //TODO
+        } if ("Type".equalsIgnoreCase(_type)) {
+            if (isUUID(_default)) {
+                ret = new TypeFilterValue().setObject(Type.get(UUID.fromString(_default)).getId());
+            } else {
+                ret = new TypeFilterValue().setObject(Type.get(_default).getId());
+            }
         }
         return ret;
     }
@@ -170,6 +184,50 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
+    public Return getTypeFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final FieldValue fieldValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+        final Command cmd = (Command) _parameter.get(ParameterValues.CALL_CMD);
+        final String formStr = cmd.getProperty("FilterTargetForm");
+        final String fieldStr = cmd.getProperty("FilterTargetField");
+
+        final Form form = isUUID(formStr) ? Form.get(UUID.fromString(formStr)) : Form.get(formStr);
+        final Field field = form.getField(fieldStr);
+        final EventDefinition event = field.getEvents(EventType.UI_FIELD_VALUE).get(0);
+
+        final List<DropDownPosition> values = new ArrayList<DropDownPosition>();
+        if (event.getProperty("Type") != null) {
+            final Type type = isUUID(event.getProperty("Type")) ? Type.get(UUID.fromString(event.getProperty("Type")))
+                            : Type.get(event.getProperty("Type"));
+            values.add(new DropDownPosition(type.getId(), type.getLabel()));
+        }
+        for (int i = 1; i < 100; i++) {
+            final String nameTmp = "Type" + String.format("%02d", i);
+            if (event.getProperty(nameTmp) != null) {
+                final Type type = isUUID(event.getProperty(nameTmp)) ? Type.get(UUID.fromString(event
+                                .getProperty(nameTmp)))
+                                : Type.get(event.getProperty(nameTmp));
+                values.add(new DropDownPosition(type.getId(), type.getLabel()));
+            } else {
+                break;
+            }
+
+            final String key = fieldValue.getField().getName();
+            final Map<String, Object> map = getFilterMap(_parameter);
+            if (!map.containsKey(key)) {
+                map.put(key, new TypeFilterValue().setObject((Long) values.get(0).getValue()));
+            }
+            final FilterValue<?> selected = (FilterValue<?>) map.get(key);
+            for (final DropDownPosition pos : values) {
+                pos.setSelected(pos.getValue().equals(selected.getObject()));
+            }
+        }
+        return ret.put(ReturnValues.SNIPLETT,
+                        new org.efaps.esjp.common.uiform.Field().getInputField(_parameter, values, ListType.RADIO));
+    }
+
     /**
      * Get the filter map from the context.
      * @param _parameter Parameter as passed by the eFaps API
@@ -188,6 +246,9 @@ public abstract class FilteredReport_Base
         }
         return ret;
     }
+
+
+
 
     /**
      * Get the basic map from the context.
@@ -252,17 +313,30 @@ public abstract class FilteredReport_Base
         final AbstractCommand cmd = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
         final Form form = cmd.getTargetForm();
         for (final Field field : form.getFields()) {
-            final Object obj;
-            final String val = _parameter.getParameterValue(field.getName());
-            final IUIProvider uiProvider = field.getUIProvider();
-            if (uiProvider instanceof DateTimeUI || uiProvider instanceof DateUI) {
-                obj = new DateTime(val);
-            } else {
-                obj = val;
-            }
-            filter.put(field.getName(), obj);
+            filter.put(field.getName(), getFilterValue(_parameter, field));
         }
         return new Return();
+    }
+
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _field field teh valu eis wanted for
+     * @return object
+     */
+    protected Object getFilterValue(final Parameter _parameter,
+                                    final Field _field)
+    {
+        final Object obj;
+        final String val = _parameter.getParameterValue(_field.getName());
+        final IUIProvider uiProvider = _field.getUIProvider();
+        if (uiProvider instanceof DateTimeUI || uiProvider instanceof DateUI) {
+            obj = new DateTime(val);
+        } else if ("type".equals(_field.getName())) {
+            obj = new TypeFilterValue().setObject(Long.valueOf(val));
+        } else {
+            obj = val;
+        }
+        return obj;
     }
 
     /**
@@ -301,6 +375,8 @@ public abstract class FilteredReport_Base
                         if (valueTmp instanceof DateTime) {
                             value = ((DateTime) valueTmp).toString("dd/MM/yyyy",
                                             Context.getThreadContext().getLocale());
+                        } else if (valueTmp instanceof FilterValue) {
+                            value = ((FilterValue<?>) valueTmp).getLabel();
                         } else {
                             value = valueTmp.toString();
                         }
@@ -316,5 +392,50 @@ public abstract class FilteredReport_Base
         }
         ret.put(ReturnValues.SNIPLETT, html.toString());
         return ret;
+    }
+
+
+    public static abstract class FilterValue<T>
+    {
+
+        private T object;
+
+        public String getLabel()
+            throws EFapsException
+        {
+            return this.object.toString();
+        }
+
+        /**
+         * Getter method for the instance variable {@link #object}.
+         *
+         * @return value of instance variable {@link #object}
+         */
+        public T getObject()
+        {
+            return this.object;
+        }
+
+        /**
+         * Setter method for instance variable {@link #object}.
+         *
+         * @param _object value for instance variable {@link #object}
+         */
+        public FilterValue<T> setObject(final T _object)
+        {
+            this.object = _object;
+            return this;
+        }
+    }
+
+    public static class TypeFilterValue
+        extends FilterValue<Long>
+    {
+        @Override
+        public String getLabel()
+            throws EFapsException
+        {
+            return Type.get(getObject()).getLabel();
+        }
     }
 }
