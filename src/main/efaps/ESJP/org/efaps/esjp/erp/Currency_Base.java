@@ -228,12 +228,14 @@ public abstract class Currency_Base
                 final Object value = fieldValue.getValue();
                 if (value instanceof Object[]) {
                     final Object[] values = (Object[]) value;
-                    final CurrencyInst currencyInst = getCurrencyInst((Long) values[2]);
-                    if (currencyInst.isInvert()) {
-                        final Object enomTmp = values[0];
-                        values[0] = values[1];
-                        values[1] = enomTmp;
-                        ret.put(ReturnValues.TRUE, true);
+                    if ( values[2] != null) {
+                        final CurrencyInst currencyInst = getCurrencyInst((Long) values[2]);
+                        if (currencyInst.isInvert()) {
+                            final Object enomTmp = values[0];
+                            values[0] = values[1];
+                            values[1] = enomTmp;
+                            ret.put(ReturnValues.TRUE, true);
+                        }
                     }
                     ret.put(ReturnValues.VALUES, values);
                 }
