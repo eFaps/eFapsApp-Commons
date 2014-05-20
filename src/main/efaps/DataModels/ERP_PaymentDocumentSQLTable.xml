@@ -44,6 +44,7 @@
             <column name="RATEDENOM"       type="DECIMAL"       length="14" scale="6" />
             <column name="RATECURRENCYID"  type="INTEGER"/>
             <column name="CODE"            type="STRING_SHORT"  length="128" />
+            <column name="CONPOSID"        type="INTEGER"/>
             <foreign name="T_ERPPAY_FK_CURRENCYID" key="CURRENCYID"    reference="T_ERPCUR(ID)"/>
         </database>
     </definition>
