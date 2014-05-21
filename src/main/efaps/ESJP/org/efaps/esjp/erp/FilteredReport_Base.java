@@ -46,6 +46,8 @@ import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
+import org.efaps.db.PrintQuery;
 import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
 import org.efaps.esjp.common.uiform.Field_Base.ListType;
@@ -134,12 +136,14 @@ public abstract class FilteredReport_Base
                     break;
             }
             ret = tmp;
-        } if ("Type".equalsIgnoreCase(_type)) {
+        } else if ("Type".equalsIgnoreCase(_type)) {
             if (isUUID(_default)) {
                 ret = new TypeFilterValue().setObject(Type.get(UUID.fromString(_default)).getId());
             } else {
                 ret = new TypeFilterValue().setObject(Type.get(_default).getId());
             }
+        } else if ("Instance".equalsIgnoreCase(_type)) {
+            ret = new ContactFilterValue().setObject(Instance.get(_default));
         }
         return ret;
     }
@@ -159,6 +163,26 @@ public abstract class FilteredReport_Base
         final Map<String, Object> map = getFilterMap(_parameter);
         if (!map.containsKey(key)) {
             map.put(key, new DateTime());
+        }
+        ret.put(ReturnValues.VALUES, map.get(key));
+        return ret;
+    }
+
+    /**
+     * Get the fieldvalue for the from contact.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return value for the form
+     * @throws EFapsException on error
+     */
+    public Return getContactFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final FieldValue fieldValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+        final String key = fieldValue.getField().getName();
+        final Map<String, Object> map = getFilterMap(_parameter);
+        if (!map.containsKey(key)) {
+            map.put(key, "");
         }
         ret.put(ReturnValues.VALUES, map.get(key));
         return ret;
@@ -333,6 +357,8 @@ public abstract class FilteredReport_Base
             obj = new DateTime(val);
         } else if ("type".equals(_field.getName())) {
             obj = new TypeFilterValue().setObject(Long.valueOf(val));
+        } else if ("contact".equals(_field.getName())) {
+            obj = new ContactFilterValue().setObject(Instance.get(val));
         } else {
             obj = val;
         }
@@ -438,4 +464,27 @@ public abstract class FilteredReport_Base
             return Type.get(getObject()).getLabel();
         }
     }
+
+    public static class ContactFilterValue
+    extends FilterValue<Instance>
+{
+    @Override
+    public String getLabel()
+        throws EFapsException
+    {
+        String ret;
+        if (getObject().isValid()) {
+            final PrintQuery print = new PrintQuery(getObject());
+            print.addAttribute("Name");
+            print.execute();
+
+            ret = print.<String>getAttribute("Name");
+        } else {
+            ret = "";
+        }
+
+
+        return ret;
+    }
+}
 }
