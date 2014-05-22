@@ -20,6 +20,7 @@
 
 package org.efaps.esjp.erp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -423,7 +424,13 @@ public abstract class FilteredReport_Base
 
 
     public static abstract class FilterValue<T>
+        implements Serializable
     {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         private T object;
 
@@ -469,6 +476,11 @@ public abstract class FilteredReport_Base
     public static class ContactFilterValue
     extends FilterValue<Instance>
 {
+    /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
     @Override
     public String getLabel()
         throws EFapsException
