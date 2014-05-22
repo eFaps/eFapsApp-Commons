@@ -55,6 +55,7 @@ import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.util.FilterDefault;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 /**
  * TODO comment!
@@ -399,8 +400,8 @@ public abstract class FilteredReport_Base
                     final Object valueTmp = filters.get(entry.getValue());
                     if (valueTmp != null) {
                         if (valueTmp instanceof DateTime) {
-                            value = ((DateTime) valueTmp).toString("dd/MM/yyyy",
-                                            Context.getThreadContext().getLocale());
+                            value = ((DateTime) valueTmp).toString(DateTimeFormat.mediumDate().withLocale(
+                                            Context.getThreadContext().getLocale()));
                         } else if (valueTmp instanceof FilterValue) {
                             value = ((FilterValue<?>) valueTmp).getLabel();
                         } else {
