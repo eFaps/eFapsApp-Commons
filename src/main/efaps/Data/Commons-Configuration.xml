@@ -101,7 +101,10 @@ Sales_DocumentAbstract.Frmt4Discount=#,##0.00
          </attribute>
          <attribute>
             <key>org.efaps.commons.DocumentStatus4Create</key>
-            <value>Sales_IncomingInvoice.Status=Digitized</value>
+            <value><![CDATA[Sales_IncomingInvoice.Status=Digitized
+Sales_IncomingCreditNote.Status=Digitized
+Sales_IncomingReceipt.Status=Digitized
+Sales_IncomingReminder.Status=Digitized]]></value>
          </attribute>
     </definition>
 </common-systemconfiguration>
