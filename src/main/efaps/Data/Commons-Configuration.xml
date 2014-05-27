@@ -104,7 +104,11 @@ Sales_DocumentAbstract.Frmt4Discount=#,##0.00
             <value><![CDATA[Sales_IncomingInvoice.Status=Digitized
 Sales_IncomingCreditNote.Status=Digitized
 Sales_IncomingReceipt.Status=Digitized
-Sales_IncomingReminder.Status=Digitized]]></value>
+Sales_IncomingReminder.Status=Digitized
+Sales_InvoiceStatus.Status=Digitized
+Sales_CreditNote.Status=Digitized
+Sales_Receipt.Status=Digitized
+Sales_Reminder.Status=Digitized]]></value>
          </attribute>
     </definition>
 </common-systemconfiguration>
