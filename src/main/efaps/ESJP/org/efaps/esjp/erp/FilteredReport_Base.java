@@ -28,11 +28,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.ui.BooleanUI;
 import org.efaps.admin.datamodel.ui.DateTimeUI;
 import org.efaps.admin.datamodel.ui.DateUI;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.IUIProvider;
+import org.efaps.admin.datamodel.ui.UIValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -144,8 +147,10 @@ public abstract class FilteredReport_Base
             } else {
                 ret = new TypeFilterValue().setObject(Type.get(_default).getId());
             }
-        } else if ("Instance".equalsIgnoreCase(_type)) {
+        } else if ("Contact".equalsIgnoreCase(_type)) {
             ret = new ContactFilterValue().setObject(Instance.get(_default));
+        } else if ("Boolean".equalsIgnoreCase(_type)) {
+            ret = BooleanUtils.toBoolean(_default);
         }
         return ret;
     }
@@ -209,6 +214,35 @@ public abstract class FilteredReport_Base
         ret.put(ReturnValues.VALUES, map.get(key));
         return ret;
     }
+
+    /**
+     * Get the fieldvalue for the to dateField.
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return value for the form
+     * @throws EFapsException on error
+     */
+    public Return getBooleanFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final Object uiObject = _parameter.get(ParameterValues.UIOBJECT);
+        final String key ;
+        if (uiObject instanceof UIValue) {
+            final UIValue uiValue = (UIValue) uiObject;
+            key = uiValue.getField().getName();
+        } else {
+            final FieldValue fieldValue = (FieldValue) uiObject;
+            key = fieldValue.getField().getName();
+        }
+
+        final Map<String, Object> map = getFilterMap(_parameter);
+        if (!map.containsKey(key)) {
+            map.put(key, new Boolean(true));
+        }
+        ret.put(ReturnValues.VALUES, map.get(key));
+        return ret;
+    }
+
 
     public Return getTypeFieldValue(final Parameter _parameter)
         throws EFapsException
@@ -357,6 +391,8 @@ public abstract class FilteredReport_Base
         final IUIProvider uiProvider = _field.getUIProvider();
         if (uiProvider instanceof DateTimeUI || uiProvider instanceof DateUI) {
             obj = new DateTime(val);
+        } else if (uiProvider instanceof BooleanUI) {
+            obj = BooleanUtils.toBoolean(val);
         } else if ("type".equals(_field.getName())) {
             obj = new TypeFilterValue().setObject(Long.valueOf(val));
         } else if ("contact".equals(_field.getName())) {
@@ -403,6 +439,8 @@ public abstract class FilteredReport_Base
                         if (valueTmp instanceof DateTime) {
                             value = ((DateTime) valueTmp).toString(DateTimeFormat.mediumDate().withLocale(
                                             Context.getThreadContext().getLocale()));
+                        } else if (valueTmp instanceof Boolean) {
+                            value = DBProperties.getProperty(dBProperties.get(entry.getKey()) + "." + valueTmp);
                         } else if (valueTmp instanceof FilterValue) {
                             value = ((FilterValue<?>) valueTmp).getLabel();
                         } else {
