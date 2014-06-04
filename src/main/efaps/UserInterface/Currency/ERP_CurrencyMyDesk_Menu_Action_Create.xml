@@ -35,6 +35,10 @@
         <version-expression>(version==latest)</version-expression>
         <name>ERP_CurrencyMyDesk_Menu_Action_Create</name>
 
+        <access>
+            <role>ERP_CurrencyAdmin</role>
+        </access>
+
         <!-- target definitions -->
         <target>
             <form>ERP_CurrencyForm</form>

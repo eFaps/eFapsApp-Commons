@@ -35,6 +35,10 @@
         <version-expression>(version==latest)</version-expression>
         <name>ERP_CurrencyTree_Rate_Menu_Action_Delete</name>
 
+        <access>
+            <role>ERP_CurrencyAdmin</role>
+        </access>
+
         <!-- target definitions -->
         <target>
             <execute program="org.efaps.esjp.common.uitable.CommonDelete" />
