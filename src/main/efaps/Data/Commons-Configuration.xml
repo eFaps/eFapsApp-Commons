@@ -50,6 +50,7 @@
             Sales_PaymentSchedule=f1a20ea4-e7d8-4401-9b85-84b91c3119c3
             Sales_ServiceOrderOutbound=b9ca5585-87da-411d-9b26-2a8bc090373e
             Sales_ComparativeDocProvider=d7de1a94-fa29-4c4e-8468-5fb6fd6d8565
+            Sales_ServiceRequest=56c05868-0110-49b7-9282-c14749b949c4
             </value>
     <description>Properties.
     can be concatenated
