@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -936,8 +937,21 @@ public abstract class CommonDocument_Base
             final Properties props = ERP.getSysConfig()
                             .getAttributeValueAsProperties(ERPSettings.NUMBERGENERATOR, true);
             final String uuid = props.getProperty(type.getName());
+
+            Date date = null;
+            for (int i = 1; i < 10; i++) {
+                final String params = props.getProperty(type.getName() + ".Parameter" + String.format("%02d", i));
+                if ("date".equalsIgnoreCase(params)) {
+                    date = new Date();
+                }
+            }
+
             final NumberGenerator numGen = NumberGenerator.get(UUID.fromString(uuid));
-            ret = numGen.getNextVal();
+            if (date != null) {
+                ret = numGen.getNextVal(date);
+            } else {
+                ret = numGen.getNextVal();
+            }
         } else {
             ret = _parameter.getParameterValue(getFieldName4Attribute(_parameter, CIERP.DocumentAbstract.Name.name));
         }
