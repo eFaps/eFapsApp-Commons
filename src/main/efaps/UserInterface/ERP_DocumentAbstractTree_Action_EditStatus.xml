@@ -25,23 +25,16 @@
     <uuid>2d18b6f3-50af-4d2b-b3fa-37920a8d5243</uuid>
     <file-application>eFapsApp-Commons</file-application>
     <file-revision>$Rev$</file-revision>
+    <description>This form is used for Administration of Documents, to be able to ""rescue" document.</description>
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_DocumentAbstractTree_Action_EditStatus</name>
         <access>
             <role>Administration</role>
         </access>
-
         <target>
             <form>ERP_DocumentAbstract_EditStatusForm</form>
             <execute program="org.efaps.esjp.common.uiform.Edit"/>
-            <trigger program="org.efaps.esjp.admin.access.AccessCheck4UI"
-                method="check4Status"
-                name="Sales_IncomingInvoiceTree_Menu_Action_Edit.UI_ACCESSCHECK"
-                event="UI_ACCESSCHECK">
-                <property name="Check4CreateStatus">true</property>
-                <property name="Status">Open</property>
-             </trigger>
         </target>
         <property name="Target">modal</property>
         <property name="TargetMode">edit</property>
