@@ -27,7 +27,7 @@
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
     <uuid>69b412ed-0dbe-44fd-b54a-65edeaf10467</uuid>
-    <bundle name="eFapsApp-Commons" sequence="0" />
+    <bundle name="eFapsApp-Commons" sequence="1" />
     <resource>
         <type>Properties</type>
         <language></language>
