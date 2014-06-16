@@ -65,6 +65,15 @@ SaleRate=0.000000000000
 SaleRateUI=0.000</value>
             <description> Properties.Set Formatting information for rates.</description>
          </attribute>
+        <attribute>
+            <key>org.efaps.commons.RateInfo4Type</key>
+            <value>Sales_IncomingInvoice=sale
+Sales_IncomingReceipt=sale
+Sales_IncomingCreditNote=sale
+Sales_IncomingReminder=sale
+</value>
+            <description> Properties for rateInfo.</description>
+         </attribute>
          <attribute>
             <key>org.efaps.commons.NumberFormatter</key>
             <value>Sales_DocumentAbstract.Frmt4UnitPrice=#,##0.00

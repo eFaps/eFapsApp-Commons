@@ -73,6 +73,12 @@ public interface ERPSettings
     String RATEFRMT = "org.efaps.commons.RateFormatter";
 
     /**
+     * Properties.<br/>
+     * Set Info information for rates.
+     */
+    String RATEINFO = "org.efaps.commons.RateInfo4Type";
+
+    /**
      * Properties. Can be concatenated.<br/>
      * TYPENAME.Status
      */

@@ -958,6 +958,108 @@ public abstract class CommonDocument_Base
         return ret;
     }
 
+    protected Type getType4SysConf(final Parameter _parameter)
+        throws EFapsException
+    {
+        return CIERP.DocumentAbstract.getType();
+    }
+
+    /**
+     * Get the name for the document on creation.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return new Name
+     * @throws EFapsException on error
+     */
+    protected BigDecimal getRate(final Parameter _parameter,
+                                   final RateInfo _rateInfo)
+        throws EFapsException
+    {
+        BigDecimal ret;
+        final Type type = getType4SysConf(_parameter);
+        final Properties props = ERP.getSysConfig()
+                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
+        final String rate = props.getProperty(type.getName(), "buy");
+        if (rate.equalsIgnoreCase("sale")) {
+            ret = _rateInfo.getSaleRate();
+        } else {
+            ret = _rateInfo.getRate();
+        }
+        return ret;
+    }
+
+    /**
+     * Get the name for the document on creation.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return new Name
+     * @throws EFapsException on error
+     */
+    protected String getRateFrmt(final Parameter _parameter,
+                                   final RateInfo _rateInfo)
+        throws EFapsException
+    {
+        String ret;
+        final Type type = getType4SysConf(_parameter);
+        final Properties props = ERP.getSysConfig()
+                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
+        final String rate = props.getProperty(type.getName(), "buy");
+        if (rate.equalsIgnoreCase("sale")) {
+            ret = _rateInfo.getSaleRateFrmt();
+        } else {
+            ret = _rateInfo.getRateFrmt();
+        }
+        return ret;
+    }
+
+    /**
+     * Get the name for the document on creation.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return new Name
+     * @throws EFapsException on error
+     */
+    protected BigDecimal getRateUI(final Parameter _parameter,
+                                   final RateInfo _rateInfo)
+        throws EFapsException
+    {
+        BigDecimal ret;
+        final Type type = getType4SysConf(_parameter);
+        final Properties props = ERP.getSysConfig()
+                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
+        final String rate = props.getProperty(type.getName(), "buy");
+        if (rate.equalsIgnoreCase("sale")) {
+            ret = _rateInfo.getSaleRateUI();
+        } else {
+            ret = _rateInfo.getRateUI();
+        }
+        return ret;
+    }
+
+    /**
+     * Get the name for the document on creation.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return new Name
+     * @throws EFapsException on error
+     */
+    protected String getRateUIFrmt(final Parameter _parameter,
+                                   final RateInfo _rateInfo)
+        throws EFapsException
+    {
+        String ret;
+        final Type type = getType4SysConf(_parameter);
+        final Properties props = ERP.getSysConfig()
+                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
+        final String rate = props.getProperty(type.getName(), "buy");
+        if (rate.equalsIgnoreCase("sale")) {
+            ret = _rateInfo.getSaleRateUIFrmt();
+        } else {
+            ret = _rateInfo.getRateUIFrmt();
+        }
+        return ret;
+    }
+
     /**
      * @param _parameter Parameter as passed by the eFaps API
      * @return new Name
