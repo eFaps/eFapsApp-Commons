@@ -28,6 +28,17 @@
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_DocumentAbstract_EditStatusForm</name>
+        <field name="warning">
+            <property name="ModeEdit">READONLY</property>
+            <property name="HideLabel">true</property>
+            <property name="ClassNameUI">org.efaps.admin.datamodel.ui.StringUI</property>
+            <trigger program="org.efaps.esjp.common.uiform.Field"
+                method="getDBPropertiesFieldValue"
+                name="ERP_DocumentAbstract_EditStatusForm.warning.UI_FIELD_VALUE"
+                event="UI_FIELD_VALUE">
+                <property name="DBProperty">ERP_DocumentAbstract_EditStatusForm.warning</property>
+            </trigger>
+        </field>
         <field name="status">
             <property name="ModeEdit">EDITABLE</property>
             <property name="Label">ERP_DocumentAbstract_EditStatusForm.status.Label</property>
