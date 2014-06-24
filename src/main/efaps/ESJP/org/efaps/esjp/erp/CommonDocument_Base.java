@@ -863,6 +863,7 @@ public abstract class CommonDocument_Base
                 final String fileName = DBProperties.getProperty(_createdDoc.getInstance().getType().getLabelKey(),
                                 "es") + "_" + _createdDoc.getValue(CIERP.DocumentAbstract.Name.name);
                 report.setFileName(fileName);
+                add2Report(_parameter, _createdDoc, report);
                 ret = report.getFile(_parameter);
                 final InputStream input = new FileInputStream(ret);
                 final Checkin checkin = new Checkin(_createdDoc.getInstance());
@@ -873,6 +874,21 @@ public abstract class CommonDocument_Base
             }
         }
         return ret;
+    }
+
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _createdDoc   document created
+     * @param _report report
+     * @return the created file
+     * @throws EFapsException on error
+     */
+    protected void add2Report(final Parameter _parameter,
+                              final CreatedDoc _createdDoc,
+                              final StandartReport _report)
+        throws EFapsException
+    {
+        // to be used by implementation
     }
 
     /**
@@ -1097,7 +1113,6 @@ public abstract class CommonDocument_Base
         create.executeProcess(_parameter, _createdDoc.getInstance());
     }
 
-
     /**
      * Add additional values to the map passed to the process prior to
      * execution.
@@ -1112,7 +1127,48 @@ public abstract class CommonDocument_Base
                                   final Map<String, Object> _params)
         throws EFapsException
     {
+        // to be used by implementation
+    }
 
+    /**
+     * To start a process on trigger.
+     * @param _parameter Parameter as passed from the eFaps API.
+     * @param _createdDoc CreatedDoc the process must be executed for
+     * @throws EFapsException on error
+     */
+    public void executeProcess(final Parameter _parameter,
+                               final Instance _instance)
+        throws EFapsException
+    {
+        final Create create = new Create()
+        {
+            @Override
+            protected void add2ProcessMap(final Parameter _parameter,
+                                          final Instance _instance,
+                                          final Map<String, Object> _params)
+                throws EFapsException
+            {
+                CommonDocument_Base.this.add2ProcessMap(_parameter, _instance, _params);
+            }
+        };
+        create.executeProcess(_parameter, _instance);
+    }
+
+    /**
+     * Add additional values to the map passed to the process prior to
+     * execution.
+     *
+     * @param _parameter Parameter as passed by the eFasp API
+     * @param _createdDoc CreatedDoc the process must be executed for
+     * @param _params Map passed to the Process
+     * @throws EFapsException on error
+     */
+    protected void add2ProcessMap(final Parameter _parameter,
+                                  final Instance _instance,
+                                  final Map<String, Object> _params)
+        throws EFapsException
+    {
+        // to be used by implementation
     }
 
     /**
