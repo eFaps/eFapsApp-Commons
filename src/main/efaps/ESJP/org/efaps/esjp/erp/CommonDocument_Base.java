@@ -64,6 +64,7 @@ import org.efaps.db.Checkin;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
+import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIERP;
@@ -860,8 +861,15 @@ public abstract class CommonDocument_Base
             try {
                 final StandartReport report = new StandartReport();
                 _parameter.put(ParameterValues.INSTANCE, _createdDoc.getInstance());
+                String name = (String) _createdDoc.getValue(CIERP.DocumentAbstract.Name.name);
+                if (name == null) {
+                    final PrintQuery print = new PrintQuery(_createdDoc.getInstance());
+                    print.addAttribute(CIERP.DocumentAbstract.Name);
+                    print.execute();
+                    name = print.getAttribute(CIERP.DocumentAbstract.Name);
+                }
                 final String fileName = DBProperties.getProperty(_createdDoc.getInstance().getType().getLabelKey(),
-                                "es") + "_" + _createdDoc.getValue(CIERP.DocumentAbstract.Name.name);
+                                "es") + "_" + name;
                 report.setFileName(fileName);
                 add2Report(_parameter, _createdDoc, report);
                 ret = report.getFile(_parameter);
@@ -869,8 +877,7 @@ public abstract class CommonDocument_Base
                 final Checkin checkin = new Checkin(_createdDoc.getInstance());
                 checkin.execute(fileName + "." + properties.get("Mime"), input, ((Long) ret.length()).intValue());
             } catch (final FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                CommonDocument_Base.LOG.error("Catched FileNotFoundException", e);
             }
         }
         return ret;
