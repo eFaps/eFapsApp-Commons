@@ -51,6 +51,7 @@
             Sales_ServiceOrderOutbound=b9ca5585-87da-411d-9b26-2a8bc090373e
             Sales_ComparativeDocProvider=d7de1a94-fa29-4c4e-8468-5fb6fd6d8565
             Sales_ServiceRequest=56c05868-0110-49b7-9282-c14749b949c4
+            Fabrication_Process=7ae35ddb-473e-41b4-aaf5-02ace7ec4a6d
             </value>
     <description>Properties.
     can be concatenated
