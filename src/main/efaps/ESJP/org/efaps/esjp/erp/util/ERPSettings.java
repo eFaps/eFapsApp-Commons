@@ -36,13 +36,6 @@ import org.efaps.admin.program.esjp.EFapsUUID;
 public interface ERPSettings
 {
     /**
-     * Properties.<br/>
-     * Can be concatenated.<br/>
-     * Set a NumberGenerator for a Type. Used for Common Documents.
-     */
-    String NUMBERGENERATOR = "org.efaps.erp.NumberGenerator4Type";
-
-    /**
      * String with the name of the selected company.
      */
     String COMPANYNAME = "org.efaps.commons.CompanyName";
@@ -51,6 +44,12 @@ public interface ERPSettings
      * String with the tax number of the selected company.
      */
     String COMPANYTAX = "org.efaps.commons.CompanyTaxNumber";
+
+    /**
+     * Properties. Can be concatenated.<br/>
+     * TYPENAME.Status
+     */
+    String DOCSTATUSCREATE = "org.efaps.commons.DocumentStatus4Create";
 
     /**
      * Properties.<br/>
@@ -68,6 +67,13 @@ public interface ERPSettings
 
     /**
      * Properties.<br/>
+     * Can be concatenated.<br/>
+     * Set a NumberGenerator for a Type. Used for Common Documents.
+     */
+    String NUMBERGENERATOR = "org.efaps.erp.NumberGenerators";
+
+    /**
+     * Properties.<br/>
      * Set Formatting information for rates.
      */
     String RATEFRMT = "org.efaps.commons.RateFormatter";
@@ -77,10 +83,4 @@ public interface ERPSettings
      * Set Info information for rates.
      */
     String RATEINFO = "org.efaps.commons.RateInfo4Type";
-
-    /**
-     * Properties. Can be concatenated.<br/>
-     * TYPENAME.Status
-     */
-    String DOCSTATUSCREATE = "org.efaps.commons.DocumentStatus4Create";
 }

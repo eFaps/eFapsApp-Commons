@@ -29,7 +29,6 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,6 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.efaps.admin.common.NumberGenerator;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Dimension.UoM;
@@ -887,7 +885,6 @@ public abstract class CommonDocument_Base
      * @param _parameter Parameter as passed by the eFaps API
      * @param _createdDoc   document created
      * @param _report report
-     * @return the created file
      * @throws EFapsException on error
      */
     protected void add2Report(final Parameter _parameter,
@@ -957,30 +954,18 @@ public abstract class CommonDocument_Base
         String ret;
         if (useNumGen) {
             final Type type = getType4DocCreate(_parameter);
-            final Properties props = ERP.getSysConfig()
-                            .getAttributeValueAsProperties(ERPSettings.NUMBERGENERATOR, true);
-            final String uuid = props.getProperty(type.getName());
-
-            Date date = null;
-            for (int i = 1; i < 10; i++) {
-                final String params = props.getProperty(type.getName() + ".Parameter" + String.format("%02d", i));
-                if ("date".equalsIgnoreCase(params)) {
-                    date = new Date();
-                }
-            }
-
-            final NumberGenerator numGen = NumberGenerator.get(UUID.fromString(uuid));
-            if (date != null) {
-                ret = numGen.getNextVal(date);
-            } else {
-                ret = numGen.getNextVal();
-            }
+            ret = new Naming().fromNumberGenerator(_parameter, type.getName());
         } else {
             ret = _parameter.getParameterValue(getFieldName4Attribute(_parameter, CIERP.DocumentAbstract.Name.name));
         }
         return ret;
     }
 
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return type
+     * @throws EFapsException on error
+     */
     protected Type getType4SysConf(final Parameter _parameter)
         throws EFapsException
     {
@@ -991,11 +976,12 @@ public abstract class CommonDocument_Base
      * Get the name for the document on creation.
      *
      * @param _parameter Parameter as passed by the eFaps API
-     * @return new Name
+     * @param _rateInfo  rateinfo
+     * @return rate value
      * @throws EFapsException on error
      */
     protected BigDecimal getRate(final Parameter _parameter,
-                                   final RateInfo _rateInfo)
+                                 final RateInfo _rateInfo)
         throws EFapsException
     {
         BigDecimal ret;
@@ -1015,11 +1001,12 @@ public abstract class CommonDocument_Base
      * Get the name for the document on creation.
      *
      * @param _parameter Parameter as passed by the eFaps API
-     * @return new Name
+     * @param _rateInfo  rateinfo
+     * @return formated rate
      * @throws EFapsException on error
      */
     protected String getRateFrmt(final Parameter _parameter,
-                                   final RateInfo _rateInfo)
+                                 final RateInfo _rateInfo)
         throws EFapsException
     {
         String ret;
@@ -1039,7 +1026,8 @@ public abstract class CommonDocument_Base
      * Get the name for the document on creation.
      *
      * @param _parameter Parameter as passed by the eFaps API
-     * @return new Name
+     * @param _rateInfo  rateinfo
+     * @return rate value for UserInterface
      * @throws EFapsException on error
      */
     protected BigDecimal getRateUI(final Parameter _parameter,
@@ -1063,7 +1051,8 @@ public abstract class CommonDocument_Base
      * Get the name for the document on creation.
      *
      * @param _parameter Parameter as passed by the eFaps API
-     * @return new Name
+     * @param _rateInfo  rateinfo
+     * @return fromatted rate string for UserInterface
      * @throws EFapsException on error
      */
     protected String getRateUIFrmt(final Parameter _parameter,
@@ -1140,7 +1129,7 @@ public abstract class CommonDocument_Base
     /**
      * To start a process on trigger.
      * @param _parameter Parameter as passed from the eFaps API.
-     * @param _createdDoc CreatedDoc the process must be executed for
+     * @param _instance instance the process must be executed for
      * @throws EFapsException on error
      */
     public void executeProcess(final Parameter _parameter,
@@ -1166,7 +1155,7 @@ public abstract class CommonDocument_Base
      * execution.
      *
      * @param _parameter Parameter as passed by the eFasp API
-     * @param _createdDoc CreatedDoc the process must be executed for
+     * @param _instance instance the process must be executed for
      * @param _params Map passed to the Process
      * @throws EFapsException on error
      */
