@@ -70,6 +70,7 @@ import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.jasperreport.StandartReport;
 import org.efaps.esjp.common.uiform.Create;
 import org.efaps.esjp.common.util.InterfaceUtils;
+import org.efaps.esjp.common.util.InterfaceUtils_Base.DojoLibs;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
@@ -681,9 +682,29 @@ public abstract class CommonDocument_Base
                                                    final String... _field)
         throws EFapsException
     {
-        final StringBuilder js = new StringBuilder()
-            .append("require([\"dojo/query\", \"dijit/registry\",\"efaps/AutoComplete\",\"dojo/NodeList-dom\"],")
-            .append(" function(query, registry, AutoComplete) {\n");
+        return getSetFieldReadOnlyScript(_parameter, _idx, true, _field);
+    }
+
+    /**
+     * JavaScript Snipplet that sets INPUTS or TEXTARES
+     * with name <code>fieldname</code> and Index <code>_idx</code>
+     * to readOnly and assigns class eFapsReadOnly. If <code>_idx</code> all
+     * are are set.
+     * @param _parameter    Parameter as passed by the eFaps API
+     * @param _idx          index of the field to be set to readonly
+     * @param _readOnly     readonly or not
+     * @param _field        fieldnames
+     * @return JavaScript
+     * @throws EFapsException on error
+     */
+    public StringBuilder getSetFieldReadOnlyScript(final Parameter _parameter,
+                                                   final Integer _idx,
+                                                   final boolean _readOnly,
+                                                   final String... _field)
+        throws EFapsException
+    {
+        final StringBuilder js = new StringBuilder();
+
         for (final String field : _field) {
             js.append("var nl = query(\" input[name='").append(field).append("'], textarea[name='")
                 .append(field).append("']\");");
@@ -692,24 +713,33 @@ public abstract class CommonDocument_Base
                     .append("if (node.type===\"hidden\") {")
                     .append("var pW = registry.getEnclosingWidget(node);")
                     .append("if (typeof(pW) !== \"undefined\") {")
-                    .append("if (pW.isInstanceOf(AutoComplete)) {")
-                    .append("pW.set('readOnly', true);")
+                    .append("if (pW.isInstanceOf(AutoComplete) || pW.isInstanceOf(AutoSuggestion)) {")
+                    .append("pW.set('readOnly', ").append(_readOnly).append(");")
                     .append("}")
                     .append("}")
                     .append("} else {")
-                    .append("node.readOnly = true;")
+                    .append("node.readOnly =").append(_readOnly).append(";")
                     .append("}")
                     .append("});\n");
             } else {
                 js.append("if (nl[").append(_idx).append("]!=undefined) {")
-                    .append("nl[").append(_idx).append("].readOnly = true;")
+                    .append("nl[").append(_idx).append("].readOnly =").append(_readOnly).append(";")
                     .append("}\n");
             }
         }
-        js.append("query(\" input[readonly=''], textarea[readonly='']\").addClass(\"eFapsReadOnly\")")
-            .append("});");
-        return js;
+        if (_readOnly) {
+            js.append("query(\" input[readonly=''], textarea[readonly='']\").addClass(\"eFapsReadOnly\");");
+        } else {
+            js.append("query(\".eFapsReadOnly\").forEach(function(_node) {")
+                .append("if (!_node.readOnly) {")
+                .append("domClass.remove(_node, \"eFapsReadOnly\");")
+                .append("}")
+                .append("});");
+        }
+        return InterfaceUtils.wrapInDojoRequire(_parameter, js, DojoLibs.QUERY, DojoLibs.REGISTRY,
+                        DojoLibs.AUTOCOMP, DojoLibs.AUTOSUGG, DojoLibs.DOMCLASS, DojoLibs.NLDOM);
     }
+
 
     /**
      * Get a String Array for UoM Field.
@@ -1084,6 +1114,32 @@ public abstract class CommonDocument_Base
         retVal.put(ReturnValues.SNIPLETT,
                         getTableDeactivateScript(_parameter, "inventoryTable", true, true).toString());
         return retVal;
+    }
+
+    /**
+     * @param _script script to be wrapped
+     * @param _jsTag    generate the tag
+     * @param _ready    ready sequence numner, 0 to deactivate
+     * @return the wrapped script
+     */
+    public StringBuilder wrappScript(final CharSequence _script,
+                                     final boolean _jsTag,
+                                     final int _ready) {
+        final StringBuilder ret = new StringBuilder();
+        if (_jsTag) {
+            ret.append("<script type=\"text/javascript\">\n");
+        }
+        if (_ready > 0) {
+            ret.append("require([\"dojo/ready\"], function(ready){ready(").append(_ready).append(", function(){\n");
+        }
+        ret.append(_script);
+        if (_ready > 0) {
+            ret.append("});});");
+        }
+        if (_jsTag) {
+            ret.append("\n</script>");
+        }
+        return ret;
     }
 
     /**
