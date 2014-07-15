@@ -627,7 +627,7 @@ public abstract class CommonDocument_Base
         final StringBuilder js = new StringBuilder()
             .append("require([\"dojo/query\", \"dojo/dom-construct\",\"dojo/dom-class\"], ")
                 .append("function(query, domConstruct, domClass) {")
-            .append("var nl = query(\" select[name='").append(_field).append("']\")");
+            .append("var nl = query(\" select[name='").append(_field).append("']\");");
 
         if (_idx == null) {
             js.append("nl.addClass(\"eFapsReadOnly\");")
@@ -1114,32 +1114,6 @@ public abstract class CommonDocument_Base
         retVal.put(ReturnValues.SNIPLETT,
                         getTableDeactivateScript(_parameter, "inventoryTable", true, true).toString());
         return retVal;
-    }
-
-    /**
-     * @param _script script to be wrapped
-     * @param _jsTag    generate the tag
-     * @param _ready    ready sequence numner, 0 to deactivate
-     * @return the wrapped script
-     */
-    public StringBuilder wrappScript(final CharSequence _script,
-                                     final boolean _jsTag,
-                                     final int _ready) {
-        final StringBuilder ret = new StringBuilder();
-        if (_jsTag) {
-            ret.append("<script type=\"text/javascript\">\n");
-        }
-        if (_ready > 0) {
-            ret.append("require([\"dojo/ready\"], function(ready){ready(").append(_ready).append(", function(){\n");
-        }
-        ret.append(_script);
-        if (_ready > 0) {
-            ret.append("});});");
-        }
-        if (_jsTag) {
-            ret.append("\n</script>");
-        }
-        return ret;
     }
 
     /**
