@@ -57,6 +57,7 @@ import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
 import org.efaps.ci.CIAdminUser;
+import org.efaps.ci.CIType;
 import org.efaps.db.AttributeQuery;
 import org.efaps.db.Checkin;
 import org.efaps.db.Context;
@@ -68,6 +69,7 @@ import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.jasperreport.StandartReport;
+import org.efaps.esjp.common.listener.ITypedClass;
 import org.efaps.esjp.common.uiform.Create;
 import org.efaps.esjp.common.util.InterfaceUtils;
 import org.efaps.esjp.common.util.InterfaceUtils_Base.DojoLibs;
@@ -89,11 +91,22 @@ import org.slf4j.LoggerFactory;
 @EFapsRevision("$Rev$")
 public abstract class CommonDocument_Base
     extends AbstractCommon
+    implements ITypedClass
 {
     /**
      * Logger for this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(CommonDocument.class);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CIType getCIType()
+        throws EFapsException
+    {
+        return null;
+    }
 
     /**
      * @param _parameter Parameter as passed by the eFasp API
