@@ -341,6 +341,8 @@ public abstract class Currency_Base
             ret.setInstance4Currency(Instance.get(CIERP.Currency.getType(), (Long) _rate[2]));
             ret.setRate(evalRate(_rate, false));
             ret.setRateUI(evalRate(_rate, true));
+            ret.setSaleRate(ret.getRate());
+            ret.setSaleRateUI(ret.getRateUI());
         }
         return ret;
     }
