@@ -42,12 +42,24 @@ import org.efaps.util.EFapsException;
 public abstract class AbstractWarning_Base
     implements IWarning
 {
+    /**
+     * LIst of object for the DBProperty.
+     */
     private final List<Object> objects = new ArrayList<Object>();
 
+    /**
+     * Format string.
+     */
     private String format;
 
+    /**
+     * Key for the DBProperty.
+     */
     private String key;
 
+    /**
+     * Is error or not.
+     */
     private boolean error = false;
 
     /**
@@ -97,8 +109,8 @@ public abstract class AbstractWarning_Base
 
     /**
      * Getter method for the instance variable {@link #objects}.
-     *
-     * @return value of instance variable {@link #objects}
+     * @param _objects objects to be added
+     * @return this for chaining
      */
     public IWarning addObject(final Object... _objects)
     {
@@ -138,6 +150,7 @@ public abstract class AbstractWarning_Base
      *
      * @return value of instance variable {@link #error}
      */
+    @Override
     public boolean isError()
     {
         return this.error;

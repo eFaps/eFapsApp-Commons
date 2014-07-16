@@ -45,6 +45,7 @@ public abstract class AbstractPositionWarning_Base
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getPosition()
     {
         return this.position;
@@ -54,8 +55,9 @@ public abstract class AbstractPositionWarning_Base
      * Setter method for instance variable {@link #position}.
      *
      * @param _position value for instance variable {@link #position}
+     * @return this for chaining
      */
-    public IPositionWarning setPosition(final int _position)
+    public AbstractPositionWarning_Base setPosition(final int _position)
     {
         this.position = _position;
         return this;
