@@ -1291,12 +1291,16 @@ public abstract class CommonDocument_Base
          return InterfaceUtils.getSelectedRow(_parameter);
     }
 
+    /**
+     * @param _parameter    Parameter as passed by the eFasp API
+     * @return JavaScript to be used for UI
+     * @throws EFapsException on error
+     */
     protected CharSequence getJavaScript4Doc(final Parameter _parameter)
-                    throws EFapsException
+        throws EFapsException
     {
         final StringBuilder ret = new StringBuilder();
-        for (final IOnCreateDocument listener : Listener.get().<IOnCreateDocument>invoke(
-                        IOnCreateDocument.class)) {
+        for (final IOnCreateDocument listener : Listener.get().<IOnCreateDocument>invoke(IOnCreateDocument.class)) {
             ret.append(listener.getJavaScript4Doc(this, _parameter));
         }
         return ret;

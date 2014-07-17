@@ -50,8 +50,19 @@ public interface IOnCreateDocument
      * @throws EFapsException on error
      */
     void afterCreate(final Parameter _parameter,
-                     final CreatedDoc _createdDoc) throws EFapsException;
+                     final CreatedDoc _createdDoc)
+        throws EFapsException;
 
+    /**
+     * Called for the standard JavaScript field value to be able to add own
+     * scripts via listener.
+     *
+     * @param _typeClass    Typed class as an easy way to distinguish
+     * @param _parameter    Parameter as passed by the eFaps API
+     * @throws EFapsException on error
+     * @return JavaScript for UserInterface
+     */
     CharSequence getJavaScript4Doc(final ITypedClass _typeClass,
-                                   final Parameter _parameter)throws EFapsException;
+                                   final Parameter _parameter)
+        throws EFapsException;
 }
