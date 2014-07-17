@@ -52,6 +52,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.admin.program.esjp.Listener;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.admin.user.Group;
@@ -73,6 +74,7 @@ import org.efaps.esjp.common.listener.ITypedClass;
 import org.efaps.esjp.common.uiform.Create;
 import org.efaps.esjp.common.util.InterfaceUtils;
 import org.efaps.esjp.common.util.InterfaceUtils_Base.DojoLibs;
+import org.efaps.esjp.erp.listener.IOnCreateDocument;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
@@ -1287,6 +1289,17 @@ public abstract class CommonDocument_Base
     public int getSelectedRow(final Parameter _parameter)
     {
          return InterfaceUtils.getSelectedRow(_parameter);
+    }
+
+    protected CharSequence getJavaScript4Doc(final Parameter _parameter)
+                    throws EFapsException
+    {
+        final StringBuilder ret = new StringBuilder();
+        for (final IOnCreateDocument listener : Listener.get().<IOnCreateDocument>invoke(
+                        IOnCreateDocument.class)) {
+            ret.append(listener.getJavaScript4Doc(this, _parameter));
+        }
+        return ret;
     }
 
     /**

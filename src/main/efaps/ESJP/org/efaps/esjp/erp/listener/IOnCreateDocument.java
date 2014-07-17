@@ -25,6 +25,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.program.esjp.IEsjpListener;
+import org.efaps.esjp.common.listener.ITypedClass;
 import org.efaps.esjp.erp.CommonDocument_Base.CreatedDoc;
 import org.efaps.util.EFapsException;
 
@@ -50,4 +51,7 @@ public interface IOnCreateDocument
      */
     void afterCreate(final Parameter _parameter,
                      final CreatedDoc _createdDoc) throws EFapsException;
+
+    CharSequence getJavaScript4Doc(final ITypedClass _typeClass,
+                                   final Parameter _parameter)throws EFapsException;
 }
