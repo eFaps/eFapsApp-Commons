@@ -49,4 +49,14 @@ public class CurrencyInst
     {
         super(_instance);
     }
+
+    public static CurrencyInst get(final Instance _instance)
+    {
+        return CurrencyInst_Base.get(_instance);
+    }
+
+    public static CurrencyInst get(final Long _currencyId)
+    {
+        return  CurrencyInst_Base.get(_currencyId);
+    }
 }

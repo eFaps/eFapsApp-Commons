@@ -266,8 +266,13 @@ public class CurrencyInst_Base
         return ToStringBuilder.reflectionToString(this);
     }
 
-    public static CurrencyInst get(final Instance _instance)
+    protected static CurrencyInst get(final Instance _instance)
     {
         return new CurrencyInst(_instance);
+    }
+
+    protected static CurrencyInst get(final Long _currencyId)
+    {
+        return new CurrencyInst(Instance.get(CIERP.Currency.getType(), _currencyId));
     }
 }
