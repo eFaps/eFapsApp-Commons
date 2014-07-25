@@ -26,9 +26,12 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.db.CachedInstanceQuery;
 import org.efaps.db.CachedPrintQuery;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
+import org.efaps.db.QueryBuilder;
+import org.efaps.db.QueryCache;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.util.EFapsException;
 
@@ -77,7 +80,7 @@ public class CurrencyInst_Base
     /**
      * ISOCode of this Currency.
      */
-    private String ISOCode;
+    private String isoCode;
 
     /**
      * Constructor when used as instance object. to access parameters from a
@@ -130,7 +133,7 @@ public class CurrencyInst_Base
             this.name = print.<String>getAttribute(CIERP.Currency.Name);
             this.invert = print.<Boolean>getAttribute(CIERP.Currency.Invert);
             this.uuid = UUID.fromString(print.<String>getAttribute(CIERP.Currency.UUID));
-            this.ISOCode =  print.<String>getAttribute(CIERP.Currency.ISOCode);
+            this.isoCode =  print.<String>getAttribute(CIERP.Currency.ISOCode);
             this.initialized = true;
         }
     }
@@ -247,7 +250,7 @@ public class CurrencyInst_Base
         throws EFapsException
     {
         initialize();
-        return this.ISOCode;
+        return this.isoCode;
     }
 
     /**
@@ -257,7 +260,7 @@ public class CurrencyInst_Base
      */
     public void setISOCode(final String _iSOCode)
     {
-        this.ISOCode = _iSOCode;
+        this.isoCode = _iSOCode;
     }
 
     @Override
@@ -266,13 +269,46 @@ public class CurrencyInst_Base
         return ToStringBuilder.reflectionToString(this);
     }
 
+    /**
+     * @param _instance instance the CurrencyInst is wanted for
+     * @return new CurrencyInst
+     * @throws EFapsException on error
+     */
     protected static CurrencyInst get(final Instance _instance)
+        throws EFapsException
     {
         return new CurrencyInst(_instance);
     }
 
+    /**
+     * @param _currencyId id the CurrencyInst is wanted for
+     * @return new CurrencyInst
+     * @throws EFapsException on error
+     */
     protected static CurrencyInst get(final Long _currencyId)
+        throws EFapsException
     {
         return new CurrencyInst(Instance.get(CIERP.Currency.getType(), _currencyId));
     }
+
+    /**
+     * @param _currencyUUID uuid the CurrencyInst is wanted for
+     * @return new CurrencyInst
+     * @throws EFapsException on error
+     */
+    protected static CurrencyInst get(final UUID _currencyUUID)
+        throws EFapsException
+    {
+        final QueryBuilder queryBldr = new QueryBuilder(CIERP.Currency);
+        queryBldr.addWhereAttrEqValue(CIERP.Currency.UUID, _currencyUUID.toString());
+        final CachedInstanceQuery query = queryBldr.getCachedQuery(QueryCache.DEFAULTKEY)
+                        .setLifespan(1).setLifespanUnit(TimeUnit.HOURS);
+        query.executeWithoutAccessCheck();
+        CurrencyInst ret = null;
+        if (query.next()) {
+            ret = new CurrencyInst(query.getCurrentValue());
+        }
+        return ret;
+    }
+
 }

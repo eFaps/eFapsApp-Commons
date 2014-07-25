@@ -21,9 +21,12 @@
 
 package org.efaps.esjp.erp;
 
+import java.util.UUID;
+
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 
 
 /**
@@ -50,13 +53,36 @@ public class CurrencyInst
         super(_instance);
     }
 
+    /**
+     * @param _instance instance the CurrencyInst is wanted for
+     * @return new CurrencyInst
+     * @throws EFapsException on error
+     */
     public static CurrencyInst get(final Instance _instance)
+        throws EFapsException
     {
         return CurrencyInst_Base.get(_instance);
     }
 
+    /**
+     * @param _currencyId id the CurrencyInst is wanted for
+     * @return new CurrencyInst
+     * @throws EFapsException on error
+     */
     public static CurrencyInst get(final Long _currencyId)
+        throws EFapsException
     {
-        return  CurrencyInst_Base.get(_currencyId);
+        return CurrencyInst_Base.get(_currencyId);
+    }
+
+    /**
+     * @param _currencyUUID uuid the CurrencyInst is wanted for
+     * @return new CurrencyInst
+     * @throws EFapsException on error
+     */
+    public static CurrencyInst get(final UUID _currencyUUID)
+        throws EFapsException
+    {
+        return CurrencyInst_Base.get(_currencyUUID);
     }
 }
