@@ -44,7 +44,7 @@ import org.efaps.util.EFapsException;
  */
 @EFapsUUID("a848745e-417f-4148-9f24-7429cb445572")
 @EFapsRevision("$Rev$")
-public class CurrencyInst_Base
+public abstract class CurrencyInst_Base
 {
 
     /**
