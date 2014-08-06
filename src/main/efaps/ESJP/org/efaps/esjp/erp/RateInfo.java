@@ -22,11 +22,15 @@
 package org.efaps.esjp.erp;
 
 import java.math.BigDecimal;
+import java.util.Properties;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
+import org.efaps.esjp.erp.util.ERP;
+import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -297,6 +301,106 @@ public class RateInfo
         ret.setSaleRate(BigDecimal.ONE);
         ret.setSaleRateUI(BigDecimal.ONE);
         ret.setInstance4Currency(new Currency().getBaseCurrency());
+        return ret;
+    }
+
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _rateInfo  rateinfo
+     * @param _key       key for the properties
+     * @return rate value
+     * @throws EFapsException on error
+     */
+    public static BigDecimal getRate(final Parameter _parameter,
+                                     final RateInfo _rateInfo,
+                                     final String _key)
+        throws EFapsException
+    {
+        BigDecimal ret;
+        final Properties props = ERP.getSysConfig()
+                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
+        final String rate = props.getProperty(_key, "buy");
+        if (rate.equalsIgnoreCase("sale")) {
+            ret = _rateInfo.getSaleRate();
+        } else {
+            ret = _rateInfo.getRate();
+        }
+        return ret;
+    }
+
+    /**
+     * Get the name for the document on creation.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _rateInfo rateinfo
+     * @param _key key for the properties
+     * @return formated rate
+     * @throws EFapsException on error
+     */
+    public static String getRateFrmt(final Parameter _parameter,
+                                     final RateInfo _rateInfo,
+                                     final String _key)
+        throws EFapsException
+    {
+        String ret;
+        final Properties props = ERP.getSysConfig()
+                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
+        final String rate = props.getProperty(_key, "buy");
+        if (rate.equalsIgnoreCase("sale")) {
+            ret = _rateInfo.getSaleRateFrmt();
+        } else {
+            ret = _rateInfo.getRateFrmt();
+        }
+        return ret;
+    }
+
+    /**
+     * Get the name for the document on creation.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _rateInfo rateinfo
+     * @return rate value for UserInterface
+     * @throws EFapsException on error
+     */
+    public static BigDecimal getRateUI(final Parameter _parameter,
+                                       final RateInfo _rateInfo,
+                                       final String _key)
+        throws EFapsException
+    {
+        BigDecimal ret;
+        final Properties props = ERP.getSysConfig()
+                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
+        final String rate = props.getProperty(_key, "buy");
+        if (rate.equalsIgnoreCase("sale")) {
+            ret = _rateInfo.getSaleRateUI();
+        } else {
+            ret = _rateInfo.getRateUI();
+        }
+        return ret;
+    }
+
+    /**
+     * Get the name for the document on creation.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _rateInfo rateinfo
+     * @return fromatted rate string for UserInterface
+     * @throws EFapsException on error
+     */
+    public static String getRateUIFrmt(final Parameter _parameter,
+                                       final RateInfo _rateInfo,
+                                       final String _key)
+        throws EFapsException
+    {
+        String ret;
+        final Properties props = ERP.getSysConfig()
+                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
+        final String rate = props.getProperty(_key, "buy");
+        if (rate.equalsIgnoreCase("sale")) {
+            ret = _rateInfo.getSaleRateUIFrmt();
+        } else {
+            ret = _rateInfo.getRateUIFrmt();
+        }
         return ret;
     }
 

@@ -1018,8 +1018,6 @@ public abstract class CommonDocument_Base
     }
 
     /**
-     * Get the name for the document on creation.
-     *
      * @param _parameter Parameter as passed by the eFaps API
      * @param _rateInfo  rateinfo
      * @return rate value
@@ -1029,17 +1027,8 @@ public abstract class CommonDocument_Base
                                  final RateInfo _rateInfo)
         throws EFapsException
     {
-        BigDecimal ret;
         final Type type = getType4SysConf(_parameter);
-        final Properties props = ERP.getSysConfig()
-                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
-        final String rate = props.getProperty(type.getName(), "buy");
-        if (rate.equalsIgnoreCase("sale")) {
-            ret = _rateInfo.getSaleRate();
-        } else {
-            ret = _rateInfo.getRate();
-        }
-        return ret;
+        return RateInfo.getRate(_parameter, _rateInfo, type.getName());
     }
 
     /**
@@ -1054,17 +1043,8 @@ public abstract class CommonDocument_Base
                                  final RateInfo _rateInfo)
         throws EFapsException
     {
-        String ret;
         final Type type = getType4SysConf(_parameter);
-        final Properties props = ERP.getSysConfig()
-                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
-        final String rate = props.getProperty(type.getName(), "buy");
-        if (rate.equalsIgnoreCase("sale")) {
-            ret = _rateInfo.getSaleRateFrmt();
-        } else {
-            ret = _rateInfo.getRateFrmt();
-        }
-        return ret;
+        return RateInfo.getRateFrmt(_parameter, _rateInfo, type.getName());
     }
 
     /**
@@ -1079,17 +1059,8 @@ public abstract class CommonDocument_Base
                                    final RateInfo _rateInfo)
         throws EFapsException
     {
-        BigDecimal ret;
         final Type type = getType4SysConf(_parameter);
-        final Properties props = ERP.getSysConfig()
-                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
-        final String rate = props.getProperty(type.getName(), "buy");
-        if (rate.equalsIgnoreCase("sale")) {
-            ret = _rateInfo.getSaleRateUI();
-        } else {
-            ret = _rateInfo.getRateUI();
-        }
-        return ret;
+        return RateInfo.getRateUI(_parameter, _rateInfo, type.getName());
     }
 
     /**
@@ -1104,17 +1075,8 @@ public abstract class CommonDocument_Base
                                    final RateInfo _rateInfo)
         throws EFapsException
     {
-        String ret;
         final Type type = getType4SysConf(_parameter);
-        final Properties props = ERP.getSysConfig()
-                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
-        final String rate = props.getProperty(type.getName(), "buy");
-        if (rate.equalsIgnoreCase("sale")) {
-            ret = _rateInfo.getSaleRateUIFrmt();
-        } else {
-            ret = _rateInfo.getRateUIFrmt();
-        }
-        return ret;
+        return RateInfo.getRateUIFrmt(_parameter, _rateInfo, type.getName());
     }
 
     /**
