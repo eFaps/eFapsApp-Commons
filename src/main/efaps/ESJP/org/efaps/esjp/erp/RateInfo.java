@@ -207,7 +207,7 @@ public class RateInfo
     /**
      * Setter method for instance variable {@link #instance4Currency}.
      *
-     * @param _currencyInstance value for instance variable {@link #instance4Currency}
+     * @param _instance4Currency value for instance variable {@link #instance4Currency}
      */
     public void setInstance4Currency(final Instance _instance4Currency)
     {
@@ -222,7 +222,7 @@ public class RateInfo
         if (this.currencyInst == null) {
             this.currencyInst = new CurrencyInst(getInstance4Currency());
         }
-        return this.currencyInst ;
+        return this.currencyInst;
     }
 
     /**
@@ -248,43 +248,65 @@ public class RateInfo
         this.formatter = _formatter;
     }
 
+    /**
+     * @return formatter for rate
+     * @throws EFapsException on error
+     */
     public String getRateFrmt()
         throws EFapsException
     {
         return getFormatter().getFrmt4Rate().format(getRate());
     }
 
+    /**
+     * @return formatter for rateui
+     * @throws EFapsException on error
+     */
     public String getRateUIFrmt()
         throws EFapsException
     {
         return getFormatter().getFrmt4RateUI().format(getRateUI());
     }
 
+    /**
+     * @return formatter for SaleRate
+     * @throws EFapsException on error
+     */
     public String getSaleRateFrmt()
         throws EFapsException
     {
         return getFormatter().getFrmt4SaleRate().format(getSaleRate());
     }
 
+    /**
+     * @return formatter for SaleRateUI
+     * @throws EFapsException on error
+     */
     public String getSaleRateUIFrmt()
         throws EFapsException
     {
         return getFormatter().getFrmt4SaleRateUI().format(getSaleRateUI());
     }
 
+    /**
+     * @return object for rate
+     * @throws EFapsException on error
+     */
     public Object[] getRateObject()
         throws EFapsException
     {
         final boolean invert = getCurrencyInst().isInvert();
-
         return new Object[] { invert ? BigDecimal.ONE : getRateUI(), invert ? getRateUI() : BigDecimal.ONE };
     }
 
+    /**
+     * @return object for salerate
+     * @throws EFapsException on error
+     */
     public Object[] getSaleRateObject()
         throws EFapsException
     {
         final boolean invert = getCurrencyInst().isInvert();
-
         return new Object[] { invert ? BigDecimal.ONE : getSaleRateUI(), invert ? getSaleRateUI() : BigDecimal.ONE };
     }
 
@@ -359,6 +381,7 @@ public class RateInfo
      *
      * @param _parameter Parameter as passed by the eFaps API
      * @param _rateInfo rateinfo
+     * @param _key key for the properties
      * @return rate value for UserInterface
      * @throws EFapsException on error
      */
@@ -384,6 +407,7 @@ public class RateInfo
      *
      * @param _parameter Parameter as passed by the eFaps API
      * @param _rateInfo rateinfo
+     * @param _key key for the properties
      * @return fromatted rate string for UserInterface
      * @throws EFapsException on error
      */
@@ -400,6 +424,32 @@ public class RateInfo
             ret = _rateInfo.getSaleRateUIFrmt();
         } else {
             ret = _rateInfo.getRateUIFrmt();
+        }
+        return ret;
+    }
+
+    /**
+     * Get the name for the document on creation.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _rateInfo rateinfo
+     * @param _key key for the properties
+     * @return fromatted rate string for UserInterface
+     * @throws EFapsException on error
+     */
+    public static Object[] getRateObject(final Parameter _parameter,
+                                         final RateInfo _rateInfo,
+                                         final String _key)
+        throws EFapsException
+    {
+        Object[] ret;
+        final Properties props = ERP.getSysConfig()
+                        .getAttributeValueAsProperties(ERPSettings.RATEINFO, true);
+        final String rate = props.getProperty(_key, "buy");
+        if (rate.equalsIgnoreCase("sale")) {
+            ret = _rateInfo.getSaleRateObject();
+        } else {
+            ret = _rateInfo.getRateObject();
         }
         return ret;
     }
