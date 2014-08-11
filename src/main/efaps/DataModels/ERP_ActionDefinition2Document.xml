@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
  Copyright 2003 - 2014 The eFaps Team
 
@@ -22,19 +20,23 @@
  Last Changed By: $Author$
 
 -->
-
-<ui-menu xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-    <uuid>9427d507-4793-4751-83e8-f08dbf2df55d</uuid>
+<datamodel-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+    <uuid>f644204a-c676-40cd-bf99-303946cbfcad</uuid>
     <file-application>eFapsApp-Commons</file-application>
     <file-revision>$Rev$</file-revision>
+    <specification />
     <definition>
         <version-expression>(version==latest)</version-expression>
-        <name>ERP_AttributeAbstractMyDesk</name>
-        <childs>
-            <child>ERP_AttributeDefinitionMyDesk</child>
-            <child>ERP_EventDefinitionMyDesk</child>
-            <child>ERP_ActionDefinitionMyDesk</child>
-        </childs>
+        <name>ERP_ActionDefinition2DocumentAbstract</name>
+        <parent>ERP_ActionDefinition2ObjectAbstract</parent>
+        <purpose abstract="true"/>
+        <attribute>
+            <name>ToLinkAbstract</name>
+            <type>Link</type>
+            <typelink>ERP_DocumentAbstract</typelink>
+            <sqltable>ERP_ActionDefinition2ObjectSQLTable</sqltable>
+            <sqlcolumn>TOID</sqlcolumn>
+        </attribute>
     </definition>
-</ui-menu>
+</datamodel-type>

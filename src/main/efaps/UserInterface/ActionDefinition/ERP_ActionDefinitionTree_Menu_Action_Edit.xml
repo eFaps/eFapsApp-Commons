@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
  Copyright 2003 - 2014 The eFaps Team
 
@@ -22,19 +20,21 @@
  Last Changed By: $Author$
 
 -->
-
-<ui-menu xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-    <uuid>9427d507-4793-4751-83e8-f08dbf2df55d</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+    <uuid>29a700bb-1713-4ab3-bb18-5d77ffe2a5f2</uuid>
     <file-application>eFapsApp-Commons</file-application>
     <file-revision>$Rev$</file-revision>
     <definition>
         <version-expression>(version==latest)</version-expression>
-        <name>ERP_AttributeAbstractMyDesk</name>
-        <childs>
-            <child>ERP_AttributeDefinitionMyDesk</child>
-            <child>ERP_EventDefinitionMyDesk</child>
-            <child>ERP_ActionDefinitionMyDesk</child>
-        </childs>
+        <name>ERP_ActionDefinitionTree_Menu_Action_Edit</name>
+        <target>
+            <form>ERP_ActionDefinitionForm</form>
+            <execute program="org.efaps.esjp.common.uiform.Edit"/>
+        </target>
+        <property name="Target">modal</property>
+        <property name="TargetMode">edit</property>
+        <property name="WindowHeight">460</property>
+        <property name="WindowWidth">515</property>
     </definition>
-</ui-menu>
+</ui-command>

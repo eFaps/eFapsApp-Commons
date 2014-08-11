@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
  Copyright 2003 - 2014 The eFaps Team
 
@@ -22,19 +20,20 @@
  Last Changed By: $Author$
 
 -->
-
 <ui-menu xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-    <uuid>9427d507-4793-4751-83e8-f08dbf2df55d</uuid>
+    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+    <uuid>789a0cb2-921c-4a2b-98e4-19123b1d567c</uuid>
     <file-application>eFapsApp-Commons</file-application>
     <file-revision>$Rev$</file-revision>
     <definition>
         <version-expression>(version==latest)</version-expression>
-        <name>ERP_AttributeAbstractMyDesk</name>
-        <childs>
-            <child>ERP_AttributeDefinitionMyDesk</child>
-            <child>ERP_EventDefinitionMyDesk</child>
-            <child>ERP_ActionDefinitionMyDesk</child>
-        </childs>
+        <name>ERP_ActionDefinitionTree</name>
+        <target>
+            <menu>ERP_ActionDefinitionTree_Menu</menu>
+            <form>ERP_ActionDefinitionForm</form>
+        </target>
+        <type>ERP_ActionDefinitionAbstract</type>
+        <property name="Target">content</property>
+        <property name="TargetMode">view</property>
     </definition>
 </ui-menu>

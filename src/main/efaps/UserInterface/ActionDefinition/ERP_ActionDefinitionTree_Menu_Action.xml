@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
  Copyright 2003 - 2014 The eFaps Team
 
@@ -22,19 +20,16 @@
  Last Changed By: $Author$
 
 -->
-
 <ui-menu xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-    <uuid>9427d507-4793-4751-83e8-f08dbf2df55d</uuid>
+    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+    <uuid>351c7ed0-7b27-4b9a-95cf-b09ee52b394f</uuid>
     <file-application>eFapsApp-Commons</file-application>
     <file-revision>$Rev$</file-revision>
     <definition>
         <version-expression>(version==latest)</version-expression>
-        <name>ERP_AttributeAbstractMyDesk</name>
+        <name>ERP_ActionDefinitionTree_Menu_Action</name>
         <childs>
-            <child>ERP_AttributeDefinitionMyDesk</child>
-            <child>ERP_EventDefinitionMyDesk</child>
-            <child>ERP_ActionDefinitionMyDesk</child>
+            <child>ERP_ActionDefinitionTree_Menu_Action_Edit</child>
         </childs>
     </definition>
 </ui-menu>

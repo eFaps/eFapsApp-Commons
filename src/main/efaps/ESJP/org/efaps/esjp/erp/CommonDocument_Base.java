@@ -74,6 +74,7 @@ import org.efaps.esjp.common.listener.ITypedClass;
 import org.efaps.esjp.common.uiform.Create;
 import org.efaps.esjp.common.util.InterfaceUtils;
 import org.efaps.esjp.common.util.InterfaceUtils_Base.DojoLibs;
+import org.efaps.esjp.erp.listener.IOnAction;
 import org.efaps.esjp.erp.listener.IOnCreateDocument;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.erp.util.ERPSettings;
@@ -109,6 +110,37 @@ public abstract class CommonDocument_Base
     {
         return null;
     }
+
+    /**
+     * @param _parameter Parameter as passed by the eFasp API
+     * @return scale corrected BigDecimal
+     * @throws EFapsException on error
+     */
+    public Return assignAction(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final Create create = new Create()
+        {
+            @Override
+            protected void add2basicInsert(final Parameter _parameter,
+                                           final Insert _insert)
+                throws EFapsException
+            {
+                super.add2basicInsert(_parameter, _insert);
+                final Instance actionInst = Instance.get(_parameter.getParameterValue("action"));
+                if (actionInst.isValid()) {
+                    _insert.add(CIERP.ActionDefinition2ObjectAbstract.FromLinkAbstract, actionInst);
+                }
+            }
+        };
+        final Instance actionInst = create.basicInsert(_parameter);;
+        for (final IOnAction listener : Listener.get().<IOnAction>invoke(IOnAction.class)) {
+            listener.afterAssign(this, _parameter, actionInst);
+        }
+        return ret;
+    }
+
 
     /**
      * @param _parameter Parameter as passed by the eFasp API
@@ -1250,7 +1282,7 @@ public abstract class CommonDocument_Base
      */
     public int getSelectedRow(final Parameter _parameter)
     {
-         return InterfaceUtils.getSelectedRow(_parameter);
+        return InterfaceUtils.getSelectedRow(_parameter);
     }
 
     /**
