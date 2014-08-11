@@ -22,21 +22,14 @@
 -->
 <ui-menu xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-    <uuid>789a0cb2-921c-4a2b-98e4-19123b1d567c</uuid>
+    <uuid>04b04e7d-ae8f-4ee1-90b7-6c890263bd12</uuid>
     <file-application>eFapsApp-Commons</file-application>
     <file-revision>$Rev$</file-revision>
     <definition>
         <version-expression>(version==latest)</version-expression>
-        <name>ERP_ActionDefinitionTree</name>
-        <target>
-            <menu>ERP_ActionDefinitionTree_Menu</menu>
-            <form>ERP_ActionDefinitionForm</form>
-        </target>
-        <type>ERP_ActionDefinitionAbstract</type>
+        <name>ERP_ActionDefinitionTree_Documents_Menu_Action</name>
         <childs>
-            <child>ERP_ActionDefinitionTree_Documents</child>
+            <child>ERP_ActionDefinitionTree_Documents_Menu_Action_Delete</child>
         </childs>
-        <property name="Target">content</property>
-        <property name="TargetMode">view</property>
     </definition>
 </ui-menu>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
- Copyright 2003 - 2014 The eFaps Team
+ Copyright 2003 - 2010 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -20,23 +20,25 @@
  Last Changed By: $Author$
 
 -->
-<ui-menu xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-    <uuid>789a0cb2-921c-4a2b-98e4-19123b1d567c</uuid>
+    <uuid>cdb883ac-1d7b-4158-9fed-65fd2492d6bd</uuid>
     <file-application>eFapsApp-Commons</file-application>
     <file-revision>$Rev$</file-revision>
     <definition>
         <version-expression>(version==latest)</version-expression>
-        <name>ERP_ActionDefinitionTree</name>
+        <name>ERP_ActionDefinitionTree_Documents</name>
         <target>
-            <menu>ERP_ActionDefinitionTree_Menu</menu>
-            <form>ERP_ActionDefinitionForm</form>
+            <menu>ERP_ActionDefinitionTree_Documents_Menu</menu>
+            <table>ERP_ActionDefinition2DocumentTable</table>
+            <evaluate program="org.efaps.esjp.common.uitable.MultiPrint">
+                <property name="Type">ERP_ActionDefinition2DocumentAbstract</property>
+                <property name="LinkFrom">FromLinkAbstract</property>
+                <property name="ExpandChildTypes">true</property>
+            </evaluate>
         </target>
-        <type>ERP_ActionDefinitionAbstract</type>
-        <childs>
-            <child>ERP_ActionDefinitionTree_Documents</child>
-        </childs>
+        <!-- properties -->
         <property name="Target">content</property>
-        <property name="TargetMode">view</property>
+        <property name="TargetShowCheckBoxes">true</property>
     </definition>
-</ui-menu>
+</ui-command>
