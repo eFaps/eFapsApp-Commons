@@ -83,4 +83,12 @@ public interface ERPSettings
      * Set Info information for rates.
      */
     String RATEINFO = "org.efaps.commons.RateInfo4Type";
+
+    /**
+     * Properties. Can be concatenated.
+     * Key: Normally the type name
+     * Values: One of EDIT, CREATE, NONE
+     */
+    String ACTIONDEF = "org.efaps.commons.ActionDefinition";
+
 }

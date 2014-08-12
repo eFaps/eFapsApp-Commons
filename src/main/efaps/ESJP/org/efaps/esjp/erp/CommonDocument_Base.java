@@ -64,6 +64,7 @@ import org.efaps.db.Checkin;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
+import org.efaps.db.InstanceQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
@@ -113,7 +114,7 @@ public abstract class CommonDocument_Base
 
     /**
      * @param _parameter Parameter as passed by the eFasp API
-     * @return scale corrected BigDecimal
+     * @return empty Return
      * @throws EFapsException on error
      */
     public Return assignAction(final Parameter _parameter)
@@ -134,13 +135,59 @@ public abstract class CommonDocument_Base
                 }
             }
         };
-        final Instance actionInst = create.basicInsert(_parameter);;
+        final Instance actionInst = create.basicInsert(_parameter);
         for (final IOnAction listener : Listener.get().<IOnAction>invoke(IOnAction.class)) {
             listener.afterAssign(this, _parameter, actionInst);
         }
         return ret;
     }
 
+    /**
+     * @param _parameter Parameter as passed by the eFasp API
+     * @return Return containing access
+     * @throws EFapsException on error
+     */
+    public Return accessCheck4Action(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final Properties properties = ERP.getSysConfig().getAttributeValueAsProperties(ERPSettings.ACTIONDEF, true);
+        String key;
+        if (containsProperty(_parameter, "Key")) {
+            key = getProperty(_parameter, "Key");
+        } else {
+            final Type type = getType4SysConf(_parameter);
+            if (type != null) {
+                key = type.getName();
+            } else {
+                key = "Default";
+            }
+        }
+        final String accessDef = properties.getProperty(key, "NONE");
+        final String access = getProperty(_parameter, "Access", "NA");
+        if (accessDef.equalsIgnoreCase(access)) {
+            ret.put(ReturnValues.TRUE, true);
+        }
+        return ret;
+    }
+
+    /**
+     * @param _parameter Parameter as passed by the eFasp API
+     * @return Return containing access
+     * @throws EFapsException on error
+     */
+    public Return accessCheck4ActionRelation(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final QueryBuilder queryBldr = new QueryBuilder(CIERP.ActionDefinition2DocumentAbstract);
+        queryBldr.addWhereAttrEqValue(CIERP.ActionDefinition2DocumentAbstract.ToLinkAbstract, _parameter.getInstance());
+        final InstanceQuery query = queryBldr.getQuery();
+        if (query.executeWithoutAccessCheck().isEmpty()) {
+            ret.put(ReturnValues.TRUE, true);
+        }
+        return ret;
+    }
 
     /**
      * @param _parameter Parameter as passed by the eFasp API
