@@ -1082,8 +1082,7 @@ public abstract class CommonDocument_Base
     protected String getDocName4Create(final Parameter _parameter)
         throws EFapsException
     {
-        final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-        final boolean useNumGen = "true".equalsIgnoreCase((String) properties.get("UseNumberGenerator4Name"));
+        final boolean useNumGen = "true".equalsIgnoreCase(getProperty(_parameter, "UseNumberGenerator4Name"));
         String ret;
         if (useNumGen) {
             final Type type = getType4DocCreate(_parameter);
