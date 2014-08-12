@@ -163,10 +163,19 @@ public abstract class CommonDocument_Base
                 key = "Default";
             }
         }
-        final String accessDef = properties.getProperty(key, "NONE");
-        final String access = getProperty(_parameter, "Access", "NA");
-        if (accessDef.equalsIgnoreCase(access)) {
-            ret.put(ReturnValues.TRUE, true);
+        final String accessDef = properties.getProperty(key);
+        if (accessDef != null) {
+            String access = getProperty(_parameter, "Access", "NA");
+            if (access.startsWith("!")) {
+                access = access.substring(1);
+                if (!accessDef.equalsIgnoreCase(access)) {
+                    ret.put(ReturnValues.TRUE, true);
+                }
+            } else {
+                if (accessDef.equalsIgnoreCase(access)) {
+                    ret.put(ReturnValues.TRUE, true);
+                }
+            }
         }
         return ret;
     }
