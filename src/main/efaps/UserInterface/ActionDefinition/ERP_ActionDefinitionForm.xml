@@ -49,6 +49,10 @@
             <property name="ModeSearch">EDITABLE</property>
             <property name="Attribute">Description</property>
         </field>
+        <field name="statusAbstract">
+            <property name="ModeEdit">EDITABLE</property>
+            <property name="Attribute">StatusAbstract</property>
+        </field>
         <field character="Group" name="createGroup">
             <property name="GroupCount">2</property>
         </field>

@@ -48,5 +48,9 @@
             <property name="Label">ERP_ActionDefinitionAbstract/Description.Label</property>
             <property name="ModeSearch">READONLY</property>
         </field>
+        <field name="statusAbstract">
+            <property name="Label">ERP_ActionDefinitionAbstract/StatusAbstract.Label</property>
+            <property name="Attribute">StatusAbstract</property>
+        </field>
     </definition>
 </ui-table>
