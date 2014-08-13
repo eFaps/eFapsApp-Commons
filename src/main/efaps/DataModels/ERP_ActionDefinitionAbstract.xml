@@ -69,6 +69,16 @@
             <sqlcolumn>DESCR</sqlcolumn>
         </attribute>
         <attribute>
+            <name>StatusAbstract</name>
+            <type>Status</type>
+            <typelink>ERP_ActionDefinitionStatus</typelink>
+            <sqltable>ERP_ActionDefinitionSQLTable</sqltable>
+            <sqlcolumn>STATUS</sqlcolumn>
+            <trigger program="org.efaps.esjp.admin.datamodel.StatusValue"
+                name="ERP_ActionDefinitionAbstract.StatusAbstract.RANGE_VALUE" event="RANGE_VALUE">
+            </trigger>
+        </attribute>
+        <attribute>
             <name>Creator</name>
             <type>CreatorLink</type>
             <sqltable>ERP_ActionDefinitionSQLTable</sqltable>
