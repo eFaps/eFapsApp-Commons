@@ -99,7 +99,9 @@ Sales_IncomingReminder.Status=Digitized
 Sales_Invoice.Status=Digitized
 Sales_CreditNote.Status=Digitized
 Sales_Receipt.Status=Digitized
-Sales_Reminder.Status=Digitized]]></value>
+Sales_Reminder.Status=Digitized
+Sales_PaymentOrder.Status=Open
+Sales_CollectionOrder.Status=Open]]></value>
          </attribute>
     </definition>
 </common-systemconfiguration>
