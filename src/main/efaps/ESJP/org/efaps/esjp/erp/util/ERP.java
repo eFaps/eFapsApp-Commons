@@ -75,6 +75,35 @@ public final class ERP
     }
 
     /**
+     * Enum used for a multistate for Configuration in ERP_DocumentType.
+     */
+    public enum DocTypeConfiguration
+        implements IBitEnum
+    {
+        /** Documents will be used in the PurchaseRecors from Accounting. */
+        PURCHASERECORD;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int getInt()
+        {
+            return BitEnumType.getInt4Index(ordinal());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int getBitIndex()
+        {
+            return ordinal();
+        }
+    }
+
+
+    /**
      * Singelton.
      */
     private ERP()

@@ -81,5 +81,9 @@
             <property name="ModeEdit">EDITABLE</property>
             <property name="Required">true</property>
         </field>
+        <field name="configuration">
+            <property name="Attribute">Configuration</property>
+            <property name="ModeEdit">EDITABLE</property>
+        </field>
     </definition>
 </ui-form>
