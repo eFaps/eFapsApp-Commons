@@ -39,7 +39,7 @@
         <field name="name">
             <property name="Attribute">Name</property>
             <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-            <property name="Label">ERP_ActionDefinitionAbstract/Value.Label</property>
+            <property name="Label">ERP_ActionDefinitionAbstract/Name.Label</property>
             <property name="ModeSearch">READONLY</property>
             <property name="ShowTypeIcon">true</property>
         </field>
