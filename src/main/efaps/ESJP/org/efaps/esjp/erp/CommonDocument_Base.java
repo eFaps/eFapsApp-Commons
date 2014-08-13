@@ -39,6 +39,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Dimension.UoM;
@@ -1025,7 +1026,17 @@ public abstract class CommonDocument_Base
                               final StandartReport _report)
         throws EFapsException
     {
-        // to be used by implementation
+        final SystemConfiguration config = ERP.getSysConfig();
+        if (config != null) {
+            final String companyName = config.getAttributeValue(ERPSettings.COMPANYNAME);
+            if (companyName != null && !companyName.isEmpty()) {
+                _report.getJrParameters().put("CompanyName", companyName);
+            }
+            final String companyTaxNum = config.getAttributeValue(ERPSettings.COMPANYTAX);
+            if (companyTaxNum != null && !companyTaxNum.isEmpty()) {
+                _report.getJrParameters().put("CompanyTaxNum", companyTaxNum);
+            }
+        }
     }
 
     /**
