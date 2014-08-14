@@ -988,8 +988,7 @@ public abstract class CommonDocument_Base
         throws EFapsException
     {
         File ret = null;
-        final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-        if (properties.containsKey("JasperReport") || properties.containsKey("JasperKey")) {
+        if (containsProperty(_parameter, "JasperReport") || containsProperty(_parameter, "JasperKey")) {
             try {
                 final StandartReport report = new StandartReport();
                 _parameter.put(ParameterValues.INSTANCE, _createdDoc.getInstance());
@@ -998,7 +997,7 @@ public abstract class CommonDocument_Base
                     final PrintQuery print = new PrintQuery(_createdDoc.getInstance());
                     print.addAttribute(CIERP.DocumentAbstract.Name);
                     print.execute();
-                    name = print.getAttribute(CIERP.DocumentAbstract.Name);
+                    name = print.<String>getAttribute(CIERP.DocumentAbstract.Name);
                 }
                 final String fileName = DBProperties.getProperty(_createdDoc.getInstance().getType().getLabelKey(),
                                 "es") + "_" + name;
@@ -1007,7 +1006,8 @@ public abstract class CommonDocument_Base
                 ret = report.getFile(_parameter);
                 final InputStream input = new FileInputStream(ret);
                 final Checkin checkin = new Checkin(_createdDoc.getInstance());
-                checkin.execute(fileName + "." + properties.get("Mime"), input, ((Long) ret.length()).intValue());
+                checkin.execute(fileName + "." + getProperty(_parameter, "Mime"), input,
+                                ((Long) ret.length()).intValue());
             } catch (final FileNotFoundException e) {
                 CommonDocument_Base.LOG.error("Catched FileNotFoundException", e);
             }
