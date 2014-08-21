@@ -18,7 +18,6 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.esjp.erp.listener;
 
 import org.efaps.admin.event.Parameter;
@@ -28,7 +27,6 @@ import org.efaps.admin.program.esjp.IEsjpListener;
 import org.efaps.db.Instance;
 import org.efaps.esjp.common.listener.ITypedClass;
 import org.efaps.util.EFapsException;
-
 
 /**
  * TODO comment!
@@ -41,13 +39,14 @@ import org.efaps.util.EFapsException;
 public interface IOnAction
     extends IEsjpListener
 {
+
     /**
      * Called after the creation/insert of a new Document with the values
      * already set and the instance valid.
      *
-     * @param _typeClass    typed class instance
-     * @param _parameter    Parameter as passed by the eFaps API
-     * @param _actionInst   instance created
+     * @param _typeClass typed class instance
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _actionRelInst instance of the relation created
      * @throws EFapsException on error
      */
     void afterAssign(final ITypedClass _typeClass,
@@ -55,4 +54,15 @@ public interface IOnAction
                      final Instance _actionRelInst)
         throws EFapsException;
 
+    /**
+     * Called after the update a Document. Searches for a relation to an actions
+     * an than executes it.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _docInst instance of the relation created
+     * @throws EFapsException on error
+     */
+    void onDocumentUpdate(final Parameter _parameter,
+                          final Instance _docInst)
+        throws EFapsException;
 }
