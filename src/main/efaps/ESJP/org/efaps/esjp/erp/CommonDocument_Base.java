@@ -976,7 +976,6 @@ public abstract class CommonDocument_Base
         return command.getTargetCreateType();
     }
 
-
     /**
      * @param _parameter Parameter as passed by the eFaps API
      * @param _createdDoc   document created
@@ -989,7 +988,7 @@ public abstract class CommonDocument_Base
     {
         File ret = null;
         if ((containsProperty(_parameter, "JasperReport") || containsProperty(_parameter, "JasperKey"))
-                        && (_createdDoc.getInstance() != null && _createdDoc.getInstance().isValid())) {
+                        && _createdDoc.getInstance() != null && _createdDoc.getInstance().isValid()) {
             try {
                 final StandartReport report = new StandartReport();
                 _parameter.put(ParameterValues.INSTANCE, _createdDoc.getInstance());
@@ -1007,7 +1006,8 @@ public abstract class CommonDocument_Base
                 ret = report.getFile(_parameter);
                 final InputStream input = new FileInputStream(ret);
                 final Checkin checkin = new Checkin(_createdDoc.getInstance());
-                checkin.execute(fileName + "." + getProperty(_parameter, "Mime"), input, ((Long) ret.length()).intValue());
+                checkin.execute(fileName + "." + getProperty(_parameter, "Mime"), input,
+                                ((Long) ret.length()).intValue());
             } catch (final FileNotFoundException e) {
                 CommonDocument_Base.LOG.error("Catched FileNotFoundException", e);
             }
