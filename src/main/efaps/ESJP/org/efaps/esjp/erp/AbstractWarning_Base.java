@@ -23,11 +23,14 @@ package org.efaps.esjp.erp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Context;
+import org.efaps.esjp.erp.util.ERP;
+import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
 
 
@@ -152,8 +155,23 @@ public abstract class AbstractWarning_Base
      */
     @Override
     public boolean isError()
+        throws EFapsException
     {
-        return this.error;
+        boolean ret = this.error;
+        final Properties props = ERP.getSysConfig().getAttributeValueAsProperties(ERPSettings.WARNING);
+        final String keyTmp = this.getClass().getSimpleName() + ".Level";
+        if (props.containsKey(keyTmp)) {
+            switch (props.getProperty(keyTmp).toUpperCase()) {
+                case "ERROR":
+                    ret = true;
+                    break;
+                case "WARN":
+                    ret = false;
+                default:
+                    break;
+            }
+        }
+        return ret;
     }
 
     /**

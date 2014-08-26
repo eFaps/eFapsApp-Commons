@@ -91,4 +91,9 @@ public interface ERPSettings
      */
     String ACTIONDEF = "org.efaps.commons.ActionDefinition";
 
+    /**
+     * Properties. Can be concatenated.
+     * Key: Normally the type name
+     */
+    String WARNING = "org.efaps.commons.Warning";
 }
