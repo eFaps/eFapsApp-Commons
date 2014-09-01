@@ -81,8 +81,9 @@ public final class ERP
         implements IBitEnum
     {
         /** Documents will be used in the PurchaseRecors from Accounting. */
-        PURCHASERECORD;
-
+        PURCHASERECORD,
+        /** Documents is marked as a type valid for Professional Service. */
+        PROFESSIONALSERVICE;
         /**
          * {@inheritDoc}
          */
