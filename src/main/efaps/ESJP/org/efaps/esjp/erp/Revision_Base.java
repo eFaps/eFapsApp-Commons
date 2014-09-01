@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -45,7 +46,10 @@ import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIERP;
+import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -57,7 +61,12 @@ import org.efaps.util.EFapsException;
 @EFapsUUID("63f7a789-bd28-4e7f-bae2-89c2425df2b3")
 @EFapsRevision("$Rev$")
 public abstract class Revision_Base
+    extends AbstractCommon
 {
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(Revision.class);
 
     /**
      * Method to execute the actual revision process.
@@ -188,7 +197,7 @@ public abstract class Revision_Base
      * Copy the Relations.
      *
      * @param _parameter    Parameter as passed from the eFaps API
-     * @param _newDoc       the newly created Document
+     * @param _newInst      the newly created Document
      * @return Map of old instance to new instance
      * @throws EFapsException on error
      */
@@ -197,13 +206,24 @@ public abstract class Revision_Base
         throws EFapsException
     {
         final Map<Instance, Instance> ret = new HashMap<Instance, Instance>();
-        final Map<?,?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-        if (props.containsKey("ReviseRelations") && props.containsKey("ReviseRelationsAttribute")) {
-            final String [] rels = ((String) props.get("ReviseRelations")).split(";");
-            final String [] attrs = ((String) props.get("ReviseRelationsAttribute")).split(";");
+        _parameter.get(ParameterValues.PROPERTIES);
+        //TODO remove old api
+        if (containsProperty(_parameter, "ReviseRelations")
+                        && containsProperty(_parameter, "ReviseRelationsAttribute")) {
+            LOG.warn("Deprecated api for ReviseRelationsAttribute");
+            final String [] rels = getProperty(_parameter, "ReviseRelations").split(";");
+            final String [] attrs = getProperty(_parameter, "ReviseRelationsAttribute").split(";");
 
             for (int i = 0; i < rels.length; i++) {
                 ret.putAll(copyRelation(_parameter, _newInst, rels[i], attrs[i]));
+            }
+        }
+        if (containsProperty(_parameter, "ReviseRelation")
+                        && containsProperty(_parameter, "ReviseRelationAttribute")) {
+            final Map<Integer, String> rel = analyseProperty(_parameter, "ReviseRelation");
+            final Map<Integer, String> relattr = analyseProperty(_parameter, "ReviseRelationAttribute");
+            for (final Entry<Integer, String> entry : rel.entrySet()) {
+                ret.putAll(copyRelation(_parameter, _newInst, entry.getValue(), relattr.get(entry.getKey())));
             }
         }
         return ret;
@@ -224,15 +244,34 @@ public abstract class Revision_Base
                                                    final String _linkAttrName)
         throws EFapsException
     {
-        final Map<Instance, Instance> ret = new HashMap<Instance, Instance>();
         final Type reltype = Type.get(_typeName);
-        final QueryBuilder queryBldr = new QueryBuilder(reltype);
-        queryBldr.addWhereAttrEqValue(reltype.getAttribute(_linkAttrName), _parameter.getInstance().getId());
+        return copyRelation(_parameter, _newInst, reltype, reltype.getAttribute(_linkAttrName), null);
+    }
+
+    /**
+     * @param _parameter    Parameter as passed by the eFaps API
+     * @param _newInst      Instance of  the new doc
+     * @param _typeName     name of the relation type
+     * @param _linkAttrName name of the attribute that connects the relation
+     *                      to the type
+     * @return Map of oldInstance to new Instance
+     * @throws EFapsException on error
+     */
+    protected Map<Instance, Instance> copyRelation(final Parameter _parameter,
+                                                   final Instance _newInst,
+                                                   final Type _reltype,
+                                                   final Attribute _relAttr,
+                                                   final Type _targetType)
+        throws EFapsException
+    {
+        final Map<Instance, Instance> ret = new HashMap<Instance, Instance>();
+        final QueryBuilder queryBldr = new QueryBuilder(_reltype);
+        queryBldr.addWhereAttrEqValue(_relAttr, _parameter.getInstance().getId());
         final InstanceQuery query = queryBldr.getQuery();
         final List<Instance> instances = query.execute();
         for (final Instance instance : instances) {
-            final Insert insert = new Insert(instance.getType());
-            final Attribute attr = instance.getType().getAttribute(_linkAttrName);
+            final Insert insert = new Insert(_targetType == null ? instance.getType() : _targetType);
+            final Attribute attr = instance.getType().getAttribute(_relAttr.getName());
             insert.add(attr, _newInst.getId());
             final Set<String> added = new HashSet<String>();
             added.add(attr.getSqlColNames().toString());
@@ -362,8 +401,8 @@ public abstract class Revision_Base
         for (final Attribute attr : _update.getInstance().getType().getAttributes().values()) {
             final boolean noAdd = attr.getAttributeType().isAlwaysUpdate()
                     || attr.getAttributeType().isCreateUpdate()
-                    || (attr.getParent().getTypeAttribute() != null
-                            && attr.getParent().getTypeAttribute().getName().equals(attr.getName()))
+                    || attr.getParent().getTypeAttribute() != null
+                            && attr.getParent().getTypeAttribute().getName().equals(attr.getName())
                     || attr.getAttributeType().getDbAttrType() instanceof OIDType
                     || _added.contains(attr.getSqlColNames().toString())
                     || attr.getParent().getMainTable().getSqlColId().equals(attr.getSqlColNames().get(0));
