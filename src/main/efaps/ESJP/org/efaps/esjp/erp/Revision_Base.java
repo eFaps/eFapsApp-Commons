@@ -34,7 +34,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.OIDType;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsRevision;
@@ -140,13 +139,12 @@ public abstract class Revision_Base
                             final Instance _newDoc)
         throws EFapsException
     {
-        final Map<?,?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-        if (props.containsKey("Status")) {
-            final String statusStr = (String) props.get("Status");
+        if (containsProperty(_parameter, "Status")) {
+            final String statusStr = getProperty(_parameter, "Status");
             updateStatus(_parameter.getInstance(), statusStr);
         }
-        if (props.containsKey("RevisionStatus")) {
-            final String statusStr = (String) props.get("RevisionStatus");
+        if (containsProperty(_parameter, "RevisionStatus")) {
+            final String statusStr = getProperty(_parameter, "RevisionStatus");
             updateStatus(_newDoc, statusStr);
         }
     }
@@ -183,8 +181,7 @@ public abstract class Revision_Base
                                    final Instance _newDoc)
         throws EFapsException
     {
-        final Map<?,?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-        if (!"false".equalsIgnoreCase((String) props.get("RevisionConnect"))) {
+        if (!"false".equalsIgnoreCase(getProperty(_parameter, "RevisionConnect"))) {
             final Instance origInst = _parameter.getInstance();
             final Insert insert = new Insert(CIERP.Document2Revision);
             insert.add(CIERP.Document2Revision.FromLink, origInst.getId());
@@ -206,7 +203,6 @@ public abstract class Revision_Base
         throws EFapsException
     {
         final Map<Instance, Instance> ret = new HashMap<Instance, Instance>();
-        _parameter.get(ParameterValues.PROPERTIES);
         //TODO remove old api
         if (containsProperty(_parameter, "ReviseRelations")
                         && containsProperty(_parameter, "ReviseRelationsAttribute")) {
@@ -218,10 +214,9 @@ public abstract class Revision_Base
                 ret.putAll(copyRelation(_parameter, _newInst, rels[i], attrs[i]));
             }
         }
-        if (containsProperty(_parameter, "ReviseRelation")
-                        && containsProperty(_parameter, "ReviseRelationAttribute")) {
-            final Map<Integer, String> rel = analyseProperty(_parameter, "ReviseRelation");
-            final Map<Integer, String> relattr = analyseProperty(_parameter, "ReviseRelationAttribute");
+        final Map<Integer, String> rel = analyseProperty(_parameter, "ReviseRelation");
+        final Map<Integer, String> relattr = analyseProperty(_parameter, "ReviseRelationAttribute");
+        if (!rel.isEmpty() && !relattr.isEmpty() && rel.size() == relattr.size()) {
             for (final Entry<Integer, String> entry : rel.entrySet()) {
                 ret.putAll(copyRelation(_parameter, _newInst, entry.getValue(), relattr.get(entry.getKey())));
             }
@@ -251,9 +246,9 @@ public abstract class Revision_Base
     /**
      * @param _parameter    Parameter as passed by the eFaps API
      * @param _newInst      Instance of  the new doc
-     * @param _typeName     name of the relation type
-     * @param _linkAttrName name of the attribute that connects the relation
-     *                      to the type
+     * @param _reltype      the relation type
+     * @param _relAttr      name of the attribute that connects the relation to the type
+     * @param _targetType   targettype to be copied to
      * @return Map of oldInstance to new Instance
      * @throws EFapsException on error
      */
@@ -294,8 +289,7 @@ public abstract class Revision_Base
                                   final Instance _newDoc)
         throws EFapsException
     {
-        final Map<?,?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-        if (!"false".equalsIgnoreCase((String) props.get("RevisionUpdate"))) {
+        if (!"false".equalsIgnoreCase(getProperty(_parameter, "RevisionUpdate"))) {
             final Update update = new Update(_newDoc);
             update.add(getRevisionAttribute(_parameter, _newDoc), getNextRevision(_parameter, _newDoc));
             update.execute();
@@ -307,16 +301,16 @@ public abstract class Revision_Base
      *
      * @param _parameter    Parameter as passed from the eFaps API
      * @param _newDoc       the newly created Document
+     * @return name of the revision attribute
      * @throws EFapsException on error
      */
     protected String getRevisionAttribute(final Parameter _parameter,
                                           final Instance _newDoc)
         throws EFapsException
     {
-        final Map<?,?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
         final String attrName;
-        if (props.containsKey("RevisionAttribute")) {
-            attrName = (String) props.get("RevisionAttribute");
+        if (containsProperty(_parameter, "RevisionAttribute")) {
+            attrName = getProperty(_parameter, "RevisionAttribute");
         } else {
             attrName = CIERP.DocumentAbstract.Revision.name;
         }
@@ -337,6 +331,14 @@ public abstract class Revision_Base
         return getNextRevision(_parameter, _parameter.getInstance(), _newDoc);
     }
 
+    /**
+     * Get the next Revision Number.
+     * @param _parameter    Parameter as passed from the eFaps API
+     * @param _origDoc      original docu
+     * @param _newDoc       the newly created Document
+     * @throws EFapsException on error
+     * @return next Revision Number
+     */
     public Object getNextRevision(final Parameter _parameter,
                                   final Instance _origDoc,
                                   final Instance _newDoc)
