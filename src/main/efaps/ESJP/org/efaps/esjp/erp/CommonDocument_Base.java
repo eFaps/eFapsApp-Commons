@@ -145,6 +145,21 @@ public abstract class CommonDocument_Base
 
     /**
      * @param _parameter Parameter as passed by the eFasp API
+     * @return empty Return
+     * @throws EFapsException on error
+     */
+    public Return callAction(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        for (final IOnAction listener : Listener.get().<IOnAction>invoke(IOnAction.class)) {
+            listener.onDocumentUpdate(_parameter, _parameter.getInstance());
+        }
+        return ret;
+    }
+
+    /**
+     * @param _parameter Parameter as passed by the eFasp API
      * @return Return containing access
      * @throws EFapsException on error
      */
