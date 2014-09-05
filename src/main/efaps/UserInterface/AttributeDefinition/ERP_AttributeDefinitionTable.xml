@@ -59,6 +59,11 @@
             <property name="Label">ERP_AttributeDefinitionAbstract/MappingKey.Label</property>
             <property name="ModeSearch">READONLY</property>
         </field>
+        <field name="statusAbstract">
+            <property name="Attribute">StatusAbstract</property>
+            <property name="Label">ERP_AttributeDefinitionAbstract/StatusAbstract.Label</property>
+            <property name="FilterType">PickList</property>
+        </field>
         <field name="buttonOpenInNewWindow">
             <icon>eFapsActionNewWindow</icon>
             <property name="HRef">${COMMONURL}/MenuTree.jsp</property>

@@ -51,6 +51,7 @@
         <field name="statusAbstract">
             <property name="Label">ERP_ActionDefinitionAbstract/StatusAbstract.Label</property>
             <property name="Attribute">StatusAbstract</property>
+            <property name="FilterType">PickList</property>
         </field>
     </definition>
 </ui-table>
