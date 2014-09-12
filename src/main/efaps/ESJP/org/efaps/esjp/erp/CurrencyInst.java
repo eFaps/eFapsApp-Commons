@@ -85,4 +85,15 @@ public class CurrencyInst
     {
         return CurrencyInst_Base.get(_currencyUUID);
     }
+
+    /**
+     * @param _object object the CurrencyInst is wanted for
+     * @return new CurrencyInst
+     * @throws EFapsException on error
+     */
+    public static CurrencyInst get(final Object _object)
+        throws EFapsException
+    {
+        return CurrencyInst_Base.get(_object);
+    }
 }

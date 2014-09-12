@@ -311,4 +311,23 @@ public abstract class CurrencyInst_Base
         return ret;
     }
 
+    /**
+     * @param _object object the CurrencyInst is wanted for
+     * @return new CurrencyInst
+     * @throws EFapsException on error
+     */
+    protected static CurrencyInst get(final Object _object)
+        throws EFapsException
+    {
+        CurrencyInst ret = null;
+        if (_object instanceof Long) {
+            ret = get((Long) _object);
+        } else if (_object instanceof Instance) {
+            ret = get((Instance) _object);
+        } else if (_object instanceof UUID) {
+            ret = get((UUID) _object);
+        }
+        return ret;
+    }
+
 }
