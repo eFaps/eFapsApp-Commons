@@ -96,4 +96,16 @@ public interface ERPSettings
      * Key: Normally the type name
      */
     String WARNING = "org.efaps.commons.Warning";
+
+    /**
+     * Link.<br/>
+     * Base Currency for the System.
+     */
+    String CURRENCYBASE = "org.efaps.commons.CurrencyBase";
+
+    /**
+     * Properties. Can be concatenated.
+     * Key: Normally the type name
+     */
+    String CURRENCIES = "org.efaps.commons.Currencies";
 }

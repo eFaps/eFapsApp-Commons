@@ -22,6 +22,8 @@ package org.efaps.esjp.erp;
 
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 
 /**
  * This class must be replaced for customization, therefore it is left empty.
@@ -36,4 +38,14 @@ import org.efaps.admin.program.esjp.EFapsUUID;
 public class Currency
     extends Currency_Base
 {
+
+    /**
+     * @return the base currency for eFaps
+     * @throws EFapsException on error
+     */
+    public static Instance getBaseCurrency()
+        throws EFapsException
+    {
+        return Currency_Base.getBaseCurrency();
+    }
 }

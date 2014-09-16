@@ -52,6 +52,8 @@ import org.efaps.db.SelectBuilder;
 import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.uiform.Field;
+import org.efaps.esjp.erp.util.ERP;
+import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.ui.wicket.util.DateUtil;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
@@ -205,7 +207,7 @@ public abstract class Currency_Base
                         && _parameter.get(ParameterValues.ACCESSMODE).equals(TargetMode.CREATE)) {
             final Instance instance = _parameter.getInstance();
             if (instance != null && instance.getType().isKindOf(CIERP.Currency.getType())) {
-                final CurrencyInst currencyInst = getCurrencyInst(instance.getId());
+                final CurrencyInst currencyInst = CurrencyInst.get(instance);
                 if (currencyInst.isInvert()) {
                     ret.put(ReturnValues.TRUE, true);
                 }
@@ -229,7 +231,7 @@ public abstract class Currency_Base
                 if (value instanceof Object[]) {
                     final Object[] values = (Object[]) value;
                     if (values[2] != null) {
-                        final CurrencyInst currencyInst = getCurrencyInst((Long) values[2]);
+                        final CurrencyInst currencyInst = CurrencyInst.get((Long) values[2]);
                         if (currencyInst.isInvert()) {
                             final Object enomTmp = values[0];
                             values[0] = values[1];
@@ -257,7 +259,7 @@ public abstract class Currency_Base
         throws EFapsException
     {
         if (_considerInverse) {
-            final CurrencyInst currencyInst = getCurrencyInst((Long) _values[2]);
+            final CurrencyInst currencyInst = CurrencyInst.get((Long) _values[2]);
             if (currencyInst.isInvert()) {
                 final Object enomTmp = _values[0];
                 _values[0] = _values[1];
@@ -282,15 +284,6 @@ public abstract class Currency_Base
     }
 
     /**
-     * @param _currencyId id for the currency instance
-     * @return CurrencyInst
-     */
-    protected CurrencyInst getCurrencyInst(final long _currencyId)
-    {
-        return new CurrencyInst(Instance.get(CIERP.Currency.getType(), _currencyId));
-    }
-
-    /**
      * @param _parameter Parameter as passed from the eFaps API
      * @return value for the targetcurrency
      * @throws EFapsException on error
@@ -312,23 +305,6 @@ public abstract class Currency_Base
     }
 
     /**
-     * @return the base currency for eFaps
-     * @throws EFapsException on error
-     */
-    protected Instance getBaseCurrency()
-        throws EFapsException
-    {
-        // Sales-Configuration
-        final SystemConfiguration config = SystemConfiguration.get(
-                        UUID.fromString("c9a1cbc3-fd35-4463-80d2-412422a3802f"));
-        final Instance ret = config.getLink("org.efaps.sales.CurrencyBase");
-        if (ret == null) {
-            Currency_Base.LOG.error("There must be an BaseCurrency defined to calculate rates.");
-        }
-        return ret;
-    }
-
-    /**
      * @param _parameter Parameter as passed by the eFaps API
      * @param _rate     rateObject to be evaluated
      * @return RateInfo
@@ -340,7 +316,7 @@ public abstract class Currency_Base
     {
         final RateInfo ret = RateInfo.getDummyRateInfo();
         if (_rate.length == 4) {
-            ret.setInstance4Currency(Instance.get(CIERP.Currency.getType(), (Long) _rate[2]));
+            ret.setCurrencyInstance(Instance.get(CIERP.Currency.getType(), (Long) _rate[2]));
             ret.setRate(evalRate(_rate, false));
             ret.setRateUI(evalRate(_rate, true));
             ret.setSaleRate(ret.getRate());
@@ -414,21 +390,24 @@ public abstract class Currency_Base
         final RateInfo curr2tar;
         if (_targetCurrencyInst.equals(_currentCurrencyInst)) {
             curr2tar = RateInfo.getDummyRateInfo();
-            curr2tar.setInstance4Currency(_targetCurrencyInst);
+            curr2tar.setCurrencyInstance(_currentCurrencyInst);
+            curr2tar.setTargetCurrencyInstance(_currentCurrencyInst);
         } else {
+            // current to base uses divide ==> base to target uses multiply ==< divide must be used
             curr2tar = new RateInfo();
-            curr2tar.setInstance4Currency(_targetCurrencyInst);
-            curr2tar.setRate(currentRateInfo.getRate().divide(targetRateInfo.getRate(), BigDecimal.ROUND_HALF_DOWN));
+            curr2tar.setCurrencyInstance(_currentCurrencyInst);
+            curr2tar.setTargetCurrencyInstance(_targetCurrencyInst);
+
+            curr2tar.setRate(currentRateInfo.getRate().divide(targetRateInfo.getRate(), BigDecimal.ROUND_HALF_UP));
             curr2tar.setSaleRate(currentRateInfo.getSaleRate().divide(targetRateInfo.getSaleRate(),
-                            BigDecimal.ROUND_HALF_DOWN));
-            if (curr2tar.getCurrencyInst().isInvert()) {
+                            BigDecimal.ROUND_HALF_UP));
+
+            if (curr2tar.isInvert()) {
+                curr2tar.setRateUI(currentRateInfo.getRateUI().multiply(targetRateInfo.getRateUI()));
+                curr2tar.setSaleRateUI(currentRateInfo.getSaleRateUI().multiply(targetRateInfo.getSaleRateUI()));
+            } else {
                 curr2tar.setRateUI(curr2tar.getRate());
                 curr2tar.setSaleRateUI(curr2tar.getSaleRate());
-            } else {
-                curr2tar.setRateUI(currentRateInfo.getRateUI().divide(targetRateInfo.getRateUI(),
-                                BigDecimal.ROUND_HALF_DOWN));
-                curr2tar.setSaleRateUI(currentRateInfo.getSaleRateUI().divide(targetRateInfo.getSaleRateUI(),
-                                BigDecimal.ROUND_HALF_DOWN));
             }
         }
         return new RateInfo[] { currentRateInfo, targetRateInfo, curr2tar };
@@ -453,8 +432,7 @@ public abstract class Currency_Base
     /**
      * @param _parameter Parameter as passed by the eFaps API
      * @param _date date the rate must be evaluated for
-     * @param _currentCurrencyInst instance of the currency the rate is wanted
-     *            for
+     * @param _currentCurrencyInst instance of the currency the rate is wanted for
      * @return RateInfo
      * @throws EFapsException on error
      */
@@ -479,7 +457,7 @@ public abstract class Currency_Base
             ret.setRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.Rate), true));
             ret.setSaleRate(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.RateSale), false));
             ret.setSaleRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.RateSale), true));
-            ret.setInstance4Currency(multi.<Instance>getSelect(sel));
+            ret.setCurrencyInstance(multi.<Instance>getSelect(sel));
         } else {
             ret = RateInfo.getDummyRateInfo();
         }
@@ -535,4 +513,19 @@ public abstract class Currency_Base
         };
         return field.dropDownFieldValue(_parameter);
     }
+
+    /**
+     * @return the base currency for eFaps
+     * @throws EFapsException on error
+     */
+    protected static Instance getBaseCurrency()
+        throws EFapsException
+    {
+        final Instance ret =  ERP.getSysConfig().getLink(ERPSettings.CURRENCYBASE);
+        if (ret == null || ret != null && !ret.isValid()) {
+            Currency_Base.LOG.error("There must be an BaseCurrency defined to calculate rates.");
+        }
+        return ret;
+    }
+
 }
