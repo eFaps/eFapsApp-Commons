@@ -193,7 +193,7 @@ public abstract class Currency_Base
      * Method is used as attribute RATE_VALUE event.
      *
      * @param _parameter    Parameter as passed by the efasp API
-     * @return value for rate
+     * @return value for rate on error
      * @throws EFapsException
      */
     @SuppressWarnings("unchecked")
@@ -228,7 +228,7 @@ public abstract class Currency_Base
                 final Object value = fieldValue.getValue();
                 if (value instanceof Object[]) {
                     final Object[] values = (Object[]) value;
-                    if ( values[2] != null) {
+                    if (values[2] != null) {
                         final CurrencyInst currencyInst = getCurrencyInst((Long) values[2]);
                         if (currencyInst.isInvert()) {
                             final Object enomTmp = values[0];
@@ -293,7 +293,7 @@ public abstract class Currency_Base
     /**
      * @param _parameter Parameter as passed from the eFaps API
      * @return value for the targetcurrency
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     public Return getTargetCurrencyLinkUI(final Parameter _parameter)
         throws EFapsException
@@ -329,8 +329,10 @@ public abstract class Currency_Base
     }
 
     /**
-     * @param _parameter
-     * @param _rate
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _rate     rateObject to be evaluated
+     * @return RateInfo
+     * @throws EFapsException on error
      */
     public RateInfo evaluateRateInfo(final Parameter _parameter,
                                      final Object[] _rate)
@@ -347,7 +349,20 @@ public abstract class Currency_Base
         return ret;
     }
 
-
+    /**
+     * Returns an Array of RateInfo with following content.<br/>
+     * <ul>
+     * <li>[0]: RateInfo for <code>_currentCurrencyInst</code> against the Base Currency</li>
+     * <li>[1]: RateInfo for <code>_targetCurrencyInst</code> against the Base Currency</li>
+     * <li>[2]: RateInfo for <code>_currentCurrencyInst</code> against the <code>_targetCurrencyInst</code></li>
+     * </ul>
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _dateStr   date the rate must be evaluated for
+     * @param _currentCurrencyInst  instance of the currency the amount is currently in
+     * @param _targetCurrencyInst   instance of the currency the amount will be calculated for
+     * @return Array of RateInfo
+     * @throws EFapsException on error
+     */
     public RateInfo[] evaluateRateInfos(final Parameter _parameter,
                                         final String _dateStr,
                                         final Instance _currentCurrencyInst,
@@ -360,7 +375,7 @@ public abstract class Currency_Base
     }
 
     /**
-     * Returns an Array of RateInfo with following content.:<br/>
+     * Returns an Array of RateInfo with following content.<br/>
      * <ul>
      * <li>[0]: RateInfo for <code>_currentCurrencyInst</code> against the Base Currency</li>
      * <li>[1]: RateInfo for <code>_targetCurrencyInst</code> against the Base Currency</li>
@@ -368,9 +383,9 @@ public abstract class Currency_Base
      * </ul>
      * @param _parameter Parameter as passed by the eFaps API
      * @param _date     date the rate must be evaluated for
-     * @param _currentCurrencyInst instance of the currency the rate is wanted for
-     * @param _targetCurrencyInst instance of the currency the rate is wanted for
-     * @return RateInfo
+     * @param _currentCurrencyInst  instance of the currency the amount is currently in
+     * @param _targetCurrencyInst   instance of the currency the amount will be calculated for
+     * @return Array of RateInfo
      * @throws EFapsException on error
      */
     public RateInfo[] evaluateRateInfos(final Parameter _parameter,
@@ -399,16 +414,22 @@ public abstract class Currency_Base
         final RateInfo curr2tar;
         if (_targetCurrencyInst.equals(_currentCurrencyInst)) {
             curr2tar = RateInfo.getDummyRateInfo();
-            curr2tar.setInstance4Currency(null);
+            curr2tar.setInstance4Currency(_targetCurrencyInst);
         } else {
             curr2tar = new RateInfo();
-            curr2tar.setRate(targetRateInfo.getRate().divide(currentRateInfo.getRate(), BigDecimal.ROUND_HALF_DOWN));
-            curr2tar.setRateUI(targetRateInfo.getRateUI().divide(currentRateInfo.getRateUI(),
+            curr2tar.setInstance4Currency(_targetCurrencyInst);
+            curr2tar.setRate(currentRateInfo.getRate().divide(targetRateInfo.getRate(), BigDecimal.ROUND_HALF_DOWN));
+            curr2tar.setSaleRate(currentRateInfo.getSaleRate().divide(targetRateInfo.getSaleRate(),
                             BigDecimal.ROUND_HALF_DOWN));
-            curr2tar.setSaleRate(targetRateInfo.getSaleRate().divide(currentRateInfo.getSaleRate(),
-                            BigDecimal.ROUND_HALF_DOWN));
-            curr2tar.setSaleRateUI(targetRateInfo.getSaleRateUI().divide(currentRateInfo.getSaleRateUI(),
-                            BigDecimal.ROUND_HALF_DOWN));
+            if (curr2tar.getCurrencyInst().isInvert()) {
+                curr2tar.setRateUI(curr2tar.getRate());
+                curr2tar.setSaleRateUI(curr2tar.getSaleRate());
+            } else {
+                curr2tar.setRateUI(currentRateInfo.getRateUI().divide(targetRateInfo.getRateUI(),
+                                BigDecimal.ROUND_HALF_DOWN));
+                curr2tar.setSaleRateUI(currentRateInfo.getSaleRateUI().divide(targetRateInfo.getSaleRateUI(),
+                                BigDecimal.ROUND_HALF_DOWN));
+            }
         }
         return new RateInfo[] { currentRateInfo, targetRateInfo, curr2tar };
     }

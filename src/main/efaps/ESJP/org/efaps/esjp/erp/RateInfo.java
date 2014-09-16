@@ -85,7 +85,7 @@ public class RateInfo
     private Instance instance4Currency;
 
     /**
-     * Formatter Object used for this RateInfo
+     * Formatter Object used for this RateInfo.
      */
     private RateFormatter formatter;
 
