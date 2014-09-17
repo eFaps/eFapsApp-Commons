@@ -18,16 +18,15 @@
  * Last Changed By: $Author$
  */
 
-
 package org.efaps.esjp.erp;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
-
 
 /**
  * This class must be replaced for customization, therefore it is left empty.
@@ -42,9 +41,10 @@ import org.efaps.util.EFapsException;
 public class CurrencyInst
     extends CurrencyInst_Base
 {
+
     /**
-     * Constructor when used as instance object. to access parameters from
-     * a currency.
+     * Constructor when used as instance object. to access parameters from a
+     * currency.
      *
      * @param _instance instance of the currency
      */
@@ -95,5 +95,15 @@ public class CurrencyInst
         throws EFapsException
     {
         return CurrencyInst_Base.get(_object);
+    }
+
+    /**
+     * @return Set of available CurrencyInst
+     * @throws EFapsException on error
+     */
+    public static Set<CurrencyInst> getAvailable()
+        throws EFapsException
+    {
+        return CurrencyInst_Base.getAvailable();
     }
 }
