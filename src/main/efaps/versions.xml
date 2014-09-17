@@ -50,8 +50,8 @@
             import org.efaps.db.InstanceQuery;
             import org.efaps.esjp.admin.ui.UIUpdate;
             import org.efaps.esjp.data.ObjectImport;
-            
-            
+
+
             EFAPS_LOGGER.info("Importing Data for eFapsApp-Commons");
 
             RunLevel.init("shell");
@@ -65,6 +65,7 @@
             if (!query.next()) {
                 ObjectImport objImport = new ObjectImport();
                 objImport.importFromFile(new URL(EFAPS_ROOTURL, "Data/DataImport_Currency.xml"));
+                 objImport.importFromFile(new URL(EFAPS_ROOTURL, "Data/DataImport_Currency_ConfigLink.xml"));
             }
 
              // ERP_DocumentType
@@ -75,7 +76,7 @@
                 ObjectImport objImport = new ObjectImport();
                 objImport.importFromFile(new URL(EFAPS_ROOTURL, "Data/DataImport_DocumentType.xml"));
             }
-            
+
 
             UIUpdate update = new UIUpdate();
 
@@ -84,7 +85,7 @@
 
             <!-- Definitions_Definitions, Admin_Help_MainMenu -->
             update.add2Help("10c1efaf-af0a-4602-b6b5-8a5aff4ae38d", "dead549e-5cc6-49f9-9a79-8e33aa139f6d", -1);
-            
+
         </script>
     </version>
 </install>

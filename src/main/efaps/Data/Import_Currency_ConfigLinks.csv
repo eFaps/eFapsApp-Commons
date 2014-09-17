@@ -1,0 +1,2 @@
+key,description,valueType,valueSelect,valueAttr,valueValue,linkType,linkSelect,linkAttr,linkValue
+org.efaps.commons.CurrencyBase,Base Currency used for all calculations. Meaning that e.g a invoice will always be stored in this currency.,ERP_Currency,oid,UUID,41823aa0-a961-46cb-b04e-adc48d8eec2c,Admin_Common_SystemConfiguration,id,UUID,9ac2673a-18f9-41ba-b9be-5b0980bdf6f3
