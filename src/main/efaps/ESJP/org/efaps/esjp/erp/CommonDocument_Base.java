@@ -63,6 +63,7 @@ import org.efaps.ci.CIType;
 import org.efaps.db.AttributeQuery;
 import org.efaps.db.Checkin;
 import org.efaps.db.Context;
+import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
@@ -122,6 +123,14 @@ public abstract class CommonDocument_Base
         throws EFapsException
     {
         final Return ret = new Return();
+        final AbstractCommand command = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
+
+        final QueryBuilder queryBldr = new QueryBuilder(command.getTargetCreateType());
+        queryBldr.addWhereAttrEqValue(command.getTargetConnectAttribute(), _parameter.getInstance());
+        for (final Instance relInst : queryBldr.getQuery().executeWithoutAccessCheck()) {
+            new Delete(relInst).execute();
+        }
+
         final Create create = new Create()
         {
             @Override
