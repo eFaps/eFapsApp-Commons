@@ -1041,6 +1041,19 @@ public abstract class CommonDocument_Base
 
     /**
      * @param _parameter Parameter as passed by the eFaps API
+     * @return the created file
+     * @throws EFapsException on error
+     */
+    public Return createReport(final Parameter _parameter)
+        throws EFapsException
+    {
+        final StandartReport report = new StandartReport();
+        add2Report(_parameter, null, report);
+        return report.execute(_parameter);
+    }
+
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
      * @param _createdDoc   document created
      * @param _report report
      * @throws EFapsException on error
