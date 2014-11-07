@@ -343,6 +343,7 @@ public abstract class CurrencyInst_Base
         final QueryBuilder queryBldr = new QueryBuilder(CIERP.Currency);
         final CachedInstanceQuery query = queryBldr.getCachedQuery(QueryCache.DEFAULTKEY)
                         .setLifespan(1).setLifespanUnit(TimeUnit.HOURS);
+        queryBldr.addOrderByAttributeAsc(CIERP.Currency.ISOCode);
         query.executeWithoutAccessCheck();
         while (query.next()) {
             ret.add(new CurrencyInst(query.getCurrentValue()));
