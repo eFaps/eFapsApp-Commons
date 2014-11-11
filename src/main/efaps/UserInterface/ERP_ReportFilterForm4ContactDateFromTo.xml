@@ -46,7 +46,7 @@
         </field>
         <field name="contact">
             <property name="ModeEdit">EDITABLE</property>
-            <property name="ClassNameUI">org.efaps.admin.datamodel.ui.StringUI</property>
+            <property name="UIProvider">org.efaps.admin.datamodel.ui.StringUI</property>
              <property name="Label">ERP_ReportFilterForm4ContactDateFromTo.contact.Label</property>
             <trigger program="org.efaps.esjp.erp.FilteredReport"
                 method="getContactFieldValue"
