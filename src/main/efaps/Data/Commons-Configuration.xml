@@ -38,7 +38,8 @@ Fabrication_Process=7ae35ddb-473e-41b4-aaf5-02ace7ec4a6d
 Products_ProductStandart4Batch=a1cc9de2-1f69-456c-83aa-a7c5b8f8c802
 Products_ProductStandart4Batch.Parameter01=date
 Products_ProductStandart4Batch.Parameter02=attribute[Name]
-Accounting_TransactionDocument=1bb482ae-523e-4fb1-8d81-6a2373d13881]]></value>
+Accounting_TransactionDocument=1bb482ae-523e-4fb1-8d81-6a2373d13881
+Payroll_Payslip=b5f55a9b-843c-455e-87d4-a223b96b2496]]></value>
     <description>Properties.
     can be concatenated
     Set a NumberGenerator for a Type. Used for Common Documents in the calling command using setting "UseNumberGenerator4Name"
