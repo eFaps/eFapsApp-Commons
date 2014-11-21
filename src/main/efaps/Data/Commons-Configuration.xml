@@ -103,7 +103,8 @@ Sales_Receipt.Status=Digitized
 Sales_Reminder.Status=Digitized
 Sales_PaymentOrder.Status=Open
 Sales_CollectionOrder.Status=Open
-Sales_IncomingProfServReceipt.Status=Digitized]]></value>
+Sales_IncomingProfServReceipt.Status=Digitized
+Sales_ProductionOrder.Status=Digitized]]></value>
          </attribute>
     </definition>
 </common-systemconfiguration>
