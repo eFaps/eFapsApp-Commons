@@ -157,6 +157,8 @@ public abstract class FilteredReport_Base
             ret = new ContactFilterValue().setObject(Instance.get(_default));
         } else if ("Boolean".equalsIgnoreCase(_type)) {
             ret = BooleanUtils.toBoolean(_default);
+        } else if ("Currency".equalsIgnoreCase(_type)) {
+            ret = new CurrencyFilterValue().setObject(Instance.get(_default));
         }
         return ret;
     }
@@ -416,6 +418,8 @@ public abstract class FilteredReport_Base
             obj = new TypeFilterValue().setObject(Long.valueOf(val));
         } else if ("contact".equals(_field.getName())) {
             obj = new ContactFilterValue().setObject(Instance.get(val));
+        }  else if ("currency".equals(_field.getName())) {
+            obj = new CurrencyFilterValue().setObject(Instance.get(val));
         } else {
             obj = val;
         }
@@ -555,6 +559,35 @@ public abstract class FilteredReport_Base
                 ret = "";
             }
 
+            return ret;
+        }
+    }
+
+    /**
+     * FilterClass.
+     */
+    public static class CurrencyFilterValue
+        extends FilterValue<Instance>
+    {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public String getLabel()
+            throws EFapsException
+        {
+            String ret;
+            if (getObject().isValid()) {
+                final PrintQuery print = new PrintQuery(getObject());
+                print.addAttribute("Name");
+                print.execute();
+                ret = print.<String>getAttribute("Name");
+            } else {
+                ret = "";
+            }
             return ret;
         }
     }
