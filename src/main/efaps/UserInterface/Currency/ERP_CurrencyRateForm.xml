@@ -38,16 +38,16 @@
         <field name="type">
             <property name="Attribute">Type</property>
         </field>
-        <field name="rateSale">
-            <property name="ModeCreate">EDITABLE</property>
-            <property name="ModeEdit">EDITABLE</property>
-            <property name="Attribute">RateSale</property>
-            <property name="Required">true</property>
-        </field>
         <field name="rate">
             <property name="ModeCreate">EDITABLE</property>
             <property name="ModeEdit">EDITABLE</property>
             <property name="Attribute">Rate</property>
+            <property name="Required">true</property>
+        </field>
+        <field name="rateSale">
+            <property name="ModeCreate">EDITABLE</property>
+            <property name="ModeEdit">EDITABLE</property>
+            <property name="Attribute">RateSale</property>
             <property name="Required">true</property>
         </field>
         <field name="validFrom">
