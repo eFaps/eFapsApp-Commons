@@ -22,10 +22,14 @@ package org.efaps.esjp.erp;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -109,9 +113,11 @@ public abstract class FilteredReport_Base
      * Evaluate the properties of the event to get an default value.
      *
      * @param _parameter Parameter as passed by the eFasp API
+     * @param _field FieldName
      * @param _type type of filter
      * @param _default default value
      * @return default value for the context map
+     * @throws EFapsException on error
      */
     protected Object getDefaultValue(final Parameter _parameter,
                                      final String _field,
@@ -148,11 +154,13 @@ public abstract class FilteredReport_Base
             }
             ret = tmp;
         } else if ("Type".equalsIgnoreCase(_type)) {
+            final Set<Long> set = new HashSet<>();
             if (isUUID(_default)) {
-                ret = new TypeFilterValue().setObject(Type.get(UUID.fromString(_default)).getId());
+                set.add(Type.get(UUID.fromString(_default)).getId());
             } else {
-                ret = new TypeFilterValue().setObject(Type.get(_default).getId());
+                set.add(Type.get(_default).getId());
             }
+            ret = new TypeFilterValue().setObject(set);
         } else if ("Contact".equalsIgnoreCase(_type)) {
             ret = new ContactFilterValue().setObject(Instance.get(_default));
         } else if ("Boolean".equalsIgnoreCase(_type)) {
@@ -264,6 +272,11 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return Return with SNIPPLET
+     * @throws EFapsException on error
+     */
     public Return getTypeFieldValue(final Parameter _parameter)
         throws EFapsException
     {
@@ -297,7 +310,9 @@ public abstract class FilteredReport_Base
             final String key = fieldValue.getField().getName();
             final Map<String, Object> map = getFilterMap(_parameter);
             if (!map.containsKey(key)) {
-                map.put(key, new TypeFilterValue().setObject((Long) values.get(0).getValue()));
+                final Set<Long> set = new HashSet<>();
+                set.add((Long) values.get(0).getValue());
+                map.put(key, new TypeFilterValue().setObject(set));
             }
             final FilterValue<?> selected = (FilterValue<?>) map.get(key);
             for (final DropDownPosition pos : values) {
@@ -409,16 +424,21 @@ public abstract class FilteredReport_Base
     {
         final Object obj;
         final String val = _parameter.getParameterValue(_field.getName());
+        final String[] values = _parameter.getParameterValues(_field.getName());
         final IUIProvider uiProvider = _field.getUIProvider();
         if (uiProvider instanceof DateTimeUI || uiProvider instanceof DateUI) {
             obj = new DateTime(val);
         } else if (uiProvider instanceof BooleanUI) {
             obj = BooleanUtils.toBoolean(val);
         } else if ("type".equals(_field.getName())) {
-            obj = new TypeFilterValue().setObject(Long.valueOf(val));
+            final Set<Long> typeIds = new HashSet<>();
+            for (final String value : values) {
+                typeIds.add(Long.valueOf(value));
+            }
+            obj = new TypeFilterValue().setObject(typeIds);
         } else if ("contact".equals(_field.getName())) {
             obj = new ContactFilterValue().setObject(Instance.get(val));
-        }  else if ("currency".equals(_field.getName())) {
+        } else if ("currency".equals(_field.getName())) {
             obj = new CurrencyFilterValue().setObject(Instance.get(val));
         } else {
             obj = val;
@@ -524,14 +544,39 @@ public abstract class FilteredReport_Base
     }
 
     public static class TypeFilterValue
-        extends FilterValue<Long>
+        extends FilterValue<Set<Long>>
     {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
 
         @Override
         public String getLabel()
             throws EFapsException
         {
-            return Type.get(getObject()).getLabel();
+            final StringBuilder ret = new StringBuilder();
+            final List<String> labels = new ArrayList<>();
+            for (final Long val : getObject()) {
+                labels.add(Type.get(val).getLabel());
+            }
+            Collections.sort(labels, new Comparator<String>()
+            {
+                @Override
+                public int compare(final String _o1,
+                                   final String _o2)
+                {
+                    return _o1.compareTo(_o2);
+                }
+            });
+            for (final String label : labels) {
+                if (ret.length() > 0) {
+                    ret.append(", ");
+                }
+                ret.append(label);
+            }
+            return ret.toString();
         }
     }
 
