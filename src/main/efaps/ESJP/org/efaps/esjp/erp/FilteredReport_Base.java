@@ -468,7 +468,8 @@ public abstract class FilteredReport_Base
 
     /**
      * @param _parameter Parameter as passed by the eFaps API
-     * @param _field field teh valu eis wanted for
+     * @param _field field the value is wanted for
+     * @param _oldFilter old filter
      * @return object
      */
     @SuppressWarnings("unchecked")
@@ -495,14 +496,14 @@ public abstract class FilteredReport_Base
         } else if ("currency".equals(_field.getName())) {
             obj = new CurrencyFilterValue().setObject(Instance.get(val));
         } else if (_oldFilter.containsKey(_field.getName())) {
-             final Object oldObj = _oldFilter.get(_field.getName());
-             if (oldObj instanceof EnumFilterValue) {
-                 @SuppressWarnings("rawtypes")
+            final Object oldObj = _oldFilter.get(_field.getName());
+            if (oldObj instanceof EnumFilterValue) {
+                @SuppressWarnings("rawtypes")
                 final Class clazz = ((EnumFilterValue) oldObj).getObject().getDeclaringClass();
-                 obj = new EnumFilterValue().setObject(Enum.valueOf(clazz, val));
-             } else {
-                 obj = val;
-             }
+                obj = new EnumFilterValue().setObject(Enum.valueOf(clazz, val));
+            } else {
+                obj = val;
+            }
         } else {
             obj = val;
         }
@@ -534,7 +535,8 @@ public abstract class FilteredReport_Base
                     } else {
                         html.append("<br/>");
                     }
-                    html.append(entry.getKey()).append(": ").append(entry.getValue());
+                    html.append("<span style=\"font-weight: bold;\">").append(entry.getKey())
+                        .append(": ").append("</span>").append(entry.getValue());
                 }
             } else {
                 final Map<String, Object> filters = map.get(filterKey);
@@ -559,7 +561,9 @@ public abstract class FilteredReport_Base
                     } else {
                         html.append("<br/>");
                     }
-                    html.append(DBProperties.getProperty(dBProperties.get(entry.getKey()))).append(": ").append(value);
+                    html.append("<span style=\"font-weight: bold;\">")
+                        .append(DBProperties.getProperty(dBProperties.get(entry.getKey()))).append(": ")
+                        .append("</span>").append(value);
                 }
             }
         }
