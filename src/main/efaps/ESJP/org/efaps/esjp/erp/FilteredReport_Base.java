@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.BooleanUI;
 import org.efaps.admin.datamodel.ui.DateTimeUI;
@@ -374,6 +375,46 @@ public abstract class FilteredReport_Base
                         new org.efaps.esjp.common.uiform.Field().getInputField(_parameter, values, ListType.RADIO));
     }
 
+    public Return getStatusFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final Object uiObject = _parameter.get(ParameterValues.UIOBJECT);
+        final String key;
+        if (uiObject instanceof UIValue) {
+            final UIValue uiValue = (UIValue) uiObject;
+            key = uiValue.getField().getName();
+        } else {
+            final FieldValue fieldValue = (FieldValue) uiObject;
+            key = fieldValue.getField().getName();
+        }
+
+        final Map<String, Object> map = getFilterMap(_parameter);
+        final StatusFilterValue value = (StatusFilterValue) map.get(key);
+
+        final List<DropDownPosition> values = new ArrayList<DropDownPosition>();
+        final List<Status> statusList = getStatusListFromProperties(_parameter);
+
+        for (final Status status : statusList) {
+            final DropDownPosition position = new DropDownPosition(status.getId(), status.getLabel());
+            values.add(position);
+            position.setSelected(value.getObject().contains(status.getId()));
+        }
+        Collections.sort(values, new Comparator<DropDownPosition>(){
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public int compare(final DropDownPosition _arg0,
+                               final DropDownPosition _arg1)
+            {
+                return _arg0.getOrderValue().compareTo(_arg1.getOrderValue());
+            }});
+        final ListType listtype = ListType.valueOf(getProperty(_parameter, "ListType", "CHECKBOX"));
+        ret.put(ReturnValues.SNIPLETT,
+                        new org.efaps.esjp.common.uiform.Field().getInputField(_parameter, values, listtype));
+        return ret;
+    }
+
     /**
      * Get the filter map from the context.
      *
@@ -487,8 +528,10 @@ public abstract class FilteredReport_Base
             obj = BooleanUtils.toBoolean(val);
         } else if ("type".equals(_field.getName())) {
             final Set<Long> typeIds = new HashSet<>();
-            for (final String value : values) {
-                typeIds.add(Long.valueOf(value));
+            if (values != null) {
+                for (final String value : values) {
+                    typeIds.add(Long.valueOf(value));
+                }
             }
             obj = new TypeFilterValue().setObject(typeIds);
         } else if ("contact".equals(_field.getName())) {
@@ -501,6 +544,14 @@ public abstract class FilteredReport_Base
                 @SuppressWarnings("rawtypes")
                 final Class clazz = ((EnumFilterValue) oldObj).getObject().getDeclaringClass();
                 obj = new EnumFilterValue().setObject(Enum.valueOf(clazz, val));
+            } else if (oldObj instanceof StatusFilterValue) {
+                final Set<Long> statusIds = new HashSet<>();
+                if (values != null) {
+                    for (final String value : values) {
+                        statusIds.add(Long.valueOf(value));
+                    }
+                }
+                obj = new StatusFilterValue().setObject(statusIds);
             } else {
                 obj = val;
             }
@@ -646,6 +697,44 @@ public abstract class FilteredReport_Base
             return ret.toString();
         }
     }
+
+    public static class StatusFilterValue
+        extends FilterValue<Set<Long>>
+    {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public String getLabel()
+            throws EFapsException
+        {
+            final StringBuilder ret = new StringBuilder();
+            final List<String> labels = new ArrayList<>();
+            for (final Long val : getObject()) {
+                labels.add(Status.get(val).getLabel());
+            }
+            Collections.sort(labels, new Comparator<String>()
+            {
+
+                @Override
+                public int compare(final String _o1,
+                                   final String _o2)
+                {
+                    return _o1.compareTo(_o2);
+                }
+            });
+            for (final String label : labels) {
+                if (ret.length() > 0) {
+                    ret.append(", ");
+                }
+                ret.append(label);
+            }
+            return ret.toString();
+        }
+    }
+
 
     public static class ContactFilterValue
         extends FilterValue<Instance>
