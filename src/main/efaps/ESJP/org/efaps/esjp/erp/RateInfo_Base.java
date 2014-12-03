@@ -92,7 +92,7 @@ public abstract class RateInfo_Base
 
     /**
      * @return is the rate value for UI inverted or not
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     public boolean isInvert()
         throws EFapsException
