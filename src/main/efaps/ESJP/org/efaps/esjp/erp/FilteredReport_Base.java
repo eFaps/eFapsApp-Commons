@@ -167,6 +167,17 @@ public abstract class FilteredReport_Base
             ret = BooleanUtils.toBoolean(_default);
         } else if ("Currency".equalsIgnoreCase(_type)) {
             ret = new CurrencyFilterValue().setObject(Instance.get(_default));
+        } else if ("Enum".equalsIgnoreCase(_type)) {
+            try {
+                final Class<?> clazz = Class.forName(_default);
+                if (clazz.isEnum()) {
+                    final Object[] consts = clazz.getEnumConstants();
+                    ret = new EnumFilterValue().setObject((Enum<?>) consts[0]);
+                }
+            } catch (final ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         return ret;
     }
@@ -271,6 +282,46 @@ public abstract class FilteredReport_Base
         ret.put(ReturnValues.VALUES, map.get(key));
         return ret;
     }
+
+    /**
+     * Get the fieldvalue for the to dateField.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return value for the form
+     * @throws EFapsException on error
+     */
+    public Return getEnumFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final List<DropDownPosition> values = new ArrayList<>();
+        final Object uiObject = _parameter.get(ParameterValues.UIOBJECT);
+        final String key;
+        if (uiObject instanceof UIValue) {
+            final UIValue uiValue = (UIValue) uiObject;
+            key = uiValue.getField().getName();
+        } else {
+            final FieldValue fieldValue = (FieldValue) uiObject;
+            key = fieldValue.getField().getName();
+        }
+
+        final Map<String, Object> map = getFilterMap(_parameter);
+        if (map.containsKey(key)) {
+            final EnumFilterValue value = (EnumFilterValue) map.get(key);
+            final Object[] consts = value.getObject().getDeclaringClass().getEnumConstants();
+            for (final Object obj : consts) {
+                final String option = DBProperties.getProperty(obj.getClass().getName() + "." + obj.toString());
+                final DropDownPosition pos = new DropDownPosition(obj.toString(), option);
+                values.add(pos);
+                pos.setSelected(obj.equals(value.getObject()));
+            }
+        }
+
+        ret.put(ReturnValues.SNIPLETT,
+                        new org.efaps.esjp.common.uiform.Field().getInputField(_parameter, values, ListType.RADIO));
+        return ret;
+    }
+
 
     /**
      * @param _parameter Parameter as passed by the eFaps API
@@ -402,15 +453,16 @@ public abstract class FilteredReport_Base
     public Return setFilter(final Parameter _parameter)
         throws EFapsException
     {
-        final Map<String, Map<String, Object>> map = getCtxMap(_parameter);
-        final String filterKey = getFilterKey(_parameter);
-        final Map<String, Object> filter = new HashMap<String, Object>();
-        map.put(filterKey, filter);
+        final Map<String, Object> oldFilter = getFilterMap(_parameter);
+        final Map<String, Object> newFilter = new HashMap<String, Object>();
+
         final AbstractCommand cmd = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
         final Form form = cmd.getTargetForm();
         for (final Field field : form.getFields()) {
-            filter.put(field.getName(), getFilterValue(_parameter, field));
+            newFilter.put(field.getName(), getFilterValue(_parameter, field, oldFilter));
         }
+        oldFilter.clear();
+        oldFilter.putAll(newFilter);
         return new Return();
     }
 
@@ -419,8 +471,10 @@ public abstract class FilteredReport_Base
      * @param _field field teh valu eis wanted for
      * @return object
      */
+    @SuppressWarnings("unchecked")
     protected Object getFilterValue(final Parameter _parameter,
-                                    final Field _field)
+                                    final Field _field,
+                                    final Map<String, Object> _oldFilter)
     {
         final Object obj;
         final String val = _parameter.getParameterValue(_field.getName());
@@ -440,6 +494,15 @@ public abstract class FilteredReport_Base
             obj = new ContactFilterValue().setObject(Instance.get(val));
         } else if ("currency".equals(_field.getName())) {
             obj = new CurrencyFilterValue().setObject(Instance.get(val));
+        } else if (_oldFilter.containsKey(_field.getName())) {
+             final Object oldObj = _oldFilter.get(_field.getName());
+             if (oldObj instanceof EnumFilterValue) {
+                 @SuppressWarnings("rawtypes")
+                final Class clazz = ((EnumFilterValue) oldObj).getObject().getDeclaringClass();
+                 obj = new EnumFilterValue().setObject(Enum.valueOf(clazz, val));
+             } else {
+                 obj = val;
+             }
         } else {
             obj = val;
         }
@@ -636,4 +699,26 @@ public abstract class FilteredReport_Base
             return ret;
         }
     }
+
+
+    /**
+     * FilterClass.
+     */
+    public static class EnumFilterValue
+        extends FilterValue<Enum<?>>
+    {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public String getLabel()
+            throws EFapsException
+        {
+            return DBProperties.getProperty(getObject().getClass().getName() + "." + getObject().toString());
+        }
+    }
+
 }
