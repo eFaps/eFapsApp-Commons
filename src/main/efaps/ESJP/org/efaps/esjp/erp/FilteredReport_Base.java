@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.BooleanUI;
@@ -59,6 +60,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.esjp.common.AbstractCommon;
+import org.efaps.esjp.common.AbstractCommon_Base;
 import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
 import org.efaps.esjp.common.uiform.Field_Base.ListType;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -164,6 +166,8 @@ public abstract class FilteredReport_Base
             ret = new TypeFilterValue().setObject(set);
         } else if ("Contact".equalsIgnoreCase(_type)) {
             ret = new ContactFilterValue().setObject(Instance.get(_default));
+        } else if ("Instance".equalsIgnoreCase(_type)) {
+            ret = new InstanceFilterValue().setObject(Instance.get(_default));
         } else if ("Boolean".equalsIgnoreCase(_type)) {
             ret = BooleanUtils.toBoolean(_default);
         } else if ("Currency".equalsIgnoreCase(_type)) {
@@ -221,9 +225,39 @@ public abstract class FilteredReport_Base
         String val = "";
         if (map.containsKey(key)) {
             final Object obj = map.get(key);
-            if (obj instanceof FilterValue) {
-                val = ((FilterValue<?>) obj).getLabel();
-                ret.put(ReturnValues.INSTANCE, ((FilterValue<?>) obj).getObject());
+            if (obj instanceof AbstractFilterValue) {
+                val = ((AbstractFilterValue<?>) obj).getLabel(_parameter);
+                ret.put(ReturnValues.INSTANCE, ((AbstractFilterValue<?>) obj).getObject());
+            } else {
+                val = obj.toString();
+            }
+        } else {
+            map.put(key, "");
+        }
+        ret.put(ReturnValues.VALUES, val);
+        return ret;
+    }
+
+    /**
+     * Get the fieldvalue for the from contact.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return value for the form
+     * @throws EFapsException on error
+     */
+    public Return getInstanceFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final IUIValue value = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
+        final String key = value.getField().getName();
+        final Map<String, Object> map = getFilterMap(_parameter);
+        String val = "";
+        if (map.containsKey(key)) {
+            final Object obj = map.get(key);
+            if (obj instanceof AbstractFilterValue) {
+                val = ((AbstractFilterValue<?>) obj).getLabel(_parameter);
+                ret.put(ReturnValues.INSTANCE, ((AbstractFilterValue<?>) obj).getObject());
             } else {
                 val = obj.toString();
             }
@@ -323,7 +357,6 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
-
     /**
      * @param _parameter Parameter as passed by the eFaps API
      * @return Return with SNIPPLET
@@ -366,7 +399,7 @@ public abstract class FilteredReport_Base
                 set.add((Long) values.get(0).getValue());
                 map.put(key, new TypeFilterValue().setObject(set));
             }
-            final FilterValue<?> selected = (FilterValue<?>) map.get(key);
+            final AbstractFilterValue<?> selected = (AbstractFilterValue<?>) map.get(key);
             for (final DropDownPosition pos : values) {
                 pos.setSelected(pos.getValue().equals(selected.getObject()));
             }
@@ -400,7 +433,8 @@ public abstract class FilteredReport_Base
             values.add(position);
             position.setSelected(value.getObject().contains(status.getId()));
         }
-        Collections.sort(values, new Comparator<DropDownPosition>(){
+        Collections.sort(values, new Comparator<DropDownPosition>()
+        {
 
             @SuppressWarnings("unchecked")
             @Override
@@ -408,7 +442,8 @@ public abstract class FilteredReport_Base
                                final DropDownPosition _arg1)
             {
                 return _arg0.getOrderValue().compareTo(_arg1.getOrderValue());
-            }});
+            }
+        });
         final ListType listtype = ListType.valueOf(getProperty(_parameter, "ListType", "CHECKBOX"));
         ret.put(ReturnValues.SNIPLETT,
                         new org.efaps.esjp.common.uiform.Field().getInputField(_parameter, values, listtype));
@@ -541,8 +576,8 @@ public abstract class FilteredReport_Base
         } else if (_oldFilter.containsKey(_field.getName())) {
             final Object oldObj = _oldFilter.get(_field.getName());
             if (oldObj instanceof EnumFilterValue) {
-                @SuppressWarnings("rawtypes")
-                final Class clazz = ((EnumFilterValue) oldObj).getObject().getDeclaringClass();
+                @SuppressWarnings("rawtypes") final Class clazz = ((EnumFilterValue) oldObj).getObject()
+                                .getDeclaringClass();
                 obj = new EnumFilterValue().setObject(Enum.valueOf(clazz, val));
             } else if (oldObj instanceof StatusFilterValue) {
                 final Set<Long> statusIds = new HashSet<>();
@@ -552,6 +587,8 @@ public abstract class FilteredReport_Base
                     }
                 }
                 obj = new StatusFilterValue().setObject(statusIds);
+            } else if (oldObj instanceof InstanceFilterValue) {
+                obj = new InstanceFilterValue().setObject(Instance.get(val));
             } else {
                 obj = val;
             }
@@ -587,7 +624,7 @@ public abstract class FilteredReport_Base
                         html.append("<br/>");
                     }
                     html.append("<span style=\"font-weight: bold;\">").append(entry.getKey())
-                        .append(": ").append("</span>").append(entry.getValue());
+                                    .append(": ").append("</span>").append(entry.getValue());
                 }
             } else {
                 final Map<String, Object> filters = map.get(filterKey);
@@ -601,8 +638,8 @@ public abstract class FilteredReport_Base
                                             Context.getThreadContext().getLocale()));
                         } else if (valueTmp instanceof Boolean) {
                             value = DBProperties.getProperty(dBProperties.get(entry.getKey()) + "." + valueTmp);
-                        } else if (valueTmp instanceof FilterValue) {
-                            value = ((FilterValue<?>) valueTmp).getLabel();
+                        } else if (valueTmp instanceof AbstractFilterValue) {
+                            value = ((AbstractFilterValue<?>) valueTmp).getLabel(_parameter);
                         } else {
                             value = valueTmp.toString();
                         }
@@ -613,8 +650,8 @@ public abstract class FilteredReport_Base
                         html.append("<br/>");
                     }
                     html.append("<span style=\"font-weight: bold;\">")
-                        .append(DBProperties.getProperty(dBProperties.get(entry.getKey()))).append(": ")
-                        .append("</span>").append(value);
+                                    .append(DBProperties.getProperty(dBProperties.get(entry.getKey()))).append(": ")
+                                    .append("</span>").append(value);
                 }
             }
         }
@@ -622,18 +659,29 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
-    public static abstract class FilterValue<T>
+    /**
+     * Basic filter class.
+     */
+    public abstract static class AbstractFilterValue<T>
         implements Serializable
     {
 
         /**
-         *
+         * Needed for serialization.
          */
         private static final long serialVersionUID = 1L;
 
+        /**
+         * The object for this filter.
+         */
         private T object;
 
-        public String getLabel()
+        /**
+         * @param _parameter Parameter as passed by the eFaps API
+         * @return the label for this filter
+         * @throws EFapsException on error
+         */
+        public String getLabel(final Parameter _parameter)
             throws EFapsException
         {
             return this.object.toString();
@@ -653,8 +701,9 @@ public abstract class FilteredReport_Base
          * Setter method for instance variable {@link #object}.
          *
          * @param _object value for instance variable {@link #object}
+         * @return return this for chaining
          */
-        public FilterValue<T> setObject(final T _object)
+        public AbstractFilterValue<T> setObject(final T _object)
         {
             this.object = _object;
             return this;
@@ -662,7 +711,7 @@ public abstract class FilteredReport_Base
     }
 
     public static class TypeFilterValue
-        extends FilterValue<Set<Long>>
+        extends AbstractFilterValue<Set<Long>>
     {
 
         /**
@@ -671,7 +720,7 @@ public abstract class FilteredReport_Base
         private static final long serialVersionUID = 1L;
 
         @Override
-        public String getLabel()
+        public String getLabel(final Parameter _parameter)
             throws EFapsException
         {
             final StringBuilder ret = new StringBuilder();
@@ -681,6 +730,7 @@ public abstract class FilteredReport_Base
             }
             Collections.sort(labels, new Comparator<String>()
             {
+
                 @Override
                 public int compare(final String _o1,
                                    final String _o2)
@@ -699,15 +749,16 @@ public abstract class FilteredReport_Base
     }
 
     public static class StatusFilterValue
-        extends FilterValue<Set<Long>>
+        extends AbstractFilterValue<Set<Long>>
     {
+
         /**
          *
          */
         private static final long serialVersionUID = 1L;
 
         @Override
-        public String getLabel()
+        public String getLabel(final Parameter _parameter)
             throws EFapsException
         {
             final StringBuilder ret = new StringBuilder();
@@ -735,9 +786,8 @@ public abstract class FilteredReport_Base
         }
     }
 
-
     public static class ContactFilterValue
-        extends FilterValue<Instance>
+        extends AbstractFilterValue<Instance>
     {
 
         /**
@@ -746,7 +796,7 @@ public abstract class FilteredReport_Base
         private static final long serialVersionUID = 1L;
 
         @Override
-        public String getLabel()
+        public String getLabel(final Parameter _parameter)
             throws EFapsException
         {
             String ret;
@@ -760,6 +810,73 @@ public abstract class FilteredReport_Base
                 ret = "";
             }
 
+            return ret;
+        }
+    }
+
+    /**
+     * Filter that has a Instance as base.
+     */
+    public static class InstanceFilterValue
+        extends AbstractFilterValue<Instance>
+    {
+
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public String getLabel(final Parameter _parameter)
+            throws EFapsException
+        {
+            String ret;
+            if (getObject().isValid()) {
+                @SuppressWarnings("unchecked")
+                final Map<String, String> props = (Map<String, String>) _parameter.get(ParameterValues.PROPERTIES);
+                String key = getObject().getType().getName() + "_Select";
+                String select = null;
+                String phrase = null;
+                String msgPhraseStr = null;
+                MsgPhrase msgPhrase = null;
+                if (props.containsKey(key)) {
+                    select = props.get(key);
+                } else {
+                    key = getObject().getType().getName() + "_Phrase";
+                    if (props.containsKey(key)) {
+                        phrase = props.get(key);
+                    } else {
+                        key = getObject().getType().getName() + "_MsgPhrase";
+                        msgPhraseStr = props.get(key);
+                    }
+                }
+
+                final PrintQuery print = new PrintQuery(getObject());
+                if (select != null) {
+                    print.addSelect(select);
+                } else if (phrase != null) {
+                    print.addPhrase("ph", phrase);
+                } else if (msgPhraseStr != null) {
+                    if (msgPhraseStr.matches(AbstractCommon_Base.UUID_REGEX)) {
+                        msgPhrase = MsgPhrase.get(UUID.fromString(msgPhraseStr));
+                    } else {
+                        msgPhrase = MsgPhrase.get(msgPhraseStr);
+                    }
+                    print.addMsgPhrase(msgPhrase);
+                }
+                print.execute();
+                if (select != null) {
+                    ret = print.getSelect(select);
+                } else if (phrase != null) {
+                    ret = print.getPhrase("ph");
+                } else if (msgPhrase != null) {
+                    ret = print.getMsgPhrase(msgPhrase);
+                } else {
+                    ret = "-";
+                }
+            } else {
+                ret = "";
+            }
             return ret;
         }
     }
@@ -768,7 +885,7 @@ public abstract class FilteredReport_Base
      * FilterClass.
      */
     public static class CurrencyFilterValue
-        extends FilterValue<Instance>
+        extends AbstractFilterValue<Instance>
     {
 
         /**
@@ -777,7 +894,7 @@ public abstract class FilteredReport_Base
         private static final long serialVersionUID = 1L;
 
         @Override
-        public String getLabel()
+        public String getLabel(final Parameter _parameter)
             throws EFapsException
         {
             String ret;
@@ -793,12 +910,11 @@ public abstract class FilteredReport_Base
         }
     }
 
-
     /**
      * FilterClass.
      */
     public static class EnumFilterValue
-        extends FilterValue<Enum<?>>
+        extends AbstractFilterValue<Enum<?>>
     {
 
         /**
@@ -807,7 +923,7 @@ public abstract class FilteredReport_Base
         private static final long serialVersionUID = 1L;
 
         @Override
-        public String getLabel()
+        public String getLabel(final Parameter _parameter)
             throws EFapsException
         {
             return DBProperties.getProperty(getObject().getClass().getName() + "." + getObject().toString());
