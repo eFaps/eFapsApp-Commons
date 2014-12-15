@@ -457,7 +457,7 @@ public abstract class FilteredReport_Base
      * @return the mpa from the context
      * @throws EFapsException on error
      */
-    protected Map<String, Object> getFilterMap(final Parameter _parameter)
+    public Map<String, Object> getFilterMap(final Parameter _parameter)
         throws EFapsException
     {
         final Map<String, Map<String, Object>> map = getCtxMap(_parameter);
