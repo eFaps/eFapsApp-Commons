@@ -164,8 +164,6 @@ public abstract class FilteredReport_Base
                 set.add(Type.get(_default).getId());
             }
             ret = new TypeFilterValue().setObject(set);
-        } else if ("Contact".equalsIgnoreCase(_type)) {
-            ret = new ContactFilterValue().setObject(Instance.get(_default));
         } else if ("Instance".equalsIgnoreCase(_type)) {
             ret = new InstanceFilterValue().setObject(Instance.get(_default));
         } else if ("Boolean".equalsIgnoreCase(_type)) {
@@ -569,8 +567,6 @@ public abstract class FilteredReport_Base
                 }
             }
             obj = new TypeFilterValue().setObject(typeIds);
-        } else if ("contact".equals(_field.getName())) {
-            obj = new ContactFilterValue().setObject(Instance.get(val));
         } else if ("currency".equals(_field.getName())) {
             obj = new CurrencyFilterValue().setObject(Instance.get(val));
         } else if (_oldFilter.containsKey(_field.getName())) {
@@ -783,34 +779,6 @@ public abstract class FilteredReport_Base
                 ret.append(label);
             }
             return ret.toString();
-        }
-    }
-
-    public static class ContactFilterValue
-        extends AbstractFilterValue<Instance>
-    {
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public String getLabel(final Parameter _parameter)
-            throws EFapsException
-        {
-            String ret;
-            if (getObject().isValid()) {
-                final PrintQuery print = new PrintQuery(getObject());
-                print.addAttribute("Name");
-                print.execute();
-
-                ret = print.<String>getAttribute("Name");
-            } else {
-                ret = "";
-            }
-
-            return ret;
         }
     }
 
