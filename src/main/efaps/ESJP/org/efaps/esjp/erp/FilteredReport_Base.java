@@ -57,6 +57,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.api.ui.IOption;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
@@ -236,6 +237,47 @@ public abstract class FilteredReport_Base
             map.put(key, "");
         }
         ret.put(ReturnValues.VALUES, val);
+        return ret;
+    }
+
+    /**
+     * Get the fieldvalue for the from contact.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return value for the form
+     * @throws EFapsException on error
+     */
+    public Return getInstanceSetFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final IUIValue value = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
+        final String key = value.getField().getName();
+        final Map<String, Object> map = getFilterMap(_parameter);
+
+        final List<IOption> tokens = new ArrayList<IOption>();
+        if (map.containsKey(key)) {
+            final Object obj = map.get(key);
+            if (obj instanceof InstanceSetFilterValue) {
+                for (final Instance instance : ((InstanceSetFilterValue) obj).getObject()) {
+                    if (instance.isValid()) {
+                        tokens.add(new InstanceOption(instance.getOid(), getInstanceLabel(_parameter, instance)));
+                    }
+                }
+            }
+        } else {
+            map.put(key, "");
+        }
+        Collections.sort(tokens, new Comparator<IOption>()
+        {
+            @Override
+            public int compare(final IOption _arg0,
+                               final IOption _arg1)
+            {
+                return _arg0.getLabel().compareTo(_arg1.getLabel());
+            }
+        });
+        ret.put(ReturnValues.VALUES, tokens);
         return ret;
     }
 
@@ -698,7 +740,7 @@ public abstract class FilteredReport_Base
                             msgPhraseStr = props.get(key);
                         }
                     }
-    
+
                     final PrintQuery print = new PrintQuery(instance);
                     if (select != null) {
                         print.addSelect(select);
@@ -942,6 +984,41 @@ public abstract class FilteredReport_Base
             throws EFapsException
         {
             return DBProperties.getProperty(getObject().getClass().getName() + "." + getObject().toString());
+        }
+    }
+
+    public static class InstanceOption
+        implements IOption
+    {
+
+        private static final long serialVersionUID = 1L;
+
+        private final String label;
+        private final String value;
+
+        public InstanceOption(final String _value,
+                              final String _label)
+        {
+            this.label = _label;
+            this.value = _value;
+        }
+
+        @Override
+        public String getLabel()
+        {
+            return this.label;
+        }
+
+        @Override
+        public Object getValue()
+        {
+            return this.value;
+        }
+
+        @Override
+        public boolean isSelected()
+        {
+            return false;
         }
     }
 
