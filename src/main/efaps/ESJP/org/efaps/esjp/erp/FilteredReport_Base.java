@@ -22,6 +22,7 @@ package org.efaps.esjp.erp;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -166,6 +167,8 @@ public abstract class FilteredReport_Base
             ret = new TypeFilterValue().setObject(set);
         } else if ("Instance".equalsIgnoreCase(_type)) {
             ret = new InstanceFilterValue().setObject(Instance.get(_default));
+        } else if ("InstanceSet".equalsIgnoreCase(_type)) {
+            ret = new InstanceSetFilterValue().setObject(new HashSet<Instance>(Arrays.asList(Instance.get(_default))));
         } else if ("Boolean".equalsIgnoreCase(_type)) {
             ret = BooleanUtils.toBoolean(_default);
         } else if ("Currency".equalsIgnoreCase(_type)) {
@@ -572,8 +575,8 @@ public abstract class FilteredReport_Base
         } else if (_oldFilter.containsKey(_field.getName())) {
             final Object oldObj = _oldFilter.get(_field.getName());
             if (oldObj instanceof EnumFilterValue) {
-                @SuppressWarnings("rawtypes") final Class clazz = ((EnumFilterValue) oldObj).getObject()
-                                .getDeclaringClass();
+                @SuppressWarnings("rawtypes")
+                final Class clazz = ((EnumFilterValue) oldObj).getObject().getDeclaringClass();
                 obj = new EnumFilterValue().setObject(Enum.valueOf(clazz, val));
             } else if (oldObj instanceof StatusFilterValue) {
                 final Set<Long> statusIds = new HashSet<>();
@@ -585,6 +588,14 @@ public abstract class FilteredReport_Base
                 obj = new StatusFilterValue().setObject(statusIds);
             } else if (oldObj instanceof InstanceFilterValue) {
                 obj = new InstanceFilterValue().setObject(Instance.get(val));
+            } else if (oldObj instanceof InstanceSetFilterValue) {
+                final Set<Instance> set = new HashSet<>();
+                if (values != null) {
+                    for (final String value : values) {
+                        set.add(Instance.get(value));
+                    }
+                }
+                obj = new InstanceSetFilterValue().setObject(set);
             } else {
                 obj = val;
             }
@@ -653,6 +664,73 @@ public abstract class FilteredReport_Base
         }
         ret.put(ReturnValues.SNIPLETT, html.toString());
         return ret;
+    }
+
+    /**
+     * @param _parameter
+     * @param _instances
+     * @return
+     * @throws EFapsException
+     */
+    public static String getInstanceLabel(final Parameter _parameter,
+                                          final Instance... _instances)
+        throws EFapsException
+    {
+        final StringBuilder ret = new StringBuilder();
+        if (_instances != null) {
+            for (final Instance instance : _instances) {
+                if (instance.isValid()) {
+                    @SuppressWarnings("unchecked") final Map<String, String> props = (Map<String, String>) _parameter
+                                    .get(ParameterValues.PROPERTIES);
+                    String key = instance.getType().getName() + "_Select";
+                    String select = null;
+                    String phrase = null;
+                    String msgPhraseStr = null;
+                    MsgPhrase msgPhrase = null;
+                    if (props.containsKey(key)) {
+                        select = props.get(key);
+                    } else {
+                        key = instance.getType().getName() + "_Phrase";
+                        if (props.containsKey(key)) {
+                            phrase = props.get(key);
+                        } else {
+                            key = instance.getType().getName() + "_MsgPhrase";
+                            msgPhraseStr = props.get(key);
+                        }
+                    }
+    
+                    final PrintQuery print = new PrintQuery(instance);
+                    if (select != null) {
+                        print.addSelect(select);
+                    } else if (phrase != null) {
+                        print.addPhrase("ph", phrase);
+                    } else if (msgPhraseStr != null) {
+                        if (msgPhraseStr.matches(AbstractCommon_Base.UUID_REGEX)) {
+                            msgPhrase = MsgPhrase.get(UUID.fromString(msgPhraseStr));
+                        } else {
+                            msgPhrase = MsgPhrase.get(msgPhraseStr);
+                        }
+                        print.addMsgPhrase(msgPhrase);
+                    }
+                    print.execute();
+                    String val = null;
+                    if (select != null) {
+                        val = print.getSelect(select);
+                    } else if (phrase != null) {
+                        val = print.getPhrase("ph");
+                    } else if (msgPhrase != null) {
+                        val = print.getMsgPhrase(msgPhrase);
+                    }
+                    if (val != null) {
+                        if (ret.length() > 0) {
+                            ret.append(", ");
+                        }
+                        ret.append(val);
+                    }
+                }
+            }
+        }
+        return ret.toString();
     }
 
     /**
@@ -788,6 +866,22 @@ public abstract class FilteredReport_Base
     public static class InstanceFilterValue
         extends AbstractFilterValue<Instance>
     {
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public String getLabel(final Parameter _parameter)
+            throws EFapsException
+        {
+            return getInstanceLabel(_parameter, getObject());
+        }
+    }
+
+    public static class InstanceSetFilterValue
+        extends AbstractFilterValue<Set<Instance>>
+    {
 
         /**
          * Needed for serialization.
@@ -798,54 +892,7 @@ public abstract class FilteredReport_Base
         public String getLabel(final Parameter _parameter)
             throws EFapsException
         {
-            String ret;
-            if (getObject().isValid()) {
-                @SuppressWarnings("unchecked")
-                final Map<String, String> props = (Map<String, String>) _parameter.get(ParameterValues.PROPERTIES);
-                String key = getObject().getType().getName() + "_Select";
-                String select = null;
-                String phrase = null;
-                String msgPhraseStr = null;
-                MsgPhrase msgPhrase = null;
-                if (props.containsKey(key)) {
-                    select = props.get(key);
-                } else {
-                    key = getObject().getType().getName() + "_Phrase";
-                    if (props.containsKey(key)) {
-                        phrase = props.get(key);
-                    } else {
-                        key = getObject().getType().getName() + "_MsgPhrase";
-                        msgPhraseStr = props.get(key);
-                    }
-                }
-
-                final PrintQuery print = new PrintQuery(getObject());
-                if (select != null) {
-                    print.addSelect(select);
-                } else if (phrase != null) {
-                    print.addPhrase("ph", phrase);
-                } else if (msgPhraseStr != null) {
-                    if (msgPhraseStr.matches(AbstractCommon_Base.UUID_REGEX)) {
-                        msgPhrase = MsgPhrase.get(UUID.fromString(msgPhraseStr));
-                    } else {
-                        msgPhrase = MsgPhrase.get(msgPhraseStr);
-                    }
-                    print.addMsgPhrase(msgPhrase);
-                }
-                print.execute();
-                if (select != null) {
-                    ret = print.getSelect(select);
-                } else if (phrase != null) {
-                    ret = print.getPhrase("ph");
-                } else if (msgPhrase != null) {
-                    ret = print.getMsgPhrase(msgPhrase);
-                } else {
-                    ret = "-";
-                }
-            } else {
-                ret = "";
-            }
-            return ret;
+            return getInstanceLabel(_parameter, getObject().toArray(new Instance[getObject().size()]));
         }
     }
 
