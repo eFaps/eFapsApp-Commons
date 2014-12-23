@@ -30,10 +30,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
@@ -65,6 +68,7 @@ import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.AbstractCommon_Base;
 import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
 import org.efaps.esjp.common.uiform.Field_Base.ListType;
+import org.efaps.esjp.ui.html.Table;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.util.FilterDefault;
 import org.efaps.util.EFapsException;
@@ -241,6 +245,49 @@ public abstract class FilteredReport_Base
     }
 
     /**
+     * @param _parameter Parameter as passed by the eFasp API
+     * @return Return containing the file
+     * @throws EFapsException on error
+     */
+    public Return getCurrencyFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final List<DropDownPosition> values = new ArrayList<>();
+        final Map<String, Object> filterMap = getFilterMap(_parameter);
+        Object current = null;
+        if (filterMap.containsKey("currency")) {
+            final CurrencyFilterValue filter = (CurrencyFilterValue) filterMap.get("currency");
+            current = filter.getObject();
+        }
+        for (final CurrencyInst currency : CurrencyInst.getAvailable()) {
+            final DropDownPosition dropdown = new DropDownPosition(currency.getInstance().getOid(), currency.getName());
+            dropdown.setSelected(currency.getInstance().equals(current));
+            values.add(dropdown);
+        }
+        if (!"false".equalsIgnoreCase(getProperty(_parameter, "ShowEmptyValue"))) {
+            values.add(new DropDownPosition("-", "-"));
+        }
+        if ("true".equalsIgnoreCase(getProperty(_parameter, "ShowBaseCurrency"))) {
+            values.add(new DropDownPosition("BASE", DBProperties.getProperty(FilteredReport.class.getName()
+                            + ".BaseCurrency")));
+        }
+
+        Collections.sort(values, new Comparator<DropDownPosition>()
+        {
+
+            @Override
+            public int compare(final DropDownPosition _o1,
+                               final DropDownPosition _o2)
+            {
+                return String.valueOf(_o1.getOrderValue()).compareTo(String.valueOf(_o2.getOrderValue()));
+            }
+        });
+        final Return ret = new Return();
+        ret.put(ReturnValues.SNIPLETT, new org.efaps.esjp.common.uiform.Field().getDropDownField(_parameter, values));
+        return ret;
+    }
+
+    /**
      * Get the fieldvalue for the from contact.
      *
      * @param _parameter Parameter as passed by the eFaps API
@@ -408,49 +455,85 @@ public abstract class FilteredReport_Base
     public Return getTypeFieldValue(final Parameter _parameter)
         throws EFapsException
     {
+        final List<DropDownPosition> values = new ArrayList<>();
+        final Map<String, Object> filter = getFilterMap(_parameter);
+        final Set<Long> selected = new HashSet<>();
+        if (filter.containsKey("type")) {
+            final TypeFilterValue filters = (TypeFilterValue) filter.get("type");
+            selected.addAll(filters.getObject());
+        }
+        final List<Type> types = getTypeList(_parameter);
+        for (final Type type : types) {
+            final DropDownPosition dropdown = new DropDownPosition(type.getId(), type.getLabel());
+            dropdown.setSelected(selected.contains(type.getId()));
+            values.add(dropdown);
+        }
         final Return ret = new Return();
-        final FieldValue fieldValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
-        final Command cmd = (Command) _parameter.get(ParameterValues.CALL_CMD);
-        final String formStr = cmd.getProperty("FilterTargetForm");
-        final String fieldStr = cmd.getProperty("FilterTargetField");
-
-        final Form form = isUUID(formStr) ? Form.get(UUID.fromString(formStr)) : Form.get(formStr);
-        final Field field = form.getField(fieldStr);
-        final EventDefinition event = field.getEvents(EventType.UI_FIELD_VALUE).get(0);
-
-        final List<DropDownPosition> values = new ArrayList<DropDownPosition>();
-        if (event.getProperty("Type") != null) {
-            final Type type = isUUID(event.getProperty("Type")) ? Type.get(UUID.fromString(event.getProperty("Type")))
-                            : Type.get(event.getProperty("Type"));
-            values.add(new DropDownPosition(type.getId(), type.getLabel()));
-        }
-        for (int i = 1; i < 100; i++) {
-            final String nameTmp = "Type" + String.format("%02d", i);
-            if (event.getProperty(nameTmp) != null) {
-                final Type type = isUUID(event.getProperty(nameTmp)) ? Type.get(UUID.fromString(event
-                                .getProperty(nameTmp)))
-                                : Type.get(event.getProperty(nameTmp));
-                values.add(new DropDownPosition(type.getId(), type.getLabel()));
-            } else {
-                break;
-            }
-
-            final String key = fieldValue.getField().getName();
-            final Map<String, Object> map = getFilterMap(_parameter);
-            if (!map.containsKey(key)) {
-                final Set<Long> set = new HashSet<>();
-                set.add((Long) values.get(0).getValue());
-                map.put(key, new TypeFilterValue().setObject(set));
-            }
-            final AbstractFilterValue<?> selected = (AbstractFilterValue<?>) map.get(key);
-            for (final DropDownPosition pos : values) {
-                pos.setSelected(pos.getValue().equals(selected.getObject()));
-            }
-        }
-        return ret.put(ReturnValues.SNIPLETT,
-                        new org.efaps.esjp.common.uiform.Field().getInputField(_parameter, values, ListType.RADIO));
+        ret.put(ReturnValues.SNIPLETT,
+                        new org.efaps.esjp.common.uiform.Field().getInputField(_parameter, values,
+                                    EnumUtils.getEnum(ListType.class, getProperty(_parameter, "ListType", "RADIO"))));
+        return ret;
     }
 
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return list of types
+     * @throws EFapsException on error
+     */
+    protected List<Type> getTypeList(final Parameter _parameter)
+        throws EFapsException
+    {
+        final List<Type> ret = new ArrayList<>();
+        final Properties props = getProperties4TypeList(_parameter);
+
+        if (props.containsKey("Type")) {
+            final Type type = isUUID(props.getProperty("Type")) ? Type.get(UUID.fromString(props.getProperty("Type")))
+                            : Type.get(props.getProperty("Type"));
+            ret.add(type);
+        }
+        int i = 1;
+        String nameTmp = "Type" + String.format("%02d", i);
+        while (props.getProperty(nameTmp) != null) {
+            final Type type = isUUID(props.getProperty(nameTmp)) ? Type.get(UUID.fromString(props
+                            .getProperty(nameTmp)))
+                            : Type.get(props.getProperty(nameTmp));
+            ret.add(type);
+            i++;
+            nameTmp = "Type" + String.format("%02d", i);
+        }
+        return ret;
+    }
+
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return Properties
+     * @throws EFapsException on error
+     */
+    protected Properties getProperties4TypeList(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Properties ret;
+        final Command cmd = (Command) _parameter.get(ParameterValues.CALL_CMD);
+        if (cmd != null && cmd.getProperty("FilterTargetForm") != null) {
+            final String formStr = cmd.getProperty("FilterTargetForm");
+            final String fieldStr = cmd.getProperty("FilterTargetField");
+
+            final Form form = isUUID(formStr) ? Form.get(UUID.fromString(formStr)) : Form.get(formStr);
+            final Field field = form.getField(fieldStr);
+            final EventDefinition event = field.getEvents(EventType.UI_FIELD_VALUE).get(0);
+            ret = MapUtils.toProperties(event.getPropertyMap());
+        } else {
+            ret =  MapUtils.toProperties((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES));
+        }
+        return ret;
+    }
+
+
+    /**
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return status
+     * @throws EFapsException on error
+     */
     public Return getStatusFieldValue(final Parameter _parameter)
         throws EFapsException
     {
@@ -676,9 +759,14 @@ public abstract class FilteredReport_Base
                                     .append(": ").append("</span>").append(entry.getValue());
                 }
             } else {
+                final Table table = new Table();
                 final Map<String, Object> filters = map.get(filterKey);
                 final Map<Integer, String> dBProperties = analyseProperty(_parameter, "DBProperty");
+                int i = 2;
                 for (final Entry<Integer, String> entry : fields.entrySet()) {
+                    if (i % 2 == 0 || filters.size() < 8) {
+                        table.addRow();
+                    }
                     String value = "-";
                     final Object valueTmp = filters.get(entry.getValue());
                     if (valueTmp != null) {
@@ -693,15 +781,13 @@ public abstract class FilteredReport_Base
                             value = valueTmp.toString();
                         }
                     }
-                    if (first) {
-                        first = false;
-                    } else {
-                        html.append("<br/>");
-                    }
-                    html.append("<span style=\"font-weight: bold;\">")
-                                    .append(DBProperties.getProperty(dBProperties.get(entry.getKey()))).append(": ")
-                                    .append("</span>").append(value);
+                    final StringBuilder inner = new StringBuilder().append("<span style=\"font-weight: bold;\">")
+                                    .append(DBProperties.getProperty(dBProperties.get(entry.getKey()))).append(" ")
+                                    .append("</span>");
+                    table.addColumn(inner).addColumn(value);
+                    i++;
                 }
+                html.append(table.toHtml());
             }
         }
         ret.put(ReturnValues.SNIPLETT, html.toString());
@@ -709,10 +795,10 @@ public abstract class FilteredReport_Base
     }
 
     /**
-     * @param _parameter
-     * @param _instances
-     * @return
-     * @throws EFapsException
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _instances    Instances the label is wanted for
+     * @return String
+     * @throws EFapsException on error
      */
     public static String getInstanceLabel(final Parameter _parameter,
                                           final Instance... _instances)
