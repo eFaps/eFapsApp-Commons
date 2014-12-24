@@ -790,7 +790,8 @@ public abstract class FilteredReport_Base
                     final StringBuilder inner = new StringBuilder().append("<span style=\"font-weight: bold;\">")
                                     .append(DBProperties.getProperty(dBProperties.get(entry.getKey()))).append(" ")
                                     .append("</span>");
-                    table.addColumn(inner).addColumn(value);
+                    table.addColumn(inner).addColumn(value)
+                        .getCurrentColumn().setStyle("max-width: 300px;white-space: normal");
                     i++;
                 }
                 html.append(table.toHtml());
