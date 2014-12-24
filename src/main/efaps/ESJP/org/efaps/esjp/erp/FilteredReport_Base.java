@@ -268,8 +268,10 @@ public abstract class FilteredReport_Base
             values.add(new DropDownPosition("-", "-"));
         }
         if ("true".equalsIgnoreCase(getProperty(_parameter, "ShowBaseCurrency"))) {
-            values.add(new DropDownPosition("BASE", DBProperties.getProperty(FilteredReport.class.getName()
-                            + ".BaseCurrency")));
+            final DropDownPosition dropdown = new DropDownPosition("BASE", DBProperties.getProperty(
+                            FilteredReport.class.getName() + ".BaseCurrency"));
+            dropdown.setSelected(current != null && "BASE".equals(((Instance) current).getKey()));
+            values.add(dropdown);
         }
 
         Collections.sort(values, new Comparator<DropDownPosition>()
@@ -696,7 +698,11 @@ public abstract class FilteredReport_Base
             }
             obj = new TypeFilterValue().setObject(typeIds);
         } else if ("currency".equals(_field.getName())) {
-            obj = new CurrencyFilterValue().setObject(Instance.get(val));
+            if ("BASE".equals(val)) {
+                obj = new CurrencyFilterValue().setObject(Instance.get("", "", "BASE"));
+            } else {
+                obj = new CurrencyFilterValue().setObject(Instance.get(val));
+            }
         } else if (_oldFilter.containsKey(_field.getName())) {
             final Object oldObj = _oldFilter.get(_field.getName());
             if (oldObj instanceof EnumFilterValue) {
@@ -1041,7 +1047,9 @@ public abstract class FilteredReport_Base
             throws EFapsException
         {
             String ret;
-            if (getObject().isValid()) {
+            if ("BASE".equals(getObject().getKey())) {
+                ret = DBProperties.getProperty(FilteredReport.class.getName() + ".BaseCurrency");
+            } else if (getObject().isValid()) {
                 final PrintQuery print = new PrintQuery(getObject());
                 print.addAttribute("Name");
                 print.execute();
