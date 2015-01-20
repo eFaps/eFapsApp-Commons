@@ -72,6 +72,7 @@ import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.AbstractCommon;
+import org.efaps.esjp.common.file.FileUtil;
 import org.efaps.esjp.common.jasperreport.StandartReport;
 import org.efaps.esjp.common.listener.ITypedClass;
 import org.efaps.esjp.common.uiform.Create;
@@ -1028,6 +1029,9 @@ public abstract class CommonDocument_Base
                 report.setFileName(fileName);
                 add2Report(_parameter, _createdDoc, report);
                 ret = report.getFile(_parameter);
+
+                ret = new FileUtil().convert(_parameter,ret, fileName);
+
                 final InputStream input = new FileInputStream(ret);
                 final Checkin checkin = new Checkin(_createdDoc.getInstance());
                 checkin.execute(fileName + "." + getProperty(_parameter, "Mime"), input,
