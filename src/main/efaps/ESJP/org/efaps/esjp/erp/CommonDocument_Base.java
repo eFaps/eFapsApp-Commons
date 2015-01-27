@@ -1077,6 +1077,18 @@ public abstract class CommonDocument_Base
             if (companyTaxNum != null && !companyTaxNum.isEmpty()) {
                 _report.getJrParameters().put("CompanyTaxNum", companyTaxNum);
             }
+            final String companyActivity = config.getAttributeValue(ERPSettings.COMPANYACTIVITY);
+            if (companyActivity != null && !companyActivity.isEmpty()) {
+                _report.getJrParameters().put("CompanyActivity", companyActivity);
+            }
+            final String companyStreet = config.getAttributeValue(ERPSettings.COMPANYSTREET);
+            if (companyStreet != null && !companyStreet.isEmpty()) {
+                _report.getJrParameters().put("CompanyStreet", companyStreet);
+            }
+            final String companyDistrict = config.getAttributeValue(ERPSettings.COMPANYDISTRICT);
+            if (companyDistrict != null && !companyDistrict.isEmpty()) {
+                _report.getJrParameters().put("CompanyDistrict", companyDistrict);
+            }
         }
     }
 

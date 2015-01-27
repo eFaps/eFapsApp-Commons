@@ -36,34 +36,54 @@ import org.efaps.admin.program.esjp.EFapsUUID;
 public interface ERPSettings
 {
     /**
+     * Base key.
+     */
+    String BASE = "org.efaps.commons.";
+
+    /**
      * String with the name of the selected company.
      */
-    String COMPANYNAME = "org.efaps.commons.CompanyName";
+    String COMPANYNAME = BASE + "CompanyName";
 
     /**
      * String with the tax number of the selected company.
      */
-    String COMPANYTAX = "org.efaps.commons.CompanyTaxNumber";
+    String COMPANYTAX = BASE + "CompanyTaxNumber";
+
+    /**
+     * String with the tax number of the selected company.
+     */
+    String COMPANYACTIVITY = BASE + "CompanyActivity";
+
+    /**
+     * String with the tax number of the selected company.
+     */
+    String COMPANYSTREET = BASE + "CompanyStreet";
+
+    /**
+     * String with the tax number of the selected company.
+     */
+    String COMPANYDISTRICT = BASE + "CompanyDistrict";
 
     /**
      * Properties. Can be concatenated.<br/>
      * TYPENAME.Status
      */
-    String DOCSTATUSCREATE = "org.efaps.commons.DocumentStatus4Create";
+    String DOCSTATUSCREATE = BASE + "DocumentStatus4Create";
 
     /**
      * Properties.<br/>
      * Can be concatenated.<br/>
      * Set a JasperReport for a Type. Used for Common Documents.
      */
-    String JASPERKEY = "org.efaps.commons.JasperKey";
+    String JASPERKEY = BASE + "JasperKey";
 
     /**
      * Properties.<br/>
      * Can be concatenated.<br/>
      * Set Formatting information for numbers.
      */
-    String NUMBERFRMT = "org.efaps.commons.NumberFormatter";
+    String NUMBERFRMT = BASE + "NumberFormatter";
 
     /**
      * Properties.<br/>
@@ -76,36 +96,36 @@ public interface ERPSettings
      * Properties.<br/>
      * Set Formatting information for rates.
      */
-    String RATEFRMT = "org.efaps.commons.RateFormatter";
+    String RATEFRMT = BASE + "RateFormatter";
 
     /**
      * Properties.<br/>
      * Set Info information for rates.
      */
-    String RATEINFO = "org.efaps.commons.RateInfo4Type";
+    String RATEINFO = BASE + "RateInfo4Type";
 
     /**
      * Properties. Can be concatenated.
      * Key: Normally the type name
      * Values: One of EDIT, CREATE, NONE
      */
-    String ACTIONDEF = "org.efaps.commons.ActionDefinition";
+    String ACTIONDEF = BASE + "ActionDefinition";
 
     /**
      * Properties. Can be concatenated.
      * Key: Normally the type name
      */
-    String WARNING = "org.efaps.commons.Warning";
+    String WARNING = BASE + "Warning";
 
     /**
      * Link.<br/>
      * Base Currency for the System.
      */
-    String CURRENCYBASE = "org.efaps.commons.CurrencyBase";
+    String CURRENCYBASE = BASE + "CurrencyBase";
 
     /**
      * Properties. Can be concatenated.
      * Key: Normally the type name
      */
-    String CURRENCIES = "org.efaps.commons.Currencies";
+    String CURRENCIES = BASE + "Currencies";
 }
