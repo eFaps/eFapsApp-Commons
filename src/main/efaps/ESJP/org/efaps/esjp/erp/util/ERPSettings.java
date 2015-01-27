@@ -43,47 +43,57 @@ public interface ERPSettings
     /**
      * String with the name of the selected company.
      */
-    String COMPANYNAME = BASE + "CompanyName";
+    String COMPANYNAME = ERPSettings.BASE + "CompanyName";
 
     /**
      * String with the tax number of the selected company.
      */
-    String COMPANYTAX = BASE + "CompanyTaxNumber";
+    String COMPANYTAX = ERPSettings.BASE + "CompanyTaxNumber";
 
     /**
      * String with the tax number of the selected company.
      */
-    String COMPANYACTIVITY = BASE + "CompanyActivity";
+    String COMPANYACTIVITY = ERPSettings.BASE + "CompanyActivity";
 
     /**
      * String with the tax number of the selected company.
      */
-    String COMPANYSTREET = BASE + "CompanyStreet";
+    String COMPANYSTREET = ERPSettings.BASE + "CompanyStreet";
 
     /**
      * String with the tax number of the selected company.
      */
-    String COMPANYDISTRICT = BASE + "CompanyDistrict";
+    String COMPANYREGION = ERPSettings.BASE + "CompanyRegion";
+
+    /**
+     * String with the tax number of the selected company.
+     */
+    String COMPANYCITY = ERPSettings.BASE + "CompanyCity";
+
+    /**
+     * String with the tax number of the selected company.
+     */
+    String COMPANYDISTRICT = ERPSettings.BASE + "CompanyDistrict";
 
     /**
      * Properties. Can be concatenated.<br/>
      * TYPENAME.Status
      */
-    String DOCSTATUSCREATE = BASE + "DocumentStatus4Create";
+    String DOCSTATUSCREATE = ERPSettings.BASE + "DocumentStatus4Create";
 
     /**
      * Properties.<br/>
      * Can be concatenated.<br/>
      * Set a JasperReport for a Type. Used for Common Documents.
      */
-    String JASPERKEY = BASE + "JasperKey";
+    String JASPERKEY = ERPSettings.BASE + "JasperKey";
 
     /**
      * Properties.<br/>
      * Can be concatenated.<br/>
      * Set Formatting information for numbers.
      */
-    String NUMBERFRMT = BASE + "NumberFormatter";
+    String NUMBERFRMT = ERPSettings.BASE + "NumberFormatter";
 
     /**
      * Properties.<br/>
@@ -96,36 +106,36 @@ public interface ERPSettings
      * Properties.<br/>
      * Set Formatting information for rates.
      */
-    String RATEFRMT = BASE + "RateFormatter";
+    String RATEFRMT = ERPSettings.BASE + "RateFormatter";
 
     /**
      * Properties.<br/>
      * Set Info information for rates.
      */
-    String RATEINFO = BASE + "RateInfo4Type";
+    String RATEINFO = ERPSettings.BASE + "RateInfo4Type";
 
     /**
      * Properties. Can be concatenated.
      * Key: Normally the type name
      * Values: One of EDIT, CREATE, NONE
      */
-    String ACTIONDEF = BASE + "ActionDefinition";
+    String ACTIONDEF = ERPSettings.BASE + "ActionDefinition";
 
     /**
      * Properties. Can be concatenated.
      * Key: Normally the type name
      */
-    String WARNING = BASE + "Warning";
+    String WARNING = ERPSettings.BASE + "Warning";
 
     /**
      * Link.<br/>
      * Base Currency for the System.
      */
-    String CURRENCYBASE = BASE + "CurrencyBase";
+    String CURRENCYBASE = ERPSettings.BASE + "CurrencyBase";
 
     /**
      * Properties. Can be concatenated.
      * Key: Normally the type name
      */
-    String CURRENCIES = BASE + "Currencies";
+    String CURRENCIES = ERPSettings.BASE + "Currencies";
 }

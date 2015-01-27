@@ -1030,7 +1030,7 @@ public abstract class CommonDocument_Base
                 add2Report(_parameter, _createdDoc, report);
                 ret = report.getFile(_parameter);
 
-                ret = new FileUtil().convert(_parameter,ret, fileName);
+                ret = new FileUtil().convert(_parameter, ret, fileName);
 
                 final InputStream input = new FileInputStream(ret);
                 final Checkin checkin = new Checkin(_createdDoc.getInstance());
@@ -1084,6 +1084,14 @@ public abstract class CommonDocument_Base
             final String companyStreet = config.getAttributeValue(ERPSettings.COMPANYSTREET);
             if (companyStreet != null && !companyStreet.isEmpty()) {
                 _report.getJrParameters().put("CompanyStreet", companyStreet);
+            }
+            final String companyRegion = config.getAttributeValue(ERPSettings.COMPANYREGION);
+            if (companyRegion != null && !companyRegion.isEmpty()) {
+                _report.getJrParameters().put("CompanyRegion", companyRegion);
+            }
+            final String companyCity = config.getAttributeValue(ERPSettings.COMPANYCITY);
+            if (companyCity != null && !companyCity.isEmpty()) {
+                _report.getJrParameters().put("CompanyCity", companyCity);
             }
             final String companyDistrict = config.getAttributeValue(ERPSettings.COMPANYDISTRICT);
             if (companyDistrict != null && !companyDistrict.isEmpty()) {
