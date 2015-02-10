@@ -38,5 +38,12 @@ import org.efaps.admin.program.esjp.EFapsUUID;
 public class FilteredReport
     extends FilteredReport_Base
 {
-
+    /**
+     * @param _object object to be cast to enum value
+     * @return enum value
+     */
+    public static <S> S getEnumValue(final Object _object)
+    {
+        return FilteredReport_Base.<S>getEnumValue(_object);
+    }
 }

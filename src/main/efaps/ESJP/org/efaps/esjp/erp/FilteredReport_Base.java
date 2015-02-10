@@ -94,6 +94,19 @@ public abstract class FilteredReport_Base
     public static final String KEY4SESSION = FilteredReport.class.getName() + ".Key4SessionContext";
 
     /**
+     * Enum used for display.
+     */
+    public enum GroupDisplay
+    {
+        /** No display. */
+        NONE,
+        /** Display as Column */
+        COLUMN,
+        /** Display as Group. */
+        GROUP;
+    }
+
+    /**
      * Set the default filter in the context map. Must be called before any
      * other access to work.
      *
@@ -801,6 +814,18 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
+    @SuppressWarnings("unchecked")
+    protected static <S> S getEnumValue(final Object _object)
+    {
+        Object ret = null;
+        if (_object instanceof EnumFilterValue) {
+            ret = ((EnumFilterValue) _object).getObject();
+        } else {
+            ret = _object;
+        }
+        return (S) ret;
+    }
+
     /**
      * @param _parameter Parameter as passed by the eFaps API
      * @param _instances    Instances the label is wanted for
@@ -815,8 +840,8 @@ public abstract class FilteredReport_Base
         if (_instances != null) {
             for (final Instance instance : _instances) {
                 if (instance.isValid()) {
-                    @SuppressWarnings("unchecked") final Map<String, String> props = (Map<String, String>) _parameter
-                                    .get(ParameterValues.PROPERTIES);
+                    @SuppressWarnings("unchecked")
+                    final Map<String, String> props = (Map<String, String>) _parameter.get(ParameterValues.PROPERTIES);
                     String key = instance.getType().getName() + "_Select";
                     String select = null;
                     String phrase = null;
