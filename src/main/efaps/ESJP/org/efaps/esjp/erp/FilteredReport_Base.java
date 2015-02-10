@@ -100,7 +100,7 @@ public abstract class FilteredReport_Base
     {
         /** No display. */
         NONE,
-        /** Display as Column */
+        /** Display as Column. */
         COLUMN,
         /** Display as Group. */
         GROUP;
