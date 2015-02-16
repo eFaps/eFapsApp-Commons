@@ -66,11 +66,11 @@ import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.AbstractCommon_Base;
+import org.efaps.esjp.common.datetime.JodaTimeUtils;
 import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
 import org.efaps.esjp.common.uiform.Field_Base.ListType;
 import org.efaps.esjp.ui.html.Table;
 import org.efaps.ui.wicket.models.objects.UIForm;
-import org.efaps.ui.wicket.util.FilterDefault;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -150,31 +150,9 @@ public abstract class FilteredReport_Base
         Object ret = null;
         if ("DateTime".equalsIgnoreCase(_type)) {
             final String[] value = _default.split(":");
-            final int move = value.length > 1 ? Integer.parseInt(value[1]) : 0;
-
-            final FilterDefault def = FilterDefault.valueOf(value[0].toUpperCase());
-            DateTime tmp = new DateTime().withTimeAtStartOfDay();
-            switch (def) {
-                case TODAY:
-                    tmp = tmp.plusDays(move);
-                    break;
-                case WEEK:
-                    tmp = tmp.plusWeeks(move);
-                    break;
-                case MONTH:
-                    tmp = tmp.plusMonths(move);
-                    break;
-                case YEAR:
-                    tmp = tmp.plusYears(move);
-                    break;
-                case ALL:
-                    break;
-                case NONE:
-                    break;
-                default:
-                    break;
-            }
-            ret = tmp;
+            final Properties props = new Properties();
+            props.setProperty(value[0], value.length > 1 ? value[1] : "");
+            ret = JodaTimeUtils.getDefaultvalue(_parameter, props);
         } else if ("Type".equalsIgnoreCase(_type)) {
             final Set<Long> set = new HashSet<>();
             if (isUUID(_default)) {
