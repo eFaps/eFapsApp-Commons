@@ -44,7 +44,8 @@ Payroll_Advance=ad17502b-595c-4ba6-985a-4f5b2f99d182
 Payroll_Settlement=8e74f876-dbfe-4cfe-b3cf-aa7f0886efab
 Payroll_AlterationIncrement=c053192c-1c5d-4ed1-aa78-b361e8fbc509
 Payroll_AlterationAbatement=5db54ea9-9259-4e38-a96c-4210fce0ac58
-TimeReport_EmployeeTimeCard=e4795bdd-93ac-4c0b-bd8c-1a62ddfa3de2]]></value>
+TimeReport_EmployeeTimeCard=e4795bdd-93ac-4c0b-bd8c-1a62ddfa3de2
+TimeReport_EmployeePreplannedAbsence=9878c43d-319f-4b6a-a9c7-5e718fc36ea2]]></value>
     <description>Properties.
     can be concatenated
     Set a NumberGenerator for a Type. Used for Common Documents in the calling command using setting "UseNumberGenerator4Name"
@@ -109,7 +110,8 @@ Sales_Reminder.Status=Draft
 Sales_PaymentOrder.Status=Open
 Sales_CollectionOrder.Status=Open
 Sales_IncomingProfServReceipt.Status=Digitized
-Sales_ProductionOrder.Status=Digitized]]></value>
+Sales_ProductionOrder.Status=Digitized
+TimeReport_EmployeePreplannedAbsence.Status=Draft]]></value>
          </attribute>
     </definition>
 </common-systemconfiguration>
