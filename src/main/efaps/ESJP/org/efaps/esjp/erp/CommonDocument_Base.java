@@ -1031,11 +1031,12 @@ public abstract class CommonDocument_Base
                 ret = report.getFile(_parameter);
 
                 ret = new FileUtil().convert(_parameter, ret, fileName);
-
-                final InputStream input = new FileInputStream(ret);
-                final Checkin checkin = new Checkin(_createdDoc.getInstance());
-                checkin.execute(fileName + "." + getProperty(_parameter, "Mime"), input,
-                                ((Long) ret.length()).intValue());
+                if (ret != null) {
+                    final InputStream input = new FileInputStream(ret);
+                    final Checkin checkin = new Checkin(_createdDoc.getInstance());
+                    checkin.execute(fileName + "." + getProperty(_parameter, "Mime"), input,
+                                    ((Long) ret.length()).intValue());
+                }
             } catch (final FileNotFoundException e) {
                 CommonDocument_Base.LOG.error("Catched FileNotFoundException", e);
             }
