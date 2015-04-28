@@ -1012,7 +1012,8 @@ public abstract class CommonDocument_Base
         throws EFapsException
     {
         File ret = null;
-        if ((containsProperty(_parameter, "JasperReport") || containsProperty(_parameter, "JasperKey"))
+        if ((containsProperty(_parameter, "JasperReport") || containsProperty(_parameter, "JasperKey")
+                        || containsProperty(_parameter, "JasperConfig"))
                         && _createdDoc.getInstance() != null && _createdDoc.getInstance().isValid()) {
             try {
                 final StandartReport report = new StandartReport();
