@@ -54,7 +54,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.program.esjp.EFapsRevision;
+import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
@@ -79,11 +79,9 @@ import org.joda.time.format.DateTimeFormat;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: FilteredReport_Base.java 12893 2014-05-27 23:29:01Z
- *          jan@moxter.net $
  */
 @EFapsUUID("fc64ff47-d1f6-4aed-8d7d-2a9128a51a19")
-@EFapsRevision("$Rev$")
+@EFapsApplication("eFapsApp-Commons")
 public abstract class FilteredReport_Base
     extends AbstractCommon
 {
