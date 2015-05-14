@@ -38,6 +38,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.efaps.admin.common.MsgPhrase;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.BooleanUI;
@@ -503,7 +504,7 @@ public abstract class FilteredReport_Base
     protected Properties getProperties4TypeList(final Parameter _parameter)
         throws EFapsException
     {
-        final Properties ret;
+        Properties ret = new Properties();
         final Command cmd = (Command) _parameter.get(ParameterValues.CALL_CMD);
         if (cmd != null && cmd.getProperty("FilterTargetForm") != null) {
             final String formStr = cmd.getProperty("FilterTargetForm");
@@ -513,6 +514,17 @@ public abstract class FilteredReport_Base
             final Field field = form.getField(fieldStr);
             final EventDefinition event = field.getEvents(EventType.UI_FIELD_VALUE).get(0);
             ret = MapUtils.toProperties(event.getPropertyMap());
+        } else if (containsProperty(_parameter, "QueryBldrConfig")) {
+            final String config = getProperty(_parameter, "QueryBldrConfig");
+            SystemConfiguration sysConf;
+            if (isUUID(config)) {
+                sysConf = SystemConfiguration.get(UUID.fromString(config));
+            } else {
+                sysConf = SystemConfiguration.get(config);
+            }
+            if (sysConf != null) {
+                ret = sysConf.getAttributeValueAsProperties(getProperty(_parameter, "QueryBldrConfigAttribute"));
+            }
         } else {
             ret =  MapUtils.toProperties((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES));
         }
