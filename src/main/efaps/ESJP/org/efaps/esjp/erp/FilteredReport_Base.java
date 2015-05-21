@@ -167,7 +167,13 @@ public abstract class FilteredReport_Base
         } else if ("Boolean".equalsIgnoreCase(_type)) {
             ret = BooleanUtils.toBoolean(_default);
         } else if ("Currency".equalsIgnoreCase(_type)) {
-            ret = new CurrencyFilterValue().setObject(Instance.get(_default));
+            Instance inst;
+            if ("BASECURRENCY".equalsIgnoreCase(_default)) {
+                inst= Currency.getBaseCurrency();
+            } else {
+                inst = Instance.get(_default);
+            }
+            ret = new CurrencyFilterValue().setObject(inst);
         } else if ("Enum".equalsIgnoreCase(_type)) {
             try {
                 final Class<?> clazz = Class.forName(_default);
