@@ -51,7 +51,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.program.esjp.EFapsRevision;
+import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.program.esjp.Listener;
 import org.efaps.admin.ui.AbstractCommand;
@@ -95,7 +95,7 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  */
 @EFapsUUID("e47df65d-4c5e-423f-b2cc-815c3007b19f")
-@EFapsRevision("$Rev$")
+@EFapsApplication("eFapsApp-Commons")
 public abstract class CommonDocument_Base
     extends AbstractCommon
     implements ITypedClass
@@ -149,6 +149,20 @@ public abstract class CommonDocument_Base
         final Instance actionInst = create.basicInsert(_parameter);
         for (final IOnAction listener : Listener.get().<IOnAction>invoke(IOnAction.class)) {
             listener.afterAssign(this, _parameter, actionInst);
+        }
+
+        final Map<Status, Status> mapping = getStatusMapping(_parameter);
+
+        if (!mapping.isEmpty()) {
+            final PrintQuery print = new PrintQuery(_parameter.getInstance());
+            print.addAttribute(CIERP.DocumentAbstract.StatusAbstract);
+            print.execute();
+            final Status status = Status.get(print.<Long>getAttribute(CIERP.DocumentAbstract.StatusAbstract));
+            if (mapping.containsKey(status)) {
+                final Update update = new Update(_parameter.getInstance());
+                update.add(CIERP.DocumentAbstract.StatusAbstract, mapping.get(status));
+                update.execute();
+            }
         }
         return ret;
     }
