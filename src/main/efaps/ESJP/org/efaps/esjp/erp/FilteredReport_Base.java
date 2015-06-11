@@ -356,6 +356,29 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
+    public Return getOptionListFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final IUIValue value = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
+        final String key = value.getField().getName();
+        final Map<String, Object> map = getFilterMap(_parameter);
+        String val = "";
+        if (map.containsKey(key)) {
+            final Object obj = map.get(key);
+            if (obj instanceof InstanceFilterValue) {
+                val = ((InstanceFilterValue) obj).getObject().getOid();
+            } else {
+                val = obj.toString();
+            }
+            _parameter.put(ParameterValues.UIOBJECT, UIValue.get(value.getField(), null, val));
+        } else {
+            map.put(key, "");
+        }
+
+        return new org.efaps.esjp.common.uiform.Field().getOptionListFieldValue(_parameter);
+    }
+
+
     /**
      * Get the fieldvalue for the to dateField.
      *
