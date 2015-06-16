@@ -66,13 +66,13 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
 import org.efaps.esjp.common.AbstractCommon;
-import org.efaps.esjp.common.AbstractCommon_Base;
 import org.efaps.esjp.common.datetime.JodaTimeUtils;
 import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
 import org.efaps.esjp.common.uiform.Field_Base.ListType;
 import org.efaps.esjp.ui.html.Table;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
@@ -882,7 +882,7 @@ public abstract class FilteredReport_Base
                     } else if (phrase != null) {
                         print.addPhrase("ph", phrase);
                     } else if (msgPhraseStr != null) {
-                        if (msgPhraseStr.matches(AbstractCommon_Base.UUID_REGEX)) {
+                        if (UUIDUtil.isUUID(msgPhraseStr)) {
                             msgPhrase = MsgPhrase.get(UUID.fromString(msgPhraseStr));
                         } else {
                             msgPhrase = MsgPhrase.get(msgPhraseStr);
