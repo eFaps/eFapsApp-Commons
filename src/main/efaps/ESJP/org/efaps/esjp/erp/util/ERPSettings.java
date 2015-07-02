@@ -41,41 +41,6 @@ public interface ERPSettings
     String BASE = "org.efaps.commons.";
 
     /**
-     * String with the name of the selected company.
-     */
-    String COMPANYNAME = ERPSettings.BASE + "CompanyName";
-
-    /**
-     * String with the tax number of the selected company.
-     */
-    String COMPANYTAX = ERPSettings.BASE + "CompanyTaxNumber";
-
-    /**
-     * String with the tax number of the selected company.
-     */
-    String COMPANYACTIVITY = ERPSettings.BASE + "CompanyActivity";
-
-    /**
-     * String with the tax number of the selected company.
-     */
-    String COMPANYSTREET = ERPSettings.BASE + "CompanyStreet";
-
-    /**
-     * String with the tax number of the selected company.
-     */
-    String COMPANYREGION = ERPSettings.BASE + "CompanyRegion";
-
-    /**
-     * String with the tax number of the selected company.
-     */
-    String COMPANYCITY = ERPSettings.BASE + "CompanyCity";
-
-    /**
-     * String with the tax number of the selected company.
-     */
-    String COMPANYDISTRICT = ERPSettings.BASE + "CompanyDistrict";
-
-    /**
      * Properties. Can be concatenated.<br/>
      * TYPENAME.Status
      */
