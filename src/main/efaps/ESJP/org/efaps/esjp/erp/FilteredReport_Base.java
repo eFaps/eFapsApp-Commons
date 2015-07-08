@@ -702,7 +702,7 @@ public abstract class FilteredReport_Base
         }
         oldFilter.clear();
         oldFilter.putAll(newFilter);
-        clearCache();
+        clearCache(_parameter);
         return new Return();
     }
 
@@ -788,7 +788,7 @@ public abstract class FilteredReport_Base
         final Map<String, Map<String, Object>> map = getCtxMap(_parameter);
         final String filterKey = getFilterKey(_parameter);
         if (map.containsKey(filterKey)) {
-            final DateTime time = getCachedTime();
+            final DateTime time = getCachedTime(_parameter);
             if (time != null) {
                 html.append(DBProperties.getFormatedDBProperty(FilteredReport.class.getName() + ".CacheTime",
                                 time.toDate())).append("<br/>");
@@ -843,7 +843,7 @@ public abstract class FilteredReport_Base
     }
 
     @Override
-    protected Long getLifespan()
+    protected Long getLifespan(final Parameter _parameter)
         throws EFapsException
     {
         return Long.parseLong(ERP.FILTERREPORTCONFIG.get().getProperty(getClass().getName() + " .LifeSpan", "5"));
