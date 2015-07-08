@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.esjp.erp;
@@ -65,10 +62,11 @@ import org.efaps.api.ui.IOption;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
-import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.datetime.JodaTimeUtils;
+import org.efaps.esjp.common.jasperreport.AbstractCachedReport;
 import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
 import org.efaps.esjp.common.uiform.Field_Base.ListType;
+import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.ui.html.Table;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.util.EFapsException;
@@ -84,7 +82,7 @@ import org.joda.time.format.DateTimeFormat;
 @EFapsUUID("fc64ff47-d1f6-4aed-8d7d-2a9128a51a19")
 @EFapsApplication("eFapsApp-Commons")
 public abstract class FilteredReport_Base
-    extends AbstractCommon
+    extends AbstractCachedReport
 {
 
     /**
@@ -169,7 +167,7 @@ public abstract class FilteredReport_Base
         } else if ("Currency".equalsIgnoreCase(_type)) {
             Instance inst;
             if ("BASECURRENCY".equalsIgnoreCase(_default)) {
-                inst= Currency.getBaseCurrency();
+                inst = Currency.getBaseCurrency();
             } else {
                 inst = Instance.get(_default);
             }
@@ -356,6 +354,13 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
+    /**
+     * Gets the option list field value.
+     *
+     * @param _parameter the _parameter
+     * @return the option list field value
+     * @throws EFapsException the e faps exception
+     */
     public Return getOptionListFieldValue(final Parameter _parameter)
         throws EFapsException
     {
@@ -697,6 +702,7 @@ public abstract class FilteredReport_Base
         }
         oldFilter.clear();
         oldFilter.putAll(newFilter);
+        clearCache();
         return new Return();
     }
 
@@ -782,6 +788,11 @@ public abstract class FilteredReport_Base
         final Map<String, Map<String, Object>> map = getCtxMap(_parameter);
         final String filterKey = getFilterKey(_parameter);
         if (map.containsKey(filterKey)) {
+            final DateTime time = getCachedTime();
+            if (time != null) {
+                html.append(DBProperties.getFormatedDBProperty(FilteredReport.class.getName() + ".CacheTime",
+                                time.toDate())).append("<br/>");
+            }
             final Map<Integer, String> fields = analyseProperty(_parameter, "Field");
             boolean first = true;
             if (fields.isEmpty()) {
@@ -831,6 +842,20 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
+    @Override
+    protected Long getLifespan()
+        throws EFapsException
+    {
+        return Long.parseLong(ERP.FILTERREPORTCONFIG.get().getProperty(getClass().getName() + " .LifeSpan", "5"));
+    }
+
+    /**
+     * Gets the enum value.
+     *
+     * @param <S> the generic type
+     * @param _object the _object
+     * @return the enum value
+     */
     @SuppressWarnings("unchecked")
     protected static <S> S getEnumValue(final Object _object)
     {
@@ -961,6 +986,9 @@ public abstract class FilteredReport_Base
         }
     }
 
+    /**
+     * The Class TypeFilterValue.
+     */
     public static class TypeFilterValue
         extends AbstractFilterValue<Set<Long>>
     {
@@ -999,6 +1027,9 @@ public abstract class FilteredReport_Base
         }
     }
 
+    /**
+     * The Class StatusFilterValue.
+     */
     public static class StatusFilterValue
         extends AbstractFilterValue<Set<Long>>
     {
@@ -1056,6 +1087,10 @@ public abstract class FilteredReport_Base
         }
     }
 
+    /**
+     * The Class InstanceSetFilterValue.
+     *
+     */
     public static class InstanceSetFilterValue
         extends AbstractFilterValue<Set<Instance>>
     {
@@ -1124,15 +1159,29 @@ public abstract class FilteredReport_Base
         }
     }
 
+    /**
+     * The Class InstanceOption.
+     *
+     */
     public static class InstanceOption
         implements IOption
     {
 
+        /** The Constant serialVersionUID. */
         private static final long serialVersionUID = 1L;
 
+        /** The label. */
         private final String label;
+
+        /** The value. */
         private final String value;
 
+        /**
+         * Instantiates a new instance option.
+         *
+         * @param _value the _value
+         * @param _label the _label
+         */
         public InstanceOption(final String _value,
                               final String _label)
         {

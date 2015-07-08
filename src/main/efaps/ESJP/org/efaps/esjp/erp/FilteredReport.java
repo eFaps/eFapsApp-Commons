@@ -21,7 +21,7 @@
 
 package org.efaps.esjp.erp;
 
-import org.efaps.admin.program.esjp.EFapsRevision;
+import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 
 
@@ -34,13 +34,14 @@ import org.efaps.admin.program.esjp.EFapsUUID;
  * @version $Id$
  */
 @EFapsUUID("0fce31d2-c4b3-4058-9a2c-de2cd41f7615")
-@EFapsRevision("$Rev$")
+@EFapsApplication("eFapsApp-Commons")
 public class FilteredReport
     extends FilteredReport_Base
 {
     /**
      * @param _object object to be cast to enum value
      * @return enum value
+     * @param <S> return type
      */
     public static <S> S getEnumValue(final Object _object)
     {

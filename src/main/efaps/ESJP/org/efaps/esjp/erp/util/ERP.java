@@ -26,6 +26,7 @@ import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.api.annotation.EFapsSysConfAttribute;
 import org.efaps.api.annotation.EFapsSystemConfiguration;
+import org.efaps.esjp.admin.common.systemconfiguration.PropertiesSysConfAttribute;
 import org.efaps.esjp.admin.common.systemconfiguration.StringSysConfAttribute;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -94,6 +95,14 @@ public final class ERP
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CompanyDistrict")
                     .description("District of the selected company.");
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final PropertiesSysConfAttribute FILTERREPORTCONFIG = new PropertiesSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "Config4FilteredReport")
+                    .description("Basic Configurations for Filtered Reports.");
+
 
     /**
      * Enum used for a multistate for Activation in ERP_DocumentType.
