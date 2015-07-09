@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 14663 $
- * Last Changed:    $Date: 2014-12-23 01:55:16 -0500 (Tue, 23 Dec 2014) $
- * Last Changed By: $Author: jan@moxter.net $
  */
 
 package org.efaps.esjp.erp;
 
-import org.efaps.admin.program.esjp.EFapsRevision;
+import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 
 /**
@@ -29,12 +26,10 @@ import org.efaps.admin.program.esjp.EFapsUUID;
  * class.
  *
  * @author The eFaps Team
- * @version $Id: AbstractGroupedByDate.java 14663 2014-12-23 06:55:16Z jan@moxter.net $
  */
 @EFapsUUID("2c1e7279-dfac-4a24-9821-a0f4f3bd210c")
-@EFapsRevision("$Rev: 14663 $")
+@EFapsApplication("eFapsApp-Commons")
 public abstract class AbstractGroupedByDate
     extends AbstractGroupedByDate_Base
 {
-
 }

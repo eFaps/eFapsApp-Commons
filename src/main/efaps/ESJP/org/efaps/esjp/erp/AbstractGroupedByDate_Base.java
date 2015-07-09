@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 14663 $
- * Last Changed:    $Date: 2014-12-23 01:55:16 -0500 (Tue, 23 Dec 2014) $
- * Last Changed By: $Author: jan@moxter.net $
  */
 
 package org.efaps.esjp.erp;
 
-import org.efaps.admin.program.esjp.EFapsRevision;
+import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.datetime.JodaTimeUtils;
@@ -35,10 +32,9 @@ import org.joda.time.format.DateTimeFormatterBuilder;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: AbstractGroupedByDate_Base.java 14663 2014-12-23 06:55:16Z jan@moxter.net $
  */
 @EFapsUUID("a7f00855-0d8d-45ce-b98d-10852607ad6c")
-@EFapsRevision("$Rev: 14663 $")
+@EFapsApplication("eFapsApp-Commons")
 public abstract class AbstractGroupedByDate_Base
     extends AbstractCommon
 {
@@ -83,12 +79,26 @@ public abstract class AbstractGroupedByDate_Base
         }
     }
 
+    /**
+     * Gets the partial.
+     *
+     * @param _date the _date
+     * @param _dateGourp the _date gourp
+     * @return the partial
+     */
     public Partial getPartial(final DateTime _date,
                               final DateGroup _dateGourp)
     {
         return getPartial(_date, _dateGourp.getFieldType());
     }
 
+    /**
+     * Gets the partial.
+     *
+     * @param _date the _date
+     * @param _fieldType the _field type
+     * @return the partial
+     */
     public Partial getPartial(final DateTime _date,
                               final DurationFieldType _fieldType)
     {
@@ -118,13 +128,23 @@ public abstract class AbstractGroupedByDate_Base
         return ret;
     }
 
-
-
-    public DateTimeFormatter getDateTimeFormatter(final DateGroup _dateGourp)
+    /**
+     * Gets the date time formatter.
+     *
+     * @param _dateGroup the _date group
+     * @return the date time formatter
+     */
+    public DateTimeFormatter getDateTimeFormatter(final DateGroup _dateGroup)
     {
-        return getDateTimeFormatter(_dateGourp.getFieldType());
+        return getDateTimeFormatter(_dateGroup.getFieldType());
     }
 
+    /**
+     * Gets the date time formatter.
+     *
+     * @param _fieldType the _field type
+     * @return the date time formatter
+     */
     public DateTimeFormatter getDateTimeFormatter(final DurationFieldType _fieldType)
     {
         DateTimeFormatter ret = null;
@@ -137,6 +157,5 @@ public abstract class AbstractGroupedByDate_Base
         }
         return ret;
     }
-
 
 }
