@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2009 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.esjp.erp;
@@ -39,7 +36,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.program.esjp.EFapsRevision;
+import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.db.CachedMultiPrintQuery;
@@ -64,16 +61,15 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 @EFapsUUID("feb2265d-bc1d-4c71-9f38-aa84d6a1c657")
-@EFapsRevision("$Rev$")
+@EFapsApplication("eFapsApp-Commons")
 public abstract class Currency_Base
 {
     /**
      * CacheKey for ExchangeRates.
      */
-    public static String CACHEKEY4RATE = Currency.class.getName()+ ".CacheKey4Rate";
+    public static final String CACHEKEY4RATE = Currency.class.getName() + ".CacheKey4Rate";
 
     /**
      * Logging instance used in this class.
@@ -87,6 +83,13 @@ public abstract class Currency_Base
     private static final String REQUEST_KEYRATE = Currency_Base.class + ".RequestKey4RateFieldValue";
 
 
+    /**
+     * Gets the valid until ui.
+     *
+     * @param _parameter the _parameter
+     * @return the valid until ui
+     * @throws EFapsException the e faps exception
+     */
     public Return getValidUntilUI(final Parameter _parameter)
         throws EFapsException
     {
@@ -102,6 +105,13 @@ public abstract class Currency_Base
         return ret;
     }
 
+    /**
+     * Trigger4 insert.
+     *
+     * @param _parameter the _parameter
+     * @return the return
+     * @throws EFapsException the e faps exception
+     */
     public Return trigger4Insert(final Parameter _parameter)
         throws EFapsException
     {
@@ -124,6 +134,16 @@ public abstract class Currency_Base
         return new Return();
     }
 
+    /**
+     * Update.
+     *
+     * @param _parameter the _parameter
+     * @param _curId the _cur id
+     * @param _validFrom the _valid from
+     * @param _validUntil the _valid until
+     * @param _rateInstance the _rate instance
+     * @throws EFapsException the e faps exception
+     */
     protected void update(final Parameter _parameter,
                           final Long _curId,
                           final DateTime _validFrom,
@@ -182,6 +202,13 @@ public abstract class Currency_Base
         }
     }
 
+    /**
+     * Gets the cur id.
+     *
+     * @param _instance the _instance
+     * @return the cur id
+     * @throws EFapsException the e faps exception
+     */
     protected Long getCurId(final Instance _instance)
         throws EFapsException
     {
@@ -196,7 +223,7 @@ public abstract class Currency_Base
      *
      * @param _parameter    Parameter as passed by the efasp API
      * @return value for rate on error
-     * @throws EFapsException
+     * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
     public Return getRateValue(final Parameter _parameter)
@@ -453,10 +480,10 @@ public abstract class Currency_Base
         multi.execute();
         RateInfo ret = new RateInfo();
         if (multi.next()) {
-            ret.setRate(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.Rate), false));
-            ret.setRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.Rate), true));
-            ret.setSaleRate(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.RateSale), false));
-            ret.setSaleRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateClient.RateSale), true));
+            ret.setRate(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateAbstract.Rate), false));
+            ret.setRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateAbstract.Rate), true));
+            ret.setSaleRate(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateAbstract.RateSale), false));
+            ret.setSaleRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateAbstract.RateSale), true));
             ret.setCurrencyInstance(multi.<Instance>getSelect(sel));
         } else {
             ret = RateInfo.getDummyRateInfo();
