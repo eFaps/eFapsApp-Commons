@@ -39,7 +39,6 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Dimension.UoM;
@@ -1083,36 +1082,33 @@ public abstract class CommonDocument_Base
                               final StandartReport _report)
         throws EFapsException
     {
-        final SystemConfiguration config = ERP.getSysConfig();
-        if (config != null) {
-            final String companyName = config.getAttributeValue(ERP.COMPANYNAME.get());
-            if (companyName != null && !companyName.isEmpty()) {
-                _report.getJrParameters().put("CompanyName", companyName);
-            }
-            final String companyTaxNum = config.getAttributeValue(ERP.COMPANYTAX.get());
-            if (companyTaxNum != null && !companyTaxNum.isEmpty()) {
-                _report.getJrParameters().put("CompanyTaxNum", companyTaxNum);
-            }
-            final String companyActivity = config.getAttributeValue(ERP.COMPANYACTIVITY.get());
-            if (companyActivity != null && !companyActivity.isEmpty()) {
-                _report.getJrParameters().put("CompanyActivity", companyActivity);
-            }
-            final String companyStreet = config.getAttributeValue(ERP.COMPANYSTREET.get());
-            if (companyStreet != null && !companyStreet.isEmpty()) {
-                _report.getJrParameters().put("CompanyStreet", companyStreet);
-            }
-            final String companyRegion = config.getAttributeValue(ERP.COMPANYREGION.get());
-            if (companyRegion != null && !companyRegion.isEmpty()) {
-                _report.getJrParameters().put("CompanyRegion", companyRegion);
-            }
-            final String companyCity = config.getAttributeValue(ERP.COMPANYCITY.get());
-            if (companyCity != null && !companyCity.isEmpty()) {
-                _report.getJrParameters().put("CompanyCity", companyCity);
-            }
-            final String companyDistrict = config.getAttributeValue(ERP.COMPANYDISTRICT.get());
-            if (companyDistrict != null && !companyDistrict.isEmpty()) {
-                _report.getJrParameters().put("CompanyDistrict", companyDistrict);
-            }
+        final String companyName = ERP.COMPANYNAME.get();
+        if (companyName != null && !companyName.isEmpty()) {
+            _report.getJrParameters().put("CompanyName", companyName);
+        }
+        final String companyTaxNum = ERP.COMPANYTAX.get();
+        if (companyTaxNum != null && !companyTaxNum.isEmpty()) {
+            _report.getJrParameters().put("CompanyTaxNum", companyTaxNum);
+        }
+        final String companyActivity = ERP.COMPANYACTIVITY.get();
+        if (companyActivity != null && !companyActivity.isEmpty()) {
+            _report.getJrParameters().put("CompanyActivity", companyActivity);
+        }
+        final String companyStreet = ERP.COMPANYSTREET.get();
+        if (companyStreet != null && !companyStreet.isEmpty()) {
+            _report.getJrParameters().put("CompanyStreet", companyStreet);
+        }
+        final String companyRegion = ERP.COMPANYREGION.get();
+        if (companyRegion != null && !companyRegion.isEmpty()) {
+            _report.getJrParameters().put("CompanyRegion", companyRegion);
+        }
+        final String companyCity = ERP.COMPANYCITY.get();
+        if (companyCity != null && !companyCity.isEmpty()) {
+            _report.getJrParameters().put("CompanyCity", companyCity);
+        }
+        final String companyDistrict = ERP.COMPANYDISTRICT.get();
+        if (companyDistrict != null && !companyDistrict.isEmpty()) {
+            _report.getJrParameters().put("CompanyDistrict", companyDistrict);
         }
     }
 
