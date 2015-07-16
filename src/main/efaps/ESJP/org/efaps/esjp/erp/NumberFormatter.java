@@ -17,22 +17,9 @@
 
 package org.efaps.esjp.erp;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsListener;
 import org.efaps.admin.program.esjp.EFapsUUID;
-import org.efaps.admin.user.Company;
-import org.efaps.db.Context;
-import org.efaps.esjp.admin.common.IReloadCacheListener;
-import org.efaps.esjp.erp.util.ERP;
-import org.efaps.util.EFapsException;
 
 /**
  * Class is used as POJO and therefore is not thought to be used with standard
@@ -45,201 +32,13 @@ import org.efaps.util.EFapsException;
 @EFapsApplication("eFapsApp-Commons")
 @EFapsListener
 public final class NumberFormatter
-    implements IReloadCacheListener
+    extends NumberFormatter_Base
 {
-
-    /**
-     * The singelton instance.
-     */
-    private static NumberFormatter FORMATTER;
-
-    /**
-     *  Key for basic formatter.
-     */
-    private static String FRMTKEY = NumberFormatter.class.getName() + ".Formatter";
-
-    /**
-     *  Key for basic formatter.
-     */
-    private static String TWOFRMTKEY = NumberFormatter.class.getName() + ".TwoDigitsFormatter";
-
-    /**
-     *  Key for basic formatter.
-     */
-    private static String ZEROFRMTKEY = NumberFormatter.class.getName() + ".ZeroDigitsFormatter";
-
-    /**
-     * Formatter mapping.
-     */
-    private final Map<String, DecimalFormat> key2formatter = new HashMap<String, DecimalFormat>();
-
     /**
      * Singelton constructor.
      */
-    private NumberFormatter()
+    NumberFormatter()
     {
-    }
-
-    /**
-     * Method to get a formater.
-     *
-     * @return a formater
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getTwoDigitsFormatter()
-        throws EFapsException
-    {
-        if (!this.key2formatter.containsKey(NumberFormatter.TWOFRMTKEY)) {
-            this.key2formatter.put(NumberFormatter.TWOFRMTKEY, getFormatter(2, 2));
-        }
-        return this.key2formatter.get(NumberFormatter.TWOFRMTKEY);
-    }
-
-    /**
-     * Method to get a formater.
-     *
-     * @return a formater
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getZeroDigitsFormatter()
-        throws EFapsException
-    {
-        if (!this.key2formatter.containsKey(NumberFormatter.ZEROFRMTKEY)) {
-            this.key2formatter.put(NumberFormatter.ZEROFRMTKEY, getFormatter(0, 0));
-        }
-        return this.key2formatter.get(NumberFormatter.ZEROFRMTKEY);
-    }
-
-    /**
-     * @return a format used to format BigDecimal for the user interface
-     * @param _maxFrac maximum Faction, null to deactivate
-     * @param _minFrac minimum Faction, null to activate
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getFormatter(final Integer _minFrac,
-                                      final Integer _maxFrac)
-        throws EFapsException
-    {
-        final DecimalFormat formater = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext().getLocale());
-        if (_maxFrac != null) {
-            formater.setMaximumFractionDigits(_maxFrac);
-        }
-        if (_minFrac != null) {
-            formater.setMinimumFractionDigits(_minFrac);
-        }
-        formater.setMinimumIntegerDigits(1);
-        formater.setRoundingMode(RoundingMode.HALF_UP);
-        formater.setParseBigDecimal(true);
-        return formater;
-    }
-
-    /**
-     * Method to get a <code>DecimalFormat</code> instance with the
-     * <code>Locale</code> from the <code>Context</code>.
-     *
-     * @return DecimalFormat
-     * @throws EFapsException on erro
-     */
-    public DecimalFormat getFormatter()
-        throws EFapsException
-    {
-        if (!this.key2formatter.containsKey(NumberFormatter.FRMTKEY)) {
-            this.key2formatter.put(NumberFormatter.FRMTKEY, getFormatter(null, null));
-        }
-        return this.key2formatter.get(NumberFormatter.FRMTKEY);
-    }
-
-    /**
-     * @param _type TypeName
-     * @return DecimalFormat
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getFrmt4UnitPrice(final String _type)
-        throws EFapsException
-    {
-        return getFrmtFromSysConf(_type + ".Frmt4UnitPrice", NumberFormatter.TWOFRMTKEY);
-    }
-
-    /**
-     * @param _type TypeName
-     * @return DecimalFormat
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getFrmt4Quantity(final String _type)
-        throws EFapsException
-    {
-        return getFrmtFromSysConf(_type + ".Frmt4Quantity", NumberFormatter.ZEROFRMTKEY);
-    }
-
-    /**
-     * @param _type TypeName
-     * @return DecimalFormat
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getFrmt4Total(final String _type)
-        throws EFapsException
-    {
-        return getFrmtFromSysConf(_type + ".Frmt4Total", NumberFormatter.TWOFRMTKEY);
-    }
-
-    /**
-     * @param _type TypeName
-     * @return DecimalFormat
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getFrmt4Discount(final String _type)
-        throws EFapsException
-    {
-        return getFrmtFromSysConf(_type + ".Frmt4Discount", NumberFormatter.TWOFRMTKEY);
-    }
-
-    /**
-     * @param _type TypeName
-     * @return DecimalFormat
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getFrmt4Key(final String _type,
-                                     final String _key)
-        throws EFapsException
-    {
-        return getFrmtFromSysConf(_type + "." + _key, NumberFormatter.TWOFRMTKEY);
-    }
-
-    /**
-     * @param _key key to the Formatter
-     * @param _default default key for a formatter
-     * @return DecimalFormat
-     * @throws EFapsException on error
-     */
-    protected DecimalFormat getFrmtFromSysConf(final String _key,
-                                               final String _default)
-        throws EFapsException
-    {
-        final String storeKey;
-
-        final Company company = Context.getThreadContext().getCompany();
-        if (company == null) {
-            storeKey = _key;
-        } else {
-            storeKey = company.getId() + _key;
-        }
-
-        if (!this.key2formatter.containsKey(storeKey)) {
-            final Properties properties = ERP.NUMBERFRMT.get();
-            DecimalFormat frmt;
-            if (properties.containsKey(_key)) {
-                frmt = getFormatter(null, null);
-                frmt.applyPattern(properties.getProperty(_key));
-            } else {
-                // init
-                getTwoDigitsFormatter();
-                getZeroDigitsFormatter();
-                getFormatter();
-                frmt = this.key2formatter.get(_default);
-            }
-            this.key2formatter.put(storeKey, frmt);
-        }
-        return this.key2formatter.get(storeKey);
     }
 
     /**
@@ -247,33 +46,6 @@ public final class NumberFormatter
      */
     public static NumberFormatter get()
     {
-        if (NumberFormatter.FORMATTER == null) {
-            NumberFormatter.FORMATTER = new NumberFormatter();
-        }
-        return NumberFormatter.FORMATTER;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onReloadSystemConfig(final Parameter _parameter)
-    {
-        NumberFormatter.FORMATTER.key2formatter.clear();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onReloadCache(final Parameter _parameter)
-    {
-        NumberFormatter.FORMATTER.key2formatter.clear();
-    }
-
-    @Override
-    public int getWeight()
-    {
-        return 0;
+        return NumberFormatter_Base.get();
     }
 }
