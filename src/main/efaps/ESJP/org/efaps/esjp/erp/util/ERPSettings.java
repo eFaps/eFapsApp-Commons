@@ -41,66 +41,8 @@ public interface ERPSettings
     String BASE = "org.efaps.commons.";
 
     /**
-     * Properties. Can be concatenated.<br/>
-     * TYPENAME.Status
-     */
-    String DOCSTATUSCREATE = ERPSettings.BASE + "DocumentStatus4Create";
-
-    /**
-     * Properties.<br/>
-     * Can be concatenated.<br/>
-     * Set a JasperReport for a Type. Used for Common Documents.
-     */
-    String JASPERKEY = ERPSettings.BASE + "JasperKey";
-
-    /**
-     * Properties.<br/>
-     * Can be concatenated.<br/>
-     * Set Formatting information for numbers.
-     */
-    String NUMBERFRMT = ERPSettings.BASE + "NumberFormatter";
-
-    /**
-     * Properties.<br/>
-     * Can be concatenated.<br/>
-     * Set a NumberGenerator for a Type. Used for Common Documents.
-     */
-    String NUMBERGENERATOR = "org.efaps.erp.NumberGenerators";
-
-    /**
-     * Properties.<br/>
-     * Set Formatting information for rates.
-     */
-    String RATEFRMT = ERPSettings.BASE + "RateFormatter";
-
-    /**
-     * Properties.<br/>
-     * Set Info information for rates.
-     */
-    String RATEINFO = ERPSettings.BASE + "RateInfo4Type";
-
-    /**
-     * Properties. Can be concatenated.
-     * Key: Normally the type name
-     * Values: One of EDIT, CREATE, NONE
-     */
-    String ACTIONDEF = ERPSettings.BASE + "ActionDefinition";
-
-    /**
-     * Properties. Can be concatenated.
-     * Key: Normally the type name
-     */
-    String WARNING = ERPSettings.BASE + "Warning";
-
-    /**
      * Link.<br/>
      * Base Currency for the System.
      */
     String CURRENCYBASE = ERPSettings.BASE + "CurrencyBase";
-
-    /**
-     * Properties. Can be concatenated.
-     * Key: Normally the type name
-     */
-    String CURRENCIES = ERPSettings.BASE + "Currencies";
 }

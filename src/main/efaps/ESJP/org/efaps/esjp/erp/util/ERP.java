@@ -103,6 +103,76 @@ public final class ERP
                     .key(BASE + "Config4FilteredReport")
                     .description("Basic Configurations for Filtered Reports.");
 
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final PropertiesSysConfAttribute DOCSTATUSCREATE = new PropertiesSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "DocumentStatus4Create")
+                    .description("TYPENAME.Status.")
+                    .concatenate(true);
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final PropertiesSysConfAttribute JASPERKEY = new PropertiesSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "JasperKey")
+                    .description("Set a JasperReport for a Type. Used for Common Documents.")
+                    .concatenate(true);
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final PropertiesSysConfAttribute NUMBERFRMT = new PropertiesSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "NumberFormatter")
+                    .description("Set Formatting information for numbers..")
+                    .concatenate(true);
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final PropertiesSysConfAttribute NUMBERGENERATOR = new PropertiesSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "NumberGenerators")
+                    .description("Set a NumberGenerator for a Type. Used for Common Documents")
+                    .concatenate(true);
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final PropertiesSysConfAttribute RATEFRMT = new PropertiesSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "RateFormatter")
+                    .description(" Set Formatting information for rates")
+                    .concatenate(true);
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final PropertiesSysConfAttribute RATEINFO = new PropertiesSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "RateInfo4Type")
+                    .description("Set Info information for rates.")
+                    .concatenate(true);
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final PropertiesSysConfAttribute ACTIONDEF = new PropertiesSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "ActionDefinition")
+                    .description(" Key: Normally the type name.Values: One of EDIT, CREATE, NONE")
+                    .concatenate(true);
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final PropertiesSysConfAttribute WARNING = new PropertiesSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "Warning")
+                    .description(" Key: Normally the type name")
+                    .concatenate(true);
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final PropertiesSysConfAttribute CURRENCIES = new PropertiesSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "Currencies")
+                    .description(" Key: Normally the type name");
 
     /**
      * Enum used for a multistate for Activation in ERP_DocumentType.
