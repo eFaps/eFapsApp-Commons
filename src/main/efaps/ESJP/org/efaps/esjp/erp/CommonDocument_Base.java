@@ -1,6 +1,5 @@
-
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.esjp.erp;
@@ -80,7 +76,6 @@ import org.efaps.esjp.common.util.InterfaceUtils_Base.DojoLibs;
 import org.efaps.esjp.erp.listener.IOnAction;
 import org.efaps.esjp.erp.listener.IOnCreateDocument;
 import org.efaps.esjp.erp.util.ERP;
-import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.jfree.util.Log;
@@ -91,7 +86,6 @@ import org.slf4j.LoggerFactory;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 @EFapsUUID("e47df65d-4c5e-423f-b2cc-815c3007b19f")
 @EFapsApplication("eFapsApp-Commons")
@@ -190,7 +184,7 @@ public abstract class CommonDocument_Base
         throws EFapsException
     {
         final Return ret = new Return();
-        final Properties properties = ERP.getSysConfig().getAttributeValueAsProperties(ERPSettings.ACTIONDEF, true);
+        final Properties properties = ERP.ACTIONDEF.get();
         String key;
         if (containsProperty(_parameter, "Key")) {
             key = getProperty(_parameter, "Key");
@@ -950,8 +944,7 @@ public abstract class CommonDocument_Base
 
         // if not set via properties lookup the SystemConfiguration
         if (status == null) {
-            final Properties properties = ERP.getSysConfig().getAttributeValueAsProperties(ERPSettings.DOCSTATUSCREATE,
-                            true);
+            final Properties properties = ERP.DOCSTATUSCREATE.get();
             final Type type = getType4DocCreate(_parameter);
             if (type != null) {
                 final String key = properties.getProperty(type.getName() + ".Status");

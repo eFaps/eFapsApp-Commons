@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.esjp.erp;
@@ -28,14 +25,13 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.efaps.admin.event.Parameter;
+import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsListener;
-import org.efaps.admin.program.esjp.EFapsRevision;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
 import org.efaps.esjp.admin.common.IReloadCacheListener;
 import org.efaps.esjp.erp.util.ERP;
-import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
 
 /**
@@ -46,7 +42,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 @EFapsUUID("999443c8-8f9f-47be-aad1-974a1b09421b")
-@EFapsRevision("$Rev$")
+@EFapsApplication("eFapsApp-Commons")
 @EFapsListener
 public final class NumberFormatter
     implements IReloadCacheListener
@@ -229,8 +225,7 @@ public final class NumberFormatter
         }
 
         if (!this.key2formatter.containsKey(storeKey)) {
-            final Properties properties = ERP.getSysConfig()
-                            .getAttributeValueAsProperties(ERPSettings.NUMBERFRMT, true);
+            final Properties properties = ERP.NUMBERFRMT.get();
             DecimalFormat frmt;
             if (properties.containsKey(_key)) {
                 frmt = getFormatter(null, null);

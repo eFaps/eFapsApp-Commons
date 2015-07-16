@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2015 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
@@ -26,11 +23,10 @@ import java.util.List;
 import java.util.Properties;
 
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.program.esjp.EFapsRevision;
+import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Context;
 import org.efaps.esjp.erp.util.ERP;
-import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.util.EFapsException;
 
 
@@ -38,10 +34,9 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 @EFapsUUID("93fe4fd1-4d03-471b-bf88-323db2965a27")
-@EFapsRevision("$Rev$")
+@EFapsApplication("eFapsApp-Commons")
 public abstract class AbstractWarning_Base
     implements IWarning
 {
@@ -158,7 +153,7 @@ public abstract class AbstractWarning_Base
         throws EFapsException
     {
         boolean ret = this.error;
-        final Properties props = ERP.getSysConfig().getAttributeValueAsProperties(ERPSettings.WARNING);
+        final Properties props = ERP.WARNING.get();
         final String keyTmp = this.getClass().getSimpleName() + ".Level";
         if (props.containsKey(keyTmp)) {
             switch (props.getProperty(keyTmp).toUpperCase()) {

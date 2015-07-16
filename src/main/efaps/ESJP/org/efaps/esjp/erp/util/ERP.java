@@ -164,8 +164,7 @@ public final class ERP
     public static final PropertiesSysConfAttribute WARNING = new PropertiesSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "Warning")
-                    .description(" Key: Normally the type name")
-                    .concatenate(true);
+                    .description(" Key: Normally the type name");
 
     /** See description. */
     @EFapsSysConfAttribute
