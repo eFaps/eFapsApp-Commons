@@ -1404,15 +1404,15 @@ public abstract class CommonDocument_Base
                                       final Update _update)
         throws EFapsException
     {
-    
+
     }
 
     /**
      * Update connection 2 object.
      *
      * @param _parameter the _parameter
-     * @param _createdDoc the _created doc
-     * @throws EFapsException
+     * @param _editedDoc the _edited doc
+     * @throws EFapsException on error
      */
     public void updateConnection2Object(final Parameter _parameter,
                                         final EditedDoc _editedDoc)
@@ -1431,17 +1431,18 @@ public abstract class CommonDocument_Base
                     if (foreigns != null) {
                         for (final String foreign : foreigns) {
                             final String typeStr = entry.getValue();
+                            final Type type = isUUID(typeStr) ? Type.get(UUID.fromString(typeStr)) : Type.get(typeStr);
 
-                            QueryBuilder queryBldr;
-                            if (isUUID(typeStr)) {
-                                queryBldr = new QueryBuilder(UUID.fromString(typeStr));
-                            } else {
-                                queryBldr = new QueryBuilder(Type.get(typeStr));
-                            }
+                            final QueryBuilder queryBldr = new QueryBuilder(type);
                             queryBldr.addWhereAttrEqValue(currentLinks.get(entry.getKey()), _editedDoc.getInstance());
                             final List<Instance> insts = queryBldr.getQuery().execute();
-                            if (insts.size() == 1) {
-                                final Update update = new Update(insts.get(0));
+                            if (insts.size() == 1 && (foreign == null || foreign.isEmpty())) {
+                                new Delete(insts.get(0)).execute();
+                            } else if (insts.size() < 2) {
+                                final Update update = insts.isEmpty() ? new Insert(type) : new Update(insts.get(0));
+                                if (insts.isEmpty()) {
+                                    update.add(currentLinks.get(entry.getKey()), _editedDoc.getInstance());
+                                }
                                 final Instance inst = Instance.get(foreign);
                                 if (inst.isValid()) {
                                     update.add(foreignLinks.get(entry.getKey()), inst);
@@ -1465,11 +1466,12 @@ public abstract class CommonDocument_Base
      *
      * @param _parameter the _parameter
      * @param _editedDoc the _edited doc
-     * @param update the update
+     * @param _update the _update
+     * @throws EFapsException on error
      */
     protected void add2updateConnection2Object(final Parameter _parameter,
                                              final EditedDoc _editedDoc,
-                                             final Update update)
+                                             final Update _update)
         throws EFapsException
     {
 
