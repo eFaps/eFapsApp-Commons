@@ -1041,7 +1041,7 @@ public abstract class CommonDocument_Base
                 if (ret != null) {
                     final InputStream input = new FileInputStream(ret);
                     final Checkin checkin = new Checkin(_createdDoc.getInstance());
-                    checkin.execute(fileName + "." + getProperty(_parameter, "Mime"), input,
+                    checkin.execute(fileName + "." + report.getMime(_parameter).getExtension(), input,
                                     ((Long) ret.length()).intValue());
                 }
             } catch (final FileNotFoundException e) {
