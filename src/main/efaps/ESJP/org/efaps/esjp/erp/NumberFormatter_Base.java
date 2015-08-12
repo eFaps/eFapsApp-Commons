@@ -24,10 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
-import org.efaps.admin.user.Company;
 import org.efaps.db.Context;
 import org.efaps.esjp.admin.common.IReloadCacheListener;
 import org.efaps.esjp.erp.util.ERP;
@@ -66,7 +66,7 @@ public abstract class NumberFormatter_Base
     /**
      * Formatter mapping.
      */
-    private final Map<String, DecimalFormat> key2formatter = new HashMap<String, DecimalFormat>();
+    private final Map<FormatterKey, DecimalFormat> key2formatter = new HashMap<>();
 
     /**
      * Method to get a formater.
@@ -77,10 +77,11 @@ public abstract class NumberFormatter_Base
     public DecimalFormat getTwoDigitsFormatter()
         throws EFapsException
     {
-        if (!this.key2formatter.containsKey(NumberFormatter_Base.TWOFRMTKEY)) {
-            this.key2formatter.put(NumberFormatter_Base.TWOFRMTKEY, getFormatter(2, 2));
+        final FormatterKey key = getKey(NumberFormatter_Base.TWOFRMTKEY);
+        if (!this.key2formatter.containsKey(key)) {
+            this.key2formatter.put(key, getFormatter(2, 2));
         }
-        return this.key2formatter.get(NumberFormatter_Base.TWOFRMTKEY);
+        return this.key2formatter.get(key);
     }
 
     /**
@@ -92,10 +93,11 @@ public abstract class NumberFormatter_Base
     public DecimalFormat getZeroDigitsFormatter()
         throws EFapsException
     {
-        if (!this.key2formatter.containsKey(NumberFormatter_Base.ZEROFRMTKEY)) {
-            this.key2formatter.put(NumberFormatter_Base.ZEROFRMTKEY, getFormatter(0, 0));
+        final FormatterKey key = getKey(NumberFormatter_Base.ZEROFRMTKEY);
+        if (!this.key2formatter.containsKey(key)) {
+            this.key2formatter.put(key, getFormatter(0, 0));
         }
-        return this.key2formatter.get(NumberFormatter_Base.ZEROFRMTKEY);
+        return this.key2formatter.get(key);
     }
 
     /**
@@ -106,7 +108,7 @@ public abstract class NumberFormatter_Base
      */
     public DecimalFormat getFormatter(final Integer _minFrac,
                                       final Integer _maxFrac)
-                                          throws EFapsException
+        throws EFapsException
     {
         final DecimalFormat formater = (DecimalFormat) NumberFormat.getInstance(Context.getThreadContext().getLocale());
         if (_maxFrac != null) {
@@ -131,10 +133,11 @@ public abstract class NumberFormatter_Base
     public DecimalFormat getFormatter()
         throws EFapsException
     {
-        if (!this.key2formatter.containsKey(NumberFormatter_Base.FRMTKEY)) {
-            this.key2formatter.put(NumberFormatter_Base.FRMTKEY, getFormatter(null, null));
+        final FormatterKey key = getKey(NumberFormatter_Base.FRMTKEY);
+        if (!this.key2formatter.containsKey(key)) {
+            this.key2formatter.put(key, getFormatter(null, null));
         }
-        return this.key2formatter.get(NumberFormatter_Base.FRMTKEY);
+        return this.key2formatter.get(key);
     }
 
     /**
@@ -206,31 +209,58 @@ public abstract class NumberFormatter_Base
                                                final String _default)
         throws EFapsException
     {
-        final String storeKey;
-
-        final Company company = Context.getThreadContext().getCompany();
-        if (company == null) {
-            storeKey = _key;
-        } else {
-            storeKey = company.getId() + _key;
+        final FormatterKey key = getKey(_key);
+        if (!this.key2formatter.containsKey(key)) {
+            getFrmtFromProperties(key, getKey(_default), ERP.NUMBERFRMT.get());
         }
+        return this.key2formatter.get(key);
+    }
 
-        if (!this.key2formatter.containsKey(storeKey)) {
-            final Properties properties = ERP.NUMBERFRMT.get();
-            DecimalFormat frmt;
-            if (properties.containsKey(_key)) {
+    /**
+     * @param _key key to the Formatter
+     * @param _default default key for a formatter
+     * @return DecimalFormat
+     * @throws EFapsException on error
+     */
+    protected DecimalFormat getFrmtFromProperties(final FormatterKey _key,
+                                                  final FormatterKey _default,
+                                                  final Properties _properties)
+        throws EFapsException
+    {
+        if (!this.key2formatter.containsKey(_key)) {
+            final DecimalFormat frmt;
+            if (_properties.containsKey(_key.baseKey)) {
                 frmt = getFormatter(null, null);
-                frmt.applyPattern(properties.getProperty(_key));
+                frmt.applyPattern(_properties.getProperty(_key.baseKey));
             } else {
                 // init
                 getTwoDigitsFormatter();
                 getZeroDigitsFormatter();
                 getFormatter();
-                frmt = this.key2formatter.get(_default);
+                if (_default == null) {
+                    frmt = getFormatter();
+                } else {
+                    frmt = this.key2formatter.get(_default);
+                }
             }
-            this.key2formatter.put(storeKey, frmt);
+            this.key2formatter.put(_key, frmt);
         }
-        return this.key2formatter.get(storeKey);
+        return this.key2formatter.get(_key);
+    }
+
+    /**
+     * Gets the key.
+     *
+     * @param _baseKey the _base key
+     * @return the key
+     * @throws EFapsException on error
+     */
+    protected FormatterKey getKey(final String _baseKey)
+        throws EFapsException
+    {
+        return new FormatterKey(_baseKey, Context.getThreadContext().getLocale().toString(),
+                        Context.getThreadContext().getCompany() == null ? "0"
+                                        : String.valueOf(Context.getThreadContext().getCompany().getId()));
     }
 
     /**
@@ -266,5 +296,63 @@ public abstract class NumberFormatter_Base
     public int getWeight()
     {
         return 0;
+    }
+
+    /**
+     * The Class FormatterKey used to identify a formatter.
+     */
+    public static class FormatterKey
+    {
+
+        /** The base key. */
+        private final String baseKey;
+
+        /** The locale. */
+        private final String locale;
+
+        /** The company. */
+        private final String company;
+
+        /**
+         * Instantiates a new formatter key.
+         *
+         * @param _baseKey the _base key
+         * @param _locale the _locale
+         * @param _company the _company
+         */
+        public FormatterKey(final String _baseKey,
+                            final String _locale,
+                            final String _company)
+        {
+            this.baseKey = _baseKey;
+            this.locale = _locale;
+            this.company = _company;
+        }
+
+        @Override
+        public boolean equals(final Object _obj)
+        {
+            boolean ret;
+            if (_obj instanceof FormatterKey) {
+                ret = this.baseKey.equals(((FormatterKey) _obj).baseKey)
+                                && this.locale.equals(((FormatterKey) _obj).locale)
+                                && this.company.equals(((FormatterKey) _obj).company);
+            } else {
+                ret = super.equals(_obj);
+            }
+            return ret;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return this.baseKey.hashCode() + this.locale.hashCode() + this.company.hashCode();
+        }
+
+        @Override
+        public String toString()
+        {
+            return ToStringBuilder.reflectionToString(this);
+        }
     }
 }
