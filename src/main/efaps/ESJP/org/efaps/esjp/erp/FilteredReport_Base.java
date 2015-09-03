@@ -61,7 +61,11 @@ import org.efaps.admin.ui.field.Field;
 import org.efaps.api.ui.IOption;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.InstanceQuery;
+import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
+import org.efaps.db.QueryBuilder;
+import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.datetime.JodaTimeUtils;
 import org.efaps.esjp.common.jasperreport.AbstractCachedReport;
 import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
@@ -183,6 +187,18 @@ public abstract class FilteredReport_Base
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+        } else if ("AttributeDefinition".equalsIgnoreCase(_type)) {
+            Type type;
+            if (isUUID(_default)) {
+                type = Type.get(UUID.fromString(_default));
+            } else {
+                type = Type.get(_default);
+            }
+            final QueryBuilder queryBldr = new QueryBuilder(type);
+            queryBldr.addWhereAttrEqValue(CIERP.AttributeDefinitionAbstract.StatusAbstract,
+                            Status.find(CIERP.AttributeDefinitionStatus.Active));
+            final InstanceQuery query = queryBldr.getQuery();
+            ret = new AttrDefFilterValue().setObject(new HashSet<Instance>(query.execute()));
         }
         return ret;
     }
@@ -383,6 +399,49 @@ public abstract class FilteredReport_Base
         return new org.efaps.esjp.common.uiform.Field().getOptionListFieldValue(_parameter);
     }
 
+    /**
+     * Gets the attr def field value.
+     *
+     * @param _parameter the _parameter
+     * @return the attr def field value
+     * @throws EFapsException on error
+     */
+    public Return getAttrDefFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final List<DropDownPosition> values = new ArrayList<DropDownPosition>();
+        final IUIValue uiValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
+        final String key = uiValue.getField().getName();
+        final Map<String, Object> map = getFilterMap(_parameter);
+        if (map.containsKey(key)) {
+            final Object obj = map.get(key);
+            Set<Instance> val;
+            if (obj instanceof AttrDefFilterValue) {
+                val = ((AttrDefFilterValue) obj).getObject();
+            } else {
+                val = new HashSet<>();
+            }
+            final QueryBuilder queryBldr = getQueryBldrFromProperties(_parameter);
+            queryBldr.addWhereAttrEqValue(CIERP.AttributeDefinitionAbstract.StatusAbstract,
+                            Status.find(CIERP.AttributeDefinitionStatus.Active));
+            final MultiPrintQuery multi = queryBldr.getPrint();
+            multi.addAttribute(CIERP.AttributeDefinitionAbstract.Value, CIERP.AttributeDefinitionAbstract.Description);
+            multi.execute();
+            while (multi.next()) {
+                final String value = multi.getAttribute(CIERP.AttributeDefinitionAbstract.Value);
+                final String description = multi.getAttribute(CIERP.AttributeDefinitionAbstract.Description);
+                final DropDownPosition pos = new DropDownPosition(multi.getCurrentInstance().getOid(),
+                                value + (description != null && !description.isEmpty() ? (" - " + description) : ""));
+                pos.setSelected(val.contains(multi.getCurrentInstance()));
+                values.add(pos);
+            }
+        } else {
+            map.put(key, "");
+        }
+        ret.put(ReturnValues.VALUES, values);
+        return ret;
+    }
 
     /**
      * Get the fieldvalue for the to dateField.
@@ -763,6 +822,14 @@ public abstract class FilteredReport_Base
                     }
                 }
                 obj = new InstanceSetFilterValue().setObject(set);
+            } else if (oldObj instanceof AttrDefFilterValue) {
+                final Set<Instance> set = new HashSet<>();
+                if (values != null) {
+                    for (final String value : values) {
+                        set.add(Instance.get(value));
+                    }
+                }
+                obj = new AttrDefFilterValue().setObject(set);
             } else {
                 obj = val;
             }
@@ -1145,10 +1212,7 @@ public abstract class FilteredReport_Base
     public static class EnumFilterValue
         extends AbstractFilterValue<Enum<?>>
     {
-
-        /**
-         *
-         */
+        /** */
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -1156,6 +1220,49 @@ public abstract class FilteredReport_Base
             throws EFapsException
         {
             return DBProperties.getProperty(getObject().getClass().getName() + "." + getObject().toString());
+        }
+    }
+
+    /**
+     * FilterClass.
+     */
+    public static class AttrDefFilterValue
+        extends AbstractFilterValue<Set<Instance>>
+    {
+        /** */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public String getLabel(final Parameter _parameter)
+            throws EFapsException
+        {
+            final StringBuilder ret = new StringBuilder();
+            final List<String> labels = new ArrayList<>();
+            final MultiPrintQuery multi = new MultiPrintQuery(new ArrayList<Instance>(getObject()));
+            multi.addAttribute(CIERP.AttributeDefinitionAbstract.Value, CIERP.AttributeDefinitionAbstract.Description);
+            multi.execute();
+            while (multi.next()) {
+                final String value = multi.getAttribute(CIERP.AttributeDefinitionAbstract.Value);
+                final String description = multi.getAttribute(CIERP.AttributeDefinitionAbstract.Description);
+                labels.add(value + (description != null && !description.isEmpty() ? (" - " + description) : ""));
+            }
+
+            Collections.sort(labels, new Comparator<String>()
+            {
+                @Override
+                public int compare(final String _o1,
+                                   final String _o2)
+                {
+                    return _o1.compareTo(_o2);
+                }
+            });
+            for (final String label : labels) {
+                if (ret.length() > 0) {
+                    ret.append(", ");
+                }
+                ret.append(label);
+            }
+            return ret.toString();
         }
     }
 
