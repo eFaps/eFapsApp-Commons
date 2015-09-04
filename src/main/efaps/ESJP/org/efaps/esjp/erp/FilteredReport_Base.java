@@ -165,7 +165,9 @@ public abstract class FilteredReport_Base
         } else if ("Instance".equalsIgnoreCase(_type)) {
             ret = new InstanceFilterValue().setObject(Instance.get(_default));
         } else if ("InstanceSet".equalsIgnoreCase(_type)) {
-            ret = new InstanceSetFilterValue().setObject(new HashSet<Instance>(Arrays.asList(Instance.get(_default))));
+            final Instance inst = Instance.get(_default);
+            ret = new InstanceSetFilterValue().setObject(inst.isValid()
+                            ? new HashSet<Instance>(Arrays.asList(inst)) : new HashSet<Instance>());
         } else if ("Boolean".equalsIgnoreCase(_type)) {
             ret = BooleanUtils.toBoolean(_default);
         } else if ("Currency".equalsIgnoreCase(_type)) {
@@ -818,7 +820,10 @@ public abstract class FilteredReport_Base
                 final Set<Instance> set = new HashSet<>();
                 if (values != null) {
                     for (final String value : values) {
-                        set.add(Instance.get(value));
+                        final Instance inst = Instance.get(value);
+                        if (inst.isValid()) {
+                            set.add(inst);
+                        }
                     }
                 }
                 obj = new InstanceSetFilterValue().setObject(set);
