@@ -951,23 +951,33 @@ public abstract class FilteredReport_Base
                 if (instance.isValid()) {
                     @SuppressWarnings("unchecked")
                     final Map<String, String> props = (Map<String, String>) _parameter.get(ParameterValues.PROPERTIES);
-                    String key = instance.getType().getName() + "_Select";
+                    boolean search = true;
                     String select = null;
                     String phrase = null;
                     String msgPhraseStr = null;
                     MsgPhrase msgPhrase = null;
-                    if (props.containsKey(key)) {
-                        select = props.get(key);
-                    } else {
-                        key = instance.getType().getName() + "_Phrase";
+                    Type type = instance.getType();
+                    while (search) {
+                        String key = type.getName() + "_Select";
                         if (props.containsKey(key)) {
-                            phrase = props.get(key);
+                            select = props.get(key);
+                            search = false;
                         } else {
-                            key = instance.getType().getName() + "_MsgPhrase";
-                            msgPhraseStr = props.get(key);
+                            key = type.getName() + "_Phrase";
+                            if (props.containsKey(key)) {
+                                phrase = props.get(key);
+                                search = false;
+                            } else {
+                                key = type.getName() + "_MsgPhrase";
+                                msgPhraseStr = props.get(key);
+                                search = !props.containsKey(key);
+                            }
+                        }
+                        if (search) {
+                            type = type.getParentType();
+                            search = type != null;
                         }
                     }
-
                     final PrintQuery print = new PrintQuery(instance);
                     if (select != null) {
                         print.addSelect(select);
