@@ -66,8 +66,8 @@ public abstract class CurrencyPanel_Base
     {
         final StringBuilder html = new StringBuilder();
 
-        final DateTime start = new DateTime().minusDays(14);
-        final DateTime end = new DateTime().plusDays(1);
+        final DateTime start = new DateTime().withTimeAtStartOfDay().minusDays(14);
+        final DateTime end = new DateTime().withTimeAtStartOfDay().plusDays(1);
 
         DateTime current = start;
         final List<Map<String, Object>> values = new ArrayList<>();
