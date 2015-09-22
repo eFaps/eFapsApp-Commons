@@ -38,4 +38,14 @@ public class CurrencyPanel
      *
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Instantiates a new currency panel.
+     *
+     * @param _config the _config
+     */
+    public CurrencyPanel(final String _config)
+    {
+        super(_config);
+    }
 }

@@ -29,7 +29,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.api.ui.IEsjpSnipplet;
-import org.efaps.esjp.common.AbstractCommon;
+import org.efaps.esjp.common.dashboard.AbstractDashboardPanel;
 import org.efaps.esjp.erp.Currency;
 import org.efaps.esjp.erp.CurrencyInst;
 import org.efaps.esjp.erp.RateInfo;
@@ -51,14 +51,33 @@ import org.joda.time.DateTime;
 @EFapsUUID("986640f5-40a2-43da-9e19-0980a94d1be9")
 @EFapsApplication("eFapsApp-Commons")
 public abstract class CurrencyPanel_Base
-    extends AbstractCommon
+    extends AbstractDashboardPanel
     implements IEsjpSnipplet
 {
-
     /**
      *
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Instantiates a new currency panel_ base.
+     *
+     * @param _config the _config
+     */
+    public CurrencyPanel_Base(final String _config)
+    {
+        super(_config);
+    }
+
+    /**
+     * Gets the width.
+     *
+     * @return the width
+     */
+    protected Integer getDays()
+    {
+        return Integer.valueOf(getConfig().getProperty("Days", "14"));
+    }
 
     @Override
     public CharSequence getHtmlSnipplet()
@@ -66,7 +85,7 @@ public abstract class CurrencyPanel_Base
     {
         final StringBuilder html = new StringBuilder();
 
-        final DateTime start = new DateTime().withTimeAtStartOfDay().minusDays(14);
+        final DateTime start = new DateTime().withTimeAtStartOfDay().minusDays(getDays());
         final DateTime end = new DateTime().withTimeAtStartOfDay().plusDays(1);
 
         DateTime current = start;
@@ -91,8 +110,11 @@ public abstract class CurrencyPanel_Base
 
         int x = 0;
         final Map<String, Integer> xmap = new LinkedHashMap<>();
-        final LineChart chart = new LineChart().setWidth(650).setHeight(400);
-        chart.setTitle(getDBProperty("Title"));
+        final LineChart chart = new LineChart().setWidth(getWidth()).setHeight(getHeight());
+        final String title = getTitle();
+        if (title != null && !title.isEmpty()) {
+            chart.setTitle(title);
+        }
         chart.setOrientation(Orientation.VERTICAL_CHART_LEGEND);
 
         final Map<String, Map<String, Serie<Data>>> seriesMap = new HashMap<>();
