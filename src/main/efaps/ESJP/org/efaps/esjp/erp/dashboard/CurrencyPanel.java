@@ -40,6 +40,14 @@ public class CurrencyPanel
     private static final long serialVersionUID = 1L;
 
     /**
+     * Instantiates a new sales4 contact panel.
+     */
+    public CurrencyPanel()
+    {
+        super();
+    }
+
+    /**
      * Instantiates a new currency panel.
      *
      * @param _config the _config

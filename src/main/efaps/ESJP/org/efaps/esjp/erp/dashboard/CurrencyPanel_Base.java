@@ -61,6 +61,14 @@ public abstract class CurrencyPanel_Base
 
     /**
      * Instantiates a new currency panel_ base.
+     */
+    public CurrencyPanel_Base()
+    {
+        super();
+    }
+
+    /**
+     * Instantiates a new currency panel_ base.
      *
      * @param _config the _config
      */
