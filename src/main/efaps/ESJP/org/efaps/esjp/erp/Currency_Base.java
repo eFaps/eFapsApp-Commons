@@ -50,7 +50,6 @@ import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.uiform.Field;
 import org.efaps.esjp.erp.util.ERP;
-import org.efaps.esjp.erp.util.ERPSettings;
 import org.efaps.ui.wicket.util.DateUtil;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
@@ -319,12 +318,9 @@ public abstract class Currency_Base
         throws EFapsException
     {
         final Return ret = new Return();
-        //Sales-Configuration
-        final SystemConfiguration config = SystemConfiguration.get(
-                        UUID.fromString("c9a1cbc3-fd35-4463-80d2-412422a3802f"));
-        if (config != null) {
-            final Instance linkInst = config.getLink("org.efaps.sales.CurrencyBase");
-            ret.put(ReturnValues.VALUES, linkInst.getId());
+        final Instance inst = ERP.CURRENCYBASE.get();
+        if (inst.isValid()) {
+            ret.put(ReturnValues.VALUES, inst.getId());
         } else {
             ret.put(ReturnValues.VALUES, _parameter.getInstance().getId());
         }
@@ -548,7 +544,7 @@ public abstract class Currency_Base
     protected static Instance getBaseCurrency()
         throws EFapsException
     {
-        final Instance ret =  ERP.getSysConfig().getLink(ERPSettings.CURRENCYBASE);
+        final Instance ret =  ERP.CURRENCYBASE.get();
         if (ret == null || ret != null && !ret.isValid()) {
             Currency_Base.LOG.error("There must be an BaseCurrency defined to calculate rates.");
         }

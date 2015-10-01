@@ -28,6 +28,7 @@ import org.efaps.api.annotation.EFapsSysConfAttribute;
 import org.efaps.api.annotation.EFapsSystemConfiguration;
 import org.efaps.esjp.admin.common.systemconfiguration.PropertiesSysConfAttribute;
 import org.efaps.esjp.admin.common.systemconfiguration.StringSysConfAttribute;
+import org.efaps.esjp.admin.common.systemconfiguration.SysConfLink;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -172,6 +173,13 @@ public final class ERP
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "Currencies")
                     .description(" Key: Normally the type name");
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final SysConfLink CURRENCYBASE = new SysConfLink()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "CurrencyBase")
+                    .description("Base Currency.");
 
     /**
      * Enum used for a multistate for Activation in ERP_DocumentType.

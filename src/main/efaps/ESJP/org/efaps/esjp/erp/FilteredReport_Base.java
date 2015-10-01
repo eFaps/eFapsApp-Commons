@@ -292,10 +292,8 @@ public abstract class FilteredReport_Base
             dropdown.setSelected(current != null && "BASE".equals(((Instance) current).getKey()));
             values.add(dropdown);
         }
-
         Collections.sort(values, new Comparator<DropDownPosition>()
         {
-
             @Override
             public int compare(final DropDownPosition _o1,
                                final DropDownPosition _o2)
@@ -304,7 +302,7 @@ public abstract class FilteredReport_Base
             }
         });
         final Return ret = new Return();
-        ret.put(ReturnValues.SNIPLETT, new org.efaps.esjp.common.uiform.Field().getDropDownField(_parameter, values));
+        ret.put(ReturnValues.VALUES, values);
         return ret;
     }
 
