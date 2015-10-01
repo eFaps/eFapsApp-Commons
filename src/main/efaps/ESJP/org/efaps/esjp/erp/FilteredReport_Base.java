@@ -156,7 +156,14 @@ public abstract class FilteredReport_Base
             ret = JodaTimeUtils.getDefaultvalue(_parameter, props);
         } else if ("Type".equalsIgnoreCase(_type)) {
             final Set<Long> set = new HashSet<>();
-            if (isUUID(_default)) {
+            if ("ALL".equals(_default)) {
+                final List<Type> types = getTypeList(_parameter);
+                for (final Type type : types) {
+                    set.add(type.getId());
+                }
+            } else if ("NONE".equals(_default) || _default.isEmpty()) {
+                set.add(Long.valueOf(0));
+            } else if (isUUID(_default)) {
                 set.add(Type.get(UUID.fromString(_default)).getId());
             } else {
                 set.add(Type.get(_default).getId());
@@ -1019,6 +1026,9 @@ public abstract class FilteredReport_Base
 
     /**
      * Basic filter class.
+     *
+     * @author The eFaps Team
+     * @param <T> the generic type
      */
     public abstract static class AbstractFilterValue<T>
         implements Serializable
@@ -1075,9 +1085,7 @@ public abstract class FilteredReport_Base
         extends AbstractFilterValue<Set<Long>>
     {
 
-        /**
-         *
-         */
+        /** */
         private static final long serialVersionUID = 1L;
 
         @Override
