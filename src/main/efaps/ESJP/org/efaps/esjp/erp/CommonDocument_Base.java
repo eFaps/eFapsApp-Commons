@@ -1359,7 +1359,13 @@ public abstract class CommonDocument_Base
             if (connectTypes.size() == currentLinks.size() && foreignLinks.size() == foreignFields.size()
                             && connectTypes.size() == foreignLinks.size()) {
                 for (final Entry<Integer, String> entry: connectTypes.entrySet()) {
-                    final String[] foreigns = _parameter.getParameterValues(foreignFields.get(entry.getKey()));
+                    final String[] foreigns;
+                    final String foreignField =  foreignFields.get(entry.getKey());
+                    if ("CALLINSTANCE".equals(foreignField)) {
+                        foreigns = new String[] { _parameter.getCallInstance().getOid() };
+                    } else {
+                        foreigns = _parameter.getParameterValues(foreignFields.get(entry.getKey()));
+                    }
                     if (foreigns != null) {
                         for (final String foreign : foreigns) {
                             if (!foreign.isEmpty()) {

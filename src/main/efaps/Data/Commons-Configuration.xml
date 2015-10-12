@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
-  Copyright 2003 - 2013 The eFaps Team
+  Copyright 2003 - 2015 The eFaps Team
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -14,24 +14,17 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  Author:          The eFaps Team
-  Revision:        $Rev$
-  Last Changed:    $Date$
-  Last Changed By: $Author$
-
 -->
 <common-systemconfiguration xmlns="http://www.efaps.org/xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-
     <uuid>9ac2673a-18f9-41ba-b9be-5b0980bdf6f3</uuid>
     <file-application>eFapsApp-Commons</file-application>
-    <file-revision>$Rev$</file-revision>
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>Commons-Configuration</name>
         <attribute>
-            <key>org.efaps.erp.NumberGenerators</key>
+            <key>org.efaps.commons.NumberGenerators</key>
             <value><![CDATA[Assets_MaintenanceOrder=f51d882e-778f-4692-b5e5-e088b64c1822
 Assets_MaintenanceRequest=48181024-d9fe-4721-b0e7-4461e685e5f5
 Fabrication_Process=7ae35ddb-473e-41b4-aaf5-02ace7ec4a6d
@@ -50,11 +43,6 @@ TimeReport_EmployeePreplannedAbsence=9878c43d-319f-4b6a-a9c7-5e718fc36ea2]]></va
     can be concatenated
     Set a NumberGenerator for a Type. Used for Common Documents in the calling command using setting "UseNumberGenerator4Name"
     </description>
-        </attribute>
-         <attribute>
-            <key>org.efaps.erp.NumberGenerators01</key>
-            <value>--</value>
-            <description>Careful is used by the sales module!!</description>
         </attribute>
         <attribute>
             <key>org.efaps.commons.RateFormatter</key>
