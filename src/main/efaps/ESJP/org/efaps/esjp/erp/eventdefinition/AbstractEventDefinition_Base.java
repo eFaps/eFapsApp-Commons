@@ -74,7 +74,7 @@ public abstract class AbstractEventDefinition_Base
         queryBldr.addWhereAttrEqValue(CIERP.EventScheduleAbstract.DefinitionLinkAbstract, _defInstance);
         add2QueryBlrd4initEvents(queryBldr);
         final InstanceQuery query = queryBldr.getQuery();
-        query.setCompanyDepended(false);
+        query.setCompanyDependent(false);
         final MultiPrintQuery multi = new MultiPrintQuery(query.executeWithoutAccessCheck());
         multi.addAttribute(CIERP.EventScheduleAbstract.StatusAbstract, CIERP.EventScheduleAbstract.Company);
         multi.executeWithoutAccessCheck();
