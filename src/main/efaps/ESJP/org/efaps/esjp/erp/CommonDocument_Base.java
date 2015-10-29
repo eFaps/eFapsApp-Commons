@@ -71,6 +71,7 @@ import org.efaps.esjp.common.file.FileUtil;
 import org.efaps.esjp.common.jasperreport.StandartReport;
 import org.efaps.esjp.common.listener.ITypedClass;
 import org.efaps.esjp.common.uiform.Create;
+import org.efaps.esjp.common.uiform.Edit;
 import org.efaps.esjp.common.util.InterfaceUtils;
 import org.efaps.esjp.common.util.InterfaceUtils_Base.DojoLibs;
 import org.efaps.esjp.erp.listener.IOnAction;
@@ -1424,47 +1425,17 @@ public abstract class CommonDocument_Base
                                         final EditedDoc _editedDoc)
         throws EFapsException
     {
-        final Map<Integer, String> connectTypes = analyseProperty(_parameter, "ConnectType");
-        if (!connectTypes.isEmpty()) {
-            final Map<Integer, String> currentLinks = analyseProperty(_parameter, "ConnectCurrentLink");
-            final Map<Integer, String> foreignLinks = analyseProperty(_parameter, "ConnectForeignLink");
-            final Map<Integer, String> foreignFields = analyseProperty(_parameter, "ConnectForeignField");
-            // all must be of the same size
-            if (connectTypes.size() == currentLinks.size() && foreignLinks.size() == foreignFields.size()
-                            && connectTypes.size() == foreignLinks.size()) {
-                for (final Entry<Integer, String> entry: connectTypes.entrySet()) {
-                    final String[] foreigns = _parameter.getParameterValues(foreignFields.get(entry.getKey()));
-                    if (foreigns != null) {
-                        for (final String foreign : foreigns) {
-                            final String typeStr = entry.getValue();
-                            final Type type = isUUID(typeStr) ? Type.get(UUID.fromString(typeStr)) : Type.get(typeStr);
-
-                            final QueryBuilder queryBldr = new QueryBuilder(type);
-                            queryBldr.addWhereAttrEqValue(currentLinks.get(entry.getKey()), _editedDoc.getInstance());
-                            final List<Instance> insts = queryBldr.getQuery().execute();
-                            if (insts.size() == 1 && (foreign == null || foreign.isEmpty())) {
-                                new Delete(insts.get(0)).execute();
-                            } else if (insts.size() < 2) {
-                                final Update update = insts.isEmpty() ? new Insert(type) : new Update(insts.get(0));
-                                if (insts.isEmpty()) {
-                                    update.add(currentLinks.get(entry.getKey()), _editedDoc.getInstance());
-                                }
-                                final Instance inst = Instance.get(foreign);
-                                if (inst.isValid()) {
-                                    update.add(foreignLinks.get(entry.getKey()), inst);
-                                } else {
-                                    update.add(foreignLinks.get(entry.getKey()), foreign);
-                                }
-                                add2updateConnection2Object(_parameter, _editedDoc, update);
-                                update.execute();
-                            }
-                        }
-                    }
-                }
-            } else {
-                CommonDocument_Base.LOG.error("The properties must be of the same size!");
+        final Edit edit = new Edit(){
+            @Override
+            protected void add2updateConnection2Object(final Parameter _parameter,
+                                                       final Update _update)
+                throws EFapsException
+            {
+                super.add2updateConnection2Object(_parameter, _update);
+                CommonDocument_Base.this.add2updateConnection2Object(_parameter, _editedDoc, _update);
             }
-        }
+        };
+        edit.updateConnection2Object(_parameter, _editedDoc.getInstance());
     }
 
     /**
