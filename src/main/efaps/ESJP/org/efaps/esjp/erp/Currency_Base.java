@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -499,6 +500,41 @@ public abstract class Currency_Base
     }
 
     /**
+     * Gets the currency from the UserInterface.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _fieldNames the field names
+     * @return the currency from ui
+     * @throws EFapsException on error
+     */
+    public Instance getCurrencyFromUI(final Parameter _parameter,
+                                      final String... _fieldNames)
+        throws EFapsException
+    {
+        String[] fieldNames;
+        if (ArrayUtils.isEmpty(_fieldNames)) {
+            fieldNames = new String[] { "rateCurrencyId" };
+        } else {
+            fieldNames = _fieldNames;
+        }
+        Instance ret = null;
+        for (final String fieldName : fieldNames) {
+            final String strVal = _parameter.getParameterValue(fieldName);
+            if (strVal != null) {
+                if (strVal.contains(".")) {
+                    ret = Instance.get(strVal);
+                } else {
+                    ret = Instance.get(CIERP.Currency.getType(), strVal);
+                }
+            }
+            if (ret != null && ret.isValid()) {
+                break;
+            }
+        }
+        return ret == null ? Currency.getBaseCurrency() : ret;
+    }
+
+    /**
      * Extension of the standard DropDown Field mechanism to select a default currency.
      * @param _parameter    Parameter as passed by the eFaps APi
      * @return  Return containing html snippet
@@ -550,5 +586,4 @@ public abstract class Currency_Base
         }
         return ret;
     }
-
 }
