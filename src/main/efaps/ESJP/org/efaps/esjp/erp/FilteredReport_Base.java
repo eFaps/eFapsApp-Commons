@@ -840,6 +840,9 @@ public abstract class FilteredReport_Base
                     }
                 }
                 obj = new AttrDefFilterValue().setObject(set);
+
+            } else if (oldObj instanceof AbstractFilterValue) {
+                obj = ((AbstractFilterValue<?>) oldObj).parseObject(values);
             } else {
                 obj = val;
             }
@@ -1072,6 +1075,17 @@ public abstract class FilteredReport_Base
         public AbstractFilterValue<T> setObject(final T _object)
         {
             this.object = _object;
+            return this;
+        }
+
+        /**
+         * Parses the object.
+         *
+         * @param _values the values
+         * @return the abstract filter value< t>
+         */
+        public AbstractFilterValue<T> parseObject(final String[] _values)
+        {
             return this;
         }
     }
