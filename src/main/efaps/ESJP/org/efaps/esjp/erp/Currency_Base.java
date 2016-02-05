@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.datamodel.ui.IUIValue;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -237,6 +238,22 @@ public abstract class Currency_Base
                 final CurrencyInst currencyInst = CurrencyInst.get(instance);
                 if (currencyInst.isInvert()) {
                     ret.put(ReturnValues.TRUE, true);
+                }
+            } else {
+                // in case that a special default value was set
+                final IUIValue uiValue =  (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
+                if (uiValue != null &&  uiValue.getObject() instanceof Object[]) {
+                    final Object[] values = (Object[]) uiValue.getObject();
+                    if (values.length > 2) {
+                        final CurrencyInst currencyInst = CurrencyInst.get((Long) values[2]);
+                        if (currencyInst.isInvert()) {
+                            final Object enomTmp = values[0];
+                            values[0] = values[1];
+                            values[1] = enomTmp;
+                            ret.put(ReturnValues.TRUE, true);
+                        }
+                    }
+                    ret.put(ReturnValues.VALUES, values);
                 }
             }
         } else {
