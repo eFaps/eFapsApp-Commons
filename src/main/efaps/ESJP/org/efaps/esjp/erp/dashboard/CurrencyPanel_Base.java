@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,6 +87,19 @@ public abstract class CurrencyPanel_Base
         return Integer.valueOf(getConfig().getProperty("Days", "14"));
     }
 
+   /**
+    * Gets the date format.
+    *
+    * @return the date format
+    * @throws EFapsException the e faps exception
+    */
+    protected String getDateFormat()
+        throws EFapsException
+    {
+        return getConfig().getProperty("DateFormat", "dd/MM/yyyy");
+    }
+
+
     @Override
     public CharSequence getHtmlSnipplet()
         throws EFapsException
@@ -105,7 +118,7 @@ public abstract class CurrencyPanel_Base
                     final RateInfo rateInfo = new Currency().evaluateRateInfo(new Parameter(), current,
                                     currencyInst.getInstance());
                     final Map<String, Object> map  = new HashMap<>();
-                    map.put("date", current.toString("YYYY-MM-dd"));
+                    map.put("date", current.toString(getDateFormat()));
                     map.put("currency", currencyInst);
                     map.put("value", rateInfo.getRateUI());
                     map.put("valueFrmt", rateInfo.getRateUIFrmt());
@@ -140,7 +153,9 @@ public abstract class CurrencyPanel_Base
             } else {
                 series = new HashMap<>();
                 final Serie<Data> serie = new Serie<Data>();
-                serie.setName(currInst.getName());
+                final DateTime validFrom = currInst.getLatestValidFrom();
+                serie.setName(currInst.getName() + " " + (validFrom == null
+                                ? "" : validFrom.toString(getDateFormat())));
                 series.put(currInst.getISOCode(), serie);
                 chart.addSerie(serie);
                 seriesMap.put(currInst.getISOCode(), series);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.esjp.erp;
@@ -26,26 +23,26 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.efaps.admin.program.esjp.EFapsRevision;
+import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.CachedInstanceQuery;
 import org.efaps.db.CachedPrintQuery;
 import org.efaps.db.Instance;
+import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.QueryCache;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.util.EFapsException;
+import org.joda.time.DateTime;
 
 /**
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: CurrencyInst_Base.java 10707 2013-10-30 01:00:13Z
- *          jan@moxter.net $
  */
 @EFapsUUID("a848745e-417f-4148-9f24-7429cb445572")
-@EFapsRevision("$Rev$")
+@EFapsApplication("eFapsApp-Commons")
 public abstract class CurrencyInst_Base
 {
 
@@ -263,6 +260,29 @@ public abstract class CurrencyInst_Base
     public void setISOCode(final String _iSOCode)
     {
         this.isoCode = _iSOCode;
+    }
+
+    /**
+     * Gets the latest valid from.
+     *
+     * @return the latest valid from
+     * @throws EFapsException the e faps exception
+     */
+    public DateTime getLatestValidFrom()
+        throws EFapsException
+    {
+        DateTime ret = null;
+        final QueryBuilder queryBldr = new QueryBuilder(CIERP.CurrencyRateAbstract);
+        queryBldr.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.CurrencyLink, getInstance());
+        queryBldr.addOrderByAttributeDesc(CIERP.CurrencyRateAbstract.ValidFrom);
+        queryBldr.setLimit(1);
+        final MultiPrintQuery multi = queryBldr.getPrint();
+        multi.addAttribute(CIERP.CurrencyRateAbstract.ValidFrom);
+        multi.execute();
+        if (multi.next()) {
+            ret = multi.getAttribute(CIERP.CurrencyRateAbstract.ValidFrom);
+        }
+        return ret;
     }
 
     @Override
