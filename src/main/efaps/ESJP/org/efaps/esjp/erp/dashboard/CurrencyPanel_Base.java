@@ -168,7 +168,7 @@ public abstract class CurrencyPanel_Base
                 final BigDecimal y = ((BigDecimal) map.get("value")).abs();
                 dataTmp.setXValue(xmap.get(map.get("date")));
                 dataTmp.setYValue(y);
-                dataTmp.setTooltip(map.get("valueFrmt") + " " + serie.getName() + " - " + map.get("date"));
+                dataTmp.setTooltip(map.get("valueFrmt") + " " + currInst.getName() + " - " + map.get("date"));
             }
         }
         final List<Map<String, Object>> labels = new ArrayList<>();
