@@ -34,6 +34,7 @@ import java.util.UUID;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Status;
@@ -120,7 +121,7 @@ public abstract class FilteredReport_Base
     {
         final Map<String, Object> filterMap = getFilterMap(_parameter);
         if (filterMap.isEmpty()) {
-            final Map<Integer, String> fields = analyseProperty(_parameter, "Field");
+            final Map<Integer, String> fields = getFields(_parameter);
             final Map<Integer, String> types = analyseProperty(_parameter, "FilterType");
             final Map<Integer, String> defaults = analyseProperty(_parameter, "FilterDefault");
 
@@ -439,7 +440,7 @@ public abstract class FilteredReport_Base
                 final String value = multi.getAttribute(CIERP.AttributeDefinitionAbstract.Value);
                 final String description = multi.getAttribute(CIERP.AttributeDefinitionAbstract.Description);
                 final DropDownPosition pos = new DropDownPosition(multi.getCurrentInstance().getOid(),
-                                value + (description != null && !description.isEmpty() ? (" - " + description) : ""));
+                                value + (description != null && !description.isEmpty() ? " - " + description : ""));
                 pos.setSelected(val.contains(multi.getCurrentInstance()));
                 values.add(pos);
             }
@@ -873,7 +874,7 @@ public abstract class FilteredReport_Base
                 html.append(DBProperties.getFormatedDBProperty(FilteredReport.class.getName() + ".CacheTime",
                                 time.toDate())).append("<br/>");
             }
-            final Map<Integer, String> fields = analyseProperty(_parameter, "Field");
+            final Map<Integer, String> fields = getFields(_parameter);
             boolean first = true;
             if (fields.isEmpty()) {
                 for (final Entry<String, Object> entry : map.get(filterKey).entrySet()) {
@@ -921,6 +922,42 @@ public abstract class FilteredReport_Base
         ret.put(ReturnValues.SNIPLETT, html.toString());
         return ret;
     }
+
+    /**
+     * Gets the fields.
+     *
+     * @param _parameter the _parameter
+     * @return the fields
+     * @throws EFapsException the e faps exception
+     */
+    protected Map<Integer, String> getFields(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Map<Integer, String> ret = analyseProperty(_parameter, "Field");
+        if (containsProperty(_parameter, "SystemConfig")) {
+            final String configStr = getProperty(_parameter, "SystemConfig");
+            SystemConfiguration config;
+            if (isUUID(configStr)) {
+                config = SystemConfiguration.get(UUID.fromString(configStr));
+            } else {
+                config = SystemConfiguration.get(configStr);
+            }
+            final Map<Integer, String> accessMap = analyseProperty(_parameter, "AccessAttribute");
+            for (final Entry<Integer, String> entry : accessMap.entrySet()) {
+                if (!StringUtils.isEmpty(entry.getValue())) {
+                    final boolean inverse = entry.getValue().startsWith("!");
+                    final String key = inverse ? entry.getValue().substring(1) : entry.getValue();
+                    final boolean access = inverse ? !config.getAttributeValueAsBoolean(key)
+                                    : config.getAttributeValueAsBoolean(key);
+                    if (!access) {
+                        ret.remove(entry.getKey());
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
 
     @Override
     protected Long getLifespan(final Parameter _parameter)
@@ -1279,7 +1316,7 @@ public abstract class FilteredReport_Base
             while (multi.next()) {
                 final String value = multi.getAttribute(CIERP.AttributeDefinitionAbstract.Value);
                 final String description = multi.getAttribute(CIERP.AttributeDefinitionAbstract.Description);
-                labels.add(value + (description != null && !description.isEmpty() ? (" - " + description) : ""));
+                labels.add(value + (description != null && !description.isEmpty() ? " - " + description : ""));
             }
 
             Collections.sort(labels, new Comparator<String>()
