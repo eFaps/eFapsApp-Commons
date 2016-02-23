@@ -19,6 +19,8 @@ package org.efaps.esjp.erp;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +36,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.IUIValue;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -50,7 +53,9 @@ import org.efaps.db.QueryBuilder;
 import org.efaps.db.SelectBuilder;
 import org.efaps.db.Update;
 import org.efaps.esjp.ci.CIERP;
+import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.uiform.Field;
+import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.ui.wicket.util.DateUtil;
 import org.efaps.util.EFapsException;
@@ -59,13 +64,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
+ * TODO comment!.
  *
  * @author The eFaps Team
  */
 @EFapsUUID("feb2265d-bc1d-4c71-9f38-aa84d6a1c657")
 @EFapsApplication("eFapsApp-Commons")
 public abstract class Currency_Base
+    extends AbstractCommon
 {
     /**
      * CacheKey for ExchangeRates.
@@ -328,6 +334,8 @@ public abstract class Currency_Base
     }
 
     /**
+     * Gets the target currency link ui.
+     *
      * @param _parameter Parameter as passed from the eFaps API
      * @return value for the targetcurrency
      * @throws EFapsException on error
@@ -346,6 +354,8 @@ public abstract class Currency_Base
     }
 
     /**
+     * Evaluate rate info.
+     *
      * @param _parameter Parameter as passed by the eFaps API
      * @param _rate     rateObject to be evaluated
      * @return RateInfo
@@ -455,6 +465,8 @@ public abstract class Currency_Base
     }
 
     /**
+     * Evaluate rate info.
+     *
      * @param _parameter Parameter as passed by the eFaps API
      * @param _dateStr date the rate must be evaluated for
      * @param _currentCurrencyInst instance of the currency the rate is wanted for
@@ -471,6 +483,8 @@ public abstract class Currency_Base
     }
 
     /**
+     * Evaluate rate info.
+     *
      * @param _parameter Parameter as passed by the eFaps API
      * @param _date date the rate must be evaluated for
      * @param _currentCurrencyInst instance of the currency the rate is wanted for
@@ -506,6 +520,8 @@ public abstract class Currency_Base
     }
 
     /**
+     * Gets the type4 exchange rate.
+     *
      * @param _parameter Parameter as passed by the eFaps API
      * @return RateInfo type for the exchange rate
      * @throws EFapsException on error
@@ -590,7 +606,48 @@ public abstract class Currency_Base
         return field.dropDownFieldValue(_parameter);
     }
 
+
     /**
+     * Currency drop down field value.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return the return
+     * @throws EFapsException on error
+     */
+    public Return currencyDropDownFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final List<DropDownPosition> values = new ArrayList<DropDownPosition>();
+        final Field field = new Field();
+        for (final CurrencyInst curInstObj : CurrencyInst.getAvailable()) {
+            final DropDownPosition pos = field.getDropDownPosition(_parameter, curInstObj.getInstance().getOid(),
+                            curInstObj.getName());
+            pos.setSelected(curInstObj.getInstance().equals(Currency.getBaseCurrency()));
+            values.add(pos);
+        }
+        if (containsProperty(_parameter, "EmptyValue")) {
+            values.add(0, new DropDownPosition("",
+                            DBProperties.getProperty(getProperty(_parameter, "EmptyValue"))));
+        }
+        Collections.sort(values, new Comparator<DropDownPosition>()
+        {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public int compare(final DropDownPosition _o1,
+                               final DropDownPosition _o2)
+            {
+                return _o1.getOrderValue().compareTo(_o2.getOrderValue());
+            }
+        });
+        final Return ret = new Return();
+        ret.put(ReturnValues.VALUES, values);
+        return ret;
+    }
+
+    /**
+     * Gets the base currency.
+     *
      * @return the base currency for eFaps
      * @throws EFapsException on error
      */
