@@ -40,7 +40,7 @@ import org.efaps.admin.datamodel.Dimension;
 import org.efaps.admin.datamodel.Dimension.UoM;
 import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.datamodel.ui.IUIValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -302,38 +302,21 @@ public abstract class CommonDocument_Base
                 throws EFapsException
             {
                 final Map<?, ?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-                final FieldValue fieldValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+                final IUIValue uiValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
                 DropDownPosition pos;
-                if (TargetMode.EDIT.equals(fieldValue.getTargetMode())) {
-                    pos = new DropDownPosition(_value, _option) {
-                        @Override
-                        public boolean isSelected()
-                        {
-                            boolean ret = false;
-                            final Long persId = (Long) fieldValue.getValue();
-                            ret = getValue().equals(persId);
-                            return ret;
-                        }
-                    };
+                if (TargetMode.EDIT.equals(_parameter.get(ParameterValues.ACCESSMODE))) {
+                    final Long persId = (Long) uiValue.getObject();
+                    pos = new DropDownPosition(_value, _option).setSelected(_value.equals(persId));
                 } else {
                     if ("true".equalsIgnoreCase((String) props.get("SelectCurrent"))) {
-                        pos = new DropDownPosition(_value, _option) {
-
-                            @Override
-                            public boolean isSelected()
-                            {
-                                boolean ret = false;
-                                long persId = 0;
-                                try {
-                                    persId = Context.getThreadContext().getPerson().getId();
-                                } catch (final EFapsException e) {
-                                    // nothing must be done at all
-                                    e.printStackTrace();
-                                }
-                                ret = new Long(persId).equals(getValue());
-                                return ret;
-                            }
-                        };
+                        long persId = 0;
+                        try {
+                            persId = Context.getThreadContext().getPerson().getId();
+                        } catch (final EFapsException e) {
+                            // nothing must be done at all
+                            LOG.error("Catched error", e);
+                        }
+                        pos = new DropDownPosition(_value, _option).setSelected(new Long(persId).equals(_value));
                     } else {
                         pos = super.getDropDownPosition(_parameter, _value, _option);
                     }
@@ -405,7 +388,7 @@ public abstract class CommonDocument_Base
                 super.add2QueryBuilder4List(_parameter, _queryBldr);
             }
         };
-        return field.dropDownFieldValue(_parameter);
+        return field.getOptionListFieldValue(_parameter);
     }
 
     /**
@@ -1425,7 +1408,7 @@ public abstract class CommonDocument_Base
                                         final EditedDoc _editedDoc)
         throws EFapsException
     {
-        final Edit edit = new Edit(){
+        final Edit edit = new Edit() {
             @Override
             protected void add2updateConnection2Object(final Parameter _parameter,
                                                        final Update _update)
