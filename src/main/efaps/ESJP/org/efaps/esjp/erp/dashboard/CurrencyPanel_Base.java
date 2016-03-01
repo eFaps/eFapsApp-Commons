@@ -99,93 +99,96 @@ public abstract class CurrencyPanel_Base
         return getConfig().getProperty("DateFormat", "dd/MM/yyyy");
     }
 
-
     @Override
     public CharSequence getHtmlSnipplet()
         throws EFapsException
     {
-        final StringBuilder html = new StringBuilder();
+        CharSequence ret;
+        if (isCached()) {
+            ret = getFromCache();
+        } else {
+            final DateTime start = new DateTime().withTimeAtStartOfDay().minusDays(getDays());
+            final DateTime end = new DateTime().withTimeAtStartOfDay().plusDays(1);
 
-        final DateTime start = new DateTime().withTimeAtStartOfDay().minusDays(getDays());
-        final DateTime end = new DateTime().withTimeAtStartOfDay().plusDays(1);
+            DateTime current = start;
+            final List<Map<String, Object>> values = new ArrayList<>();
 
-        DateTime current = start;
-        final List<Map<String, Object>> values = new ArrayList<>();
+            for (final CurrencyInst currencyInst : CurrencyInst.getAvailable()) {
+                if (!currencyInst.getInstance().equals(Currency.getBaseCurrency())) {
+                    while (current.isBefore(end)) {
+                        final RateInfo rateInfo = new Currency().evaluateRateInfo(new Parameter(), current,
+                                        currencyInst.getInstance());
+                        final Map<String, Object> map  = new HashMap<>();
+                        map.put("date", current.toString(getDateFormat()));
+                        map.put("currency", currencyInst);
+                        map.put("value", rateInfo.getRateUI());
+                        map.put("valueFrmt", rateInfo.getRateUIFrmt());
+                        current = current.plusDays(1);
+                        values.add(map);
+                    }
+                }
+                current = start;
+            }
 
-        for (final CurrencyInst currencyInst : CurrencyInst.getAvailable()) {
-            if (!currencyInst.getInstance().equals(Currency.getBaseCurrency())) {
-                while (current.isBefore(end)) {
-                    final RateInfo rateInfo = new Currency().evaluateRateInfo(new Parameter(), current,
-                                    currencyInst.getInstance());
-                    final Map<String, Object> map  = new HashMap<>();
-                    map.put("date", current.toString(getDateFormat()));
-                    map.put("currency", currencyInst);
-                    map.put("value", rateInfo.getRateUI());
-                    map.put("valueFrmt", rateInfo.getRateUIFrmt());
-                    current = current.plusDays(1);
-                    values.add(map);
+            int x = 0;
+            final Map<String, Integer> xmap = new LinkedHashMap<>();
+            final LineChart chart = new LineChart().setWidth(getWidth()).setHeight(getHeight());
+            final String title = getTitle();
+            if (title != null && !title.isEmpty()) {
+                chart.setTitle(title);
+            }
+            chart.setOrientation(Orientation.VERTICAL_CHART_LEGEND);
+
+            final Map<String, Map<String, Serie<Data>>> seriesMap = new HashMap<>();
+            final Axis xAxis = new Axis().setName("x");
+            chart.addAxis(xAxis);
+            for (final Map<String, Object> map : values) {
+
+                if (!xmap.containsKey(map.get("date"))) {
+                    xmap.put((String) map.get("date"), x++);
+                }
+                final Map<String, Serie<Data>> series;
+                final CurrencyInst currInst =  (CurrencyInst) map.get("currency");
+                if (seriesMap.containsKey(currInst.getISOCode())) {
+                    series = seriesMap.get(currInst.getISOCode());
+                } else {
+                    series = new HashMap<>();
+                    final Serie<Data> serie = new Serie<Data>();
+                    final DateTime validFrom = currInst.getLatestValidFrom();
+                    serie.setName(currInst.getName() + " " + (validFrom == null
+                                    ? "" : validFrom.toString(getDateFormat())));
+                    series.put(currInst.getISOCode(), serie);
+                    chart.addSerie(serie);
+                    seriesMap.put(currInst.getISOCode(), series);
+                }
+
+                final Data dataTmp = new Data().setSimple(false);
+                final Serie<Data> serie = series.get(currInst.getISOCode());
+                if (serie != null) {
+                    serie.addData(dataTmp);
+                    final BigDecimal y = ((BigDecimal) map.get("value")).abs();
+                    dataTmp.setXValue(xmap.get(map.get("date")));
+                    dataTmp.setYValue(y);
+                    dataTmp.setTooltip(map.get("valueFrmt") + " " + currInst.getName() + " - " + map.get("date"));
                 }
             }
-            current = start;
-        }
-
-        int x = 0;
-        final Map<String, Integer> xmap = new LinkedHashMap<>();
-        final LineChart chart = new LineChart().setWidth(getWidth()).setHeight(getHeight());
-        final String title = getTitle();
-        if (title != null && !title.isEmpty()) {
-            chart.setTitle(title);
-        }
-        chart.setOrientation(Orientation.VERTICAL_CHART_LEGEND);
-
-        final Map<String, Map<String, Serie<Data>>> seriesMap = new HashMap<>();
-        final Axis xAxis = new Axis().setName("x");
-        chart.addAxis(xAxis);
-        for (final Map<String, Object> map : values) {
-
-            if (!xmap.containsKey(map.get("date"))) {
-                xmap.put((String) map.get("date"), x++);
+            final List<Map<String, Object>> labels = new ArrayList<>();
+            for (final Entry<String, Integer> entry : xmap.entrySet()) {
+                final Map<String, Object> map = new HashMap<>();
+                map.put("value", entry.getValue());
+                map.put("text", Util.wrap4String(entry.getKey()));
+                labels.add(map);
             }
-            final Map<String, Serie<Data>> series;
-            final CurrencyInst currInst =  (CurrencyInst) map.get("currency");
-            if (seriesMap.containsKey(currInst.getISOCode())) {
-                series = seriesMap.get(currInst.getISOCode());
-            } else {
-                series = new HashMap<>();
-                final Serie<Data> serie = new Serie<Data>();
-                final DateTime validFrom = currInst.getLatestValidFrom();
-                serie.setName(currInst.getName() + " " + (validFrom == null
-                                ? "" : validFrom.toString(getDateFormat())));
-                series.put(currInst.getISOCode(), serie);
-                chart.addSerie(serie);
-                seriesMap.put(currInst.getISOCode(), series);
-            }
+            xAxis.setLabels(Util.mapCollectionToObjectArray(labels));
+            xAxis.addConfig("rotation", 75);
+            chart.addAxis(new Axis().setName("y").setVertical(true).addConfig("includeZero", true)
+                            .addConfig("fixUpper", "\"major\""));
+            chart.addPlot(new Plot().addConfig("type", "Lines").addConfig("markers", true).addConfig("tension", 2));
 
-            final Data dataTmp = new Data().setSimple(false);
-            final Serie<Data> serie = series.get(currInst.getISOCode());
-            if (serie != null) {
-                serie.addData(dataTmp);
-                final BigDecimal y = ((BigDecimal) map.get("value")).abs();
-                dataTmp.setXValue(xmap.get(map.get("date")));
-                dataTmp.setYValue(y);
-                dataTmp.setTooltip(map.get("valueFrmt") + " " + currInst.getName() + " - " + map.get("date"));
-            }
+            ret = chart.getHtmlSnipplet();
+            cache(ret);
         }
-        final List<Map<String, Object>> labels = new ArrayList<>();
-        for (final Entry<String, Integer> entry : xmap.entrySet()) {
-            final Map<String, Object> map = new HashMap<>();
-            map.put("value", entry.getValue());
-            map.put("text", Util.wrap4String(entry.getKey()));
-            labels.add(map);
-        }
-        xAxis.setLabels(Util.mapCollectionToObjectArray(labels));
-        xAxis.addConfig("rotation", 75);
-        chart.addAxis(new Axis().setName("y").setVertical(true).addConfig("includeZero", true)
-                        .addConfig("fixUpper", "\"major\""));
-        chart.addPlot(new Plot().addConfig("type", "Lines").addConfig("markers", true).addConfig("tension", 2));
-
-        html.append(chart.getHtmlSnipplet());
-        return html;
+        return ret;
     }
 
     @Override
