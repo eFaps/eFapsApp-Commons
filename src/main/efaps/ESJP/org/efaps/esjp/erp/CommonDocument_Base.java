@@ -567,15 +567,16 @@ public abstract class CommonDocument_Base
     }
 
     /**
-     * A Script adds new Rows to the given table and fills it with values.
+     * Gets the table add new rows script.
+     *
      * @param _parameter Parameter as passed by the eFaps API
-     * @param _tableName name of the table to be removed
-     * @param _values values to be used
-     * @param _onComplete script to be added on complete
-     * @param _onDomReady add onDomReady script part
-     * @param _wrapInTags wrap in script tags
-     * @param _nonEscapeFields set of fields for which the escape must not apply
-     * @return StringBuilder containing the javascript
+     * @param _tableName the table name
+     * @param _values the values
+     * @param _onComplete the on complete
+     * @param _onDomReady the on dom ready
+     * @param _wrapInTags the wrap in tags
+     * @param _nonEscapeFields the non escape fields
+     * @return the table add new rows script
      */
     protected StringBuilder getTableAddNewRowsScript(final Parameter _parameter,
                                                      final String _tableName,
@@ -584,6 +585,34 @@ public abstract class CommonDocument_Base
                                                      final boolean _onDomReady,
                                                      final boolean _wrapInTags,
                                                      final Set<String> _nonEscapeFields)
+    {
+        return getTableAddNewRowsScript(_parameter, _tableName, _values, _onComplete, _onDomReady, _wrapInTags,
+                        _nonEscapeFields, null);
+    }
+
+
+    /**
+     * A Script adds new Rows to the given table and fills it with values.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _tableName name of the table to be removed
+     * @param _values values to be used
+     * @param _onComplete script to be added on complete
+     * @param _onDomReady add onDomReady script part
+     * @param _wrapInTags wrap in script tags
+     * @param _nonEscapeFields set of fields for which the escape must not apply
+     * @param _extraParameter the extra parameter
+     * @return StringBuilder containing the javascript
+     */
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    protected StringBuilder getTableAddNewRowsScript(final Parameter _parameter,
+                                                     final String _tableName,
+                                                     final Collection<Map<String, Object>> _values,
+                                                     final StringBuilder _onComplete,
+                                                     final boolean _onDomReady,
+                                                     final boolean _wrapInTags,
+                                                     final Set<String> _nonEscapeFields,
+                                                     final String _extraParameter)
     {
         final StringBuilder ret = new StringBuilder();
         if (_wrapInTags) {
@@ -601,7 +630,13 @@ public abstract class CommonDocument_Base
         if (_onComplete != null) {
             ret.append(_onComplete);
         }
-        ret.append("\n}, null);\n");
+        ret.append("\n}, null");
+
+        if (_extraParameter != null) {
+            ret.append(",").append(_extraParameter);
+        }
+        ret.append(" );\n");
+
         if (_onDomReady) {
             ret.append("\n});\n");
         }
