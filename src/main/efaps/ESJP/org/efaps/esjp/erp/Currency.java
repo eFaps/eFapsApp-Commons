@@ -17,6 +17,9 @@
 
 package org.efaps.esjp.erp;
 
+import java.math.BigDecimal;
+
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
@@ -43,5 +46,45 @@ public class Currency
         throws EFapsException
     {
         return Currency_Base.getBaseCurrency();
+    }
+
+    /**
+     * Convert to base.
+     *
+     * @param _parameter the _parameter
+     * @param _current the _current
+     * @param _rateInfo the _rate info
+     * @param _key the _key
+     * @return the big decimal
+     * @throws EFapsException the eFaps exception
+     */
+    public static BigDecimal convertToBase(final Parameter _parameter,
+                                           final BigDecimal _current,
+                                           final RateInfo _rateInfo,
+                                           final String _key)
+        throws EFapsException
+    {
+        return Currency_Base.convertToBase(_parameter, _current, _rateInfo, _key);
+    }
+
+    /**
+     * Convert to currency.
+     *
+     * @param _parameter the _parameter
+     * @param _current the _current
+     * @param _rateInfo the _rate info
+     * @param _key the _key
+     * @param _periodCurrenycInstance the _period currenyc instance
+     * @return the big decimal
+     * @throws EFapsException the e faps exception
+     */
+    public static BigDecimal convertToCurrency(final Parameter _parameter,
+                                               final BigDecimal _current,
+                                               final RateInfo _rateInfo,
+                                               final String _key,
+                                               final Instance _periodCurrenycInstance)
+        throws EFapsException
+    {
+        return Currency_Base.convertToCurrency(_parameter, _current, _rateInfo, _key, _periodCurrenycInstance);
     }
 }

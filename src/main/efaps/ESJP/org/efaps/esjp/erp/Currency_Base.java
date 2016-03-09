@@ -18,6 +18,7 @@
 package org.efaps.esjp.erp;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -657,6 +658,62 @@ public abstract class Currency_Base
         final Instance ret =  ERP.CURRENCYBASE.get();
         if (ret == null || ret != null && !ret.isValid()) {
             Currency_Base.LOG.error("There must be an BaseCurrency defined to calculate rates.");
+        }
+        return ret;
+    }
+
+    /**
+     * Convert to base.
+     *
+     * @param _parameter the _parameter
+     * @param _current the _current
+     * @param _rateInfo the _rate info
+     * @param _key the _key
+     * @return the big decimal
+     * @throws EFapsException the e faps exception
+     */
+    protected static BigDecimal convertToBase(final Parameter _parameter,
+                                              final BigDecimal _current,
+                                              final RateInfo _rateInfo,
+                                              final String _key)
+        throws EFapsException
+    {
+        BigDecimal ret = BigDecimal.ZERO;
+        // if invert multiply else divide
+        if (_rateInfo.getCurrencyInstObj().isInvert()) {
+            final BigDecimal rate = RateInfo.getRateUI(_parameter, _rateInfo, _key);
+            ret = _current.multiply(rate);
+        } else {
+            final BigDecimal rate = RateInfo.getRate(_parameter, _rateInfo, _key);
+            ret = _current.setScale(12, RoundingMode.HALF_UP).divide(rate, RoundingMode.HALF_UP);
+        }
+        return ret;
+    }
+
+    /**
+     * Convert to currency.
+     *
+     * @param _parameter the _parameter
+     * @param _current the _current
+     * @param _rateInfo the _rate info
+     * @param _key the _key
+     * @param _target instance of the target currency
+     * @return the big decimal
+     * @throws EFapsException the eFaps exception
+     */
+    protected static BigDecimal convertToCurrency(final Parameter _parameter,
+                                                   final BigDecimal _current,
+                                                   final RateInfo _rateInfo,
+                                                   final String _key,
+                                                   final Instance _target)
+        throws EFapsException
+    {
+        BigDecimal ret;
+        if (_target.equals(getBaseCurrency())) {
+            ret = convertToBase(_parameter, _current, _rateInfo, _key == null ? "Default" : _key);
+        } else {
+            LOG.error("TODOOOOOOOOOO");
+            ret = BigDecimal.ZERO;
         }
         return ret;
     }
