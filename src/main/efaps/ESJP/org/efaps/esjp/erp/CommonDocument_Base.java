@@ -955,21 +955,19 @@ public abstract class CommonDocument_Base
         throws EFapsException
     {
         Status status = null;
-        // first check if set via properties
-        final List<Status> statusList = getStatusListFromProperties(_parameter);
-        if (!statusList.isEmpty()) {
-            status = statusList.get(0);
+        //  first check if set via SystemConfiguration if not set lookup the properties
+        final Properties properties = ERP.DOCSTATUSCREATE.get();
+        final Type type = getType4DocCreate(_parameter);
+        if (type != null) {
+            final String key = properties.getProperty(type.getName() + ".Status");
+            if (key != null) {
+                status = Status.find(type.getStatusAttribute().getLink().getUUID(), key);
+            }
         }
-
-        // if not set via properties lookup the SystemConfiguration
         if (status == null) {
-            final Properties properties = ERP.DOCSTATUSCREATE.get();
-            final Type type = getType4DocCreate(_parameter);
-            if (type != null) {
-                final String key = properties.getProperty(type.getName() + ".Status");
-                if (key != null) {
-                    status = Status.find(type.getStatusAttribute().getLink().getUUID(), key);
-                }
+            final List<Status> statusList = getStatusListFromProperties(_parameter);
+            if (!statusList.isEmpty()) {
+                status = statusList.get(0);
             }
         }
         if (status != null) {
