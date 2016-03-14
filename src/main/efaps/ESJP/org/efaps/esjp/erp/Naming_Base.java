@@ -73,31 +73,38 @@ public abstract class Naming_Base
     {
         String ret = null;
         final Properties props = ERP.NUMBERGENERATOR.get();
-        final String ngKey = props.getProperty(_key);
-
         final List<Object> argList = new ArrayList<>();
-        final List<String> selects = new ArrayList<>();
-        for (int i = 1; i < 10; i++) {
-            final String params = props.getProperty(_key + ".Parameter" + String.format("%02d", i));
-            if (params == null) {
-                break;
-            } else {
-                if ("date".equalsIgnoreCase(params)) {
-                    argList.add(new Date());
+        // first priority is the SystemConfiguration
+        String ngKey = "";
+        if (props.containsKey(_key)) {
+            ngKey = props.getProperty(_key);
+            final List<String> selects = new ArrayList<>();
+            for (int i = 1; i < 10; i++) {
+                final String params = props.getProperty(_key + ".Parameter" + String.format("%02d", i));
+                if (params == null) {
+                    break;
                 } else {
-                    selects.add(params);
+                    if ("date".equalsIgnoreCase(params)) {
+                        argList.add(new Date());
+                    } else {
+                        selects.add(params);
+                    }
                 }
             }
-        }
-        if (!selects.isEmpty() && _instance != null && _instance.isValid()) {
-            final PrintQuery print = new PrintQuery(_instance);
-            print.addSelect(selects.toArray(new String[selects.size()]));
-            print.executeWithoutAccessCheck();
-            for (final String select : selects) {
-                argList.add(print.getSelect(select));
+            if (!selects.isEmpty() && _instance != null && _instance.isValid()) {
+                final PrintQuery print = new PrintQuery(_instance);
+                print.addSelect(selects.toArray(new String[selects.size()]));
+                print.executeWithoutAccessCheck();
+                for (final String select : selects) {
+                    argList.add(print.getSelect(select));
+                }
+            }
+        } else {
+            // search in the properties
+            if (containsProperty(_parameter, "NumberGenerator")) {
+                ngKey = getProperty(_parameter, "NumberGenerator");
             }
         }
-
         final NumberGenerator numGen = isUUID(ngKey) ? NumberGenerator.get(UUID.fromString(ngKey)) : NumberGenerator
                         .get(ngKey);
         if (!argList.isEmpty()) {
