@@ -114,6 +114,15 @@ public final class ERP
 
     /** See description. */
     @EFapsSysConfAttribute
+    public static final PropertiesSysConfAttribute RELATIONSHIPS = new PropertiesSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "Relationships")
+                    .description("Properties like TYPENAME.Relationship, TYPENAME.FromAttribute and "
+                                    + "TYPENAME.ToAttribute. Optional TYPENAME.Unique")
+                    .concatenate(true);
+
+    /** See description. */
+    @EFapsSysConfAttribute
     public static final PropertiesSysConfAttribute JASPERKEY = new PropertiesSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "JasperKey")
