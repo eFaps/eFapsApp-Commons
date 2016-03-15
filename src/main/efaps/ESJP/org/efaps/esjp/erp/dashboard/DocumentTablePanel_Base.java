@@ -77,6 +77,25 @@ public abstract class DocumentTablePanel_Base
         return ret;
     }
 
+    /**
+     * Gets the selects.
+     *
+     * @param _idx the idx
+     * @return the selects
+     */
+    protected String getLabel(final int _idx)
+    {
+        final String ret;
+        final Properties properties = getConfig();
+        final String formatStr = "Label%02d";
+        final String nameTmp = String.format(formatStr, _idx);
+        if (properties.containsKey(nameTmp)) {
+            ret = properties.getProperty(nameTmp);
+        } else {
+            ret= null;
+        }
+        return ret;
+    }
 
     @Override
     protected List<Map<String, Object>> getDataSource()
@@ -92,10 +111,17 @@ public abstract class DocumentTablePanel_Base
         multi.execute();
         while (multi.next()) {
             final Map<String, Object> map = new LinkedHashMap<>();
+            int idx = 0;
             for (final String select : selects) {
+                idx++;
                 final Object value = multi.getSelect(select);
-                final Attribute attr = multi.getAttribute4Select(select);
-                map.put(DBProperties.getProperty(attr.getLabelKey()), value);
+                final String label = getLabel(idx);
+                if (label == null) {
+                    final Attribute attr = multi.getAttribute4Select(select);
+                    map.put(DBProperties.getProperty(attr.getLabelKey()), value);
+                } else {
+                    map.put(label, value);
+                }
             }
             ret.add(map);
         }
