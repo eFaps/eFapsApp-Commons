@@ -25,6 +25,7 @@ import org.efaps.admin.datamodel.attributetype.BitEnumType;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.api.annotation.EFapsSysConfAttribute;
+import org.efaps.api.annotation.EFapsSysConfLink;
 import org.efaps.api.annotation.EFapsSystemConfiguration;
 import org.efaps.esjp.admin.common.systemconfiguration.PropertiesSysConfAttribute;
 import org.efaps.esjp.admin.common.systemconfiguration.StringSysConfAttribute;
@@ -184,7 +185,7 @@ public final class ERP
                     .description(" Key: Normally the type name");
 
     /** See description. */
-    @EFapsSysConfAttribute
+    @EFapsSysConfLink
     public static final SysConfLink CURRENCYBASE = new SysConfLink()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CurrencyBase")
