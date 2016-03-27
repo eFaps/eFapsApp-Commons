@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import java.util.UUID;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Status;
@@ -78,6 +77,8 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO comment!
@@ -107,6 +108,11 @@ public abstract class FilteredReport_Base
         /** Display as Group. */
         GROUP;
     }
+
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(FilteredReport.class);
 
     /**
      * Set the default filter in the context map. Must be called before any
@@ -179,7 +185,7 @@ public abstract class FilteredReport_Base
         } else if ("Boolean".equalsIgnoreCase(_type)) {
             ret = BooleanUtils.toBoolean(_default);
         } else if ("Currency".equalsIgnoreCase(_type)) {
-            Instance inst;
+            final Instance inst;
             if ("BASECURRENCY".equalsIgnoreCase(_default)) {
                 inst = Currency.getBaseCurrency();
             } else {
@@ -194,11 +200,10 @@ public abstract class FilteredReport_Base
                     ret = new EnumFilterValue().setObject((Enum<?>) consts[0]);
                 }
             } catch (final ClassNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error("Could not find enum class {}", e);
             }
         } else if ("AttributeDefinition".equalsIgnoreCase(_type)) {
-            Type type;
+            final Type type;
             if (isUUID(_default)) {
                 type = Type.get(UUID.fromString(_default));
             } else {
@@ -209,6 +214,30 @@ public abstract class FilteredReport_Base
                             Status.find(CIERP.AttributeDefinitionStatus.Active));
             final InstanceQuery query = queryBldr.getQuery();
             ret = new AttrDefFilterValue().setObject(new HashSet<Instance>(query.execute()));
+        }  else if ("FilterValue".equalsIgnoreCase(_type)) {
+            ret = getFilterValue(_parameter, _default);
+        }
+        return ret;
+    }
+
+    /**
+     * Gets the filter value.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _className the class name
+     * @return the filter value
+     * @throws EFapsException on error
+     */
+    protected IFilterValue getFilterValue(final Parameter _parameter,
+                                          final String _className)
+        throws EFapsException
+    {
+        IFilterValue ret = null;
+        try {
+            final Class<?> clazz = Class.forName(_className);
+            ret = (IFilterValue) clazz.newInstance();
+        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            LOG.error("Could not find IFilterValue class {}", e);
         }
         return ret;
     }
@@ -424,7 +453,7 @@ public abstract class FilteredReport_Base
         final Map<String, Object> map = getFilterMap(_parameter);
         if (map.containsKey(key)) {
             final Object obj = map.get(key);
-            Set<Instance> val;
+            final Set<Instance> val;
             if (obj instanceof AttrDefFilterValue) {
                 val = ((AttrDefFilterValue) obj).getObject();
             } else {
@@ -617,7 +646,7 @@ public abstract class FilteredReport_Base
             ret = MapUtils.toProperties(event.getPropertyMap());
         } else if (containsProperty(_parameter, "QueryBldrConfig")) {
             final String config = getProperty(_parameter, "QueryBldrConfig");
-            SystemConfiguration sysConf;
+            final SystemConfiguration sysConf;
             if (isUUID(config)) {
                 sysConf = SystemConfiguration.get(UUID.fromString(config));
             } else {
@@ -711,7 +740,7 @@ public abstract class FilteredReport_Base
     protected Map<String, Map<String, Object>> getCtxMap(final Parameter _parameter)
         throws EFapsException
     {
-        Map<String, Map<String, Object>> map;
+        final Map<String, Map<String, Object>> map;
         if (Context.getThreadContext().containsSessionAttribute(FilteredReport_Base.KEY4SESSION)) {
             map = (Map<String, Map<String, Object>>) Context.getThreadContext().getSessionAttribute(
                             FilteredReport_Base.KEY4SESSION);
@@ -841,9 +870,8 @@ public abstract class FilteredReport_Base
                     }
                 }
                 obj = new AttrDefFilterValue().setObject(set);
-
-            } else if (oldObj instanceof AbstractFilterValue) {
-                obj = ((AbstractFilterValue<?>) oldObj).parseObject(values);
+            } else if (oldObj instanceof IFilterValue) {
+                obj = ((IFilterValue) oldObj).parseObject(values);
             } else {
                 obj = val;
             }
@@ -903,8 +931,8 @@ public abstract class FilteredReport_Base
                                             Context.getThreadContext().getLocale()));
                         } else if (valueTmp instanceof Boolean) {
                             value = DBProperties.getProperty(dBProperties.get(entry.getKey()) + "." + valueTmp);
-                        } else if (valueTmp instanceof AbstractFilterValue) {
-                            value = ((AbstractFilterValue<?>) valueTmp).getLabel(_parameter);
+                        } else if (valueTmp instanceof IFilterValue) {
+                            value = ((IFilterValue) valueTmp).getLabel(_parameter);
                         } else {
                             value = valueTmp.toString();
                         }
@@ -936,19 +964,36 @@ public abstract class FilteredReport_Base
         final Map<Integer, String> ret = analyseProperty(_parameter, "Field");
         if (containsProperty(_parameter, "SystemConfig")) {
             final String configStr = getProperty(_parameter, "SystemConfig");
-            SystemConfiguration config;
+            final SystemConfiguration config;
             if (isUUID(configStr)) {
                 config = SystemConfiguration.get(UUID.fromString(configStr));
             } else {
                 config = SystemConfiguration.get(configStr);
             }
-            final Map<Integer, String> accessMap = analyseProperty(_parameter, "AccessAttribute");
-            for (final Entry<Integer, String> entry : accessMap.entrySet()) {
-                if (!StringUtils.isEmpty(entry.getValue())) {
-                    final boolean inverse = entry.getValue().startsWith("!");
-                    final String key = inverse ? entry.getValue().substring(1) : entry.getValue();
+            for (final Entry<Integer, String> entry : analyseProperty(_parameter, "Field").entrySet()) {
+                final Integer idx = entry.getKey();
+                String formatStr = "%02d";
+                if (idx > 99) {
+                    formatStr = "%03d";
+                }
+                final String accessAttribute = "AccessAttribute" + String.format(formatStr, idx);
+                final String accessAttributeExists = "AccessAttributeExists" + String.format(formatStr, idx);
+                if (containsProperty(_parameter, accessAttribute)) {
+                    final String value = getProperty(_parameter, accessAttribute);
+                    final boolean inverse = value.startsWith("!");
+                    final String key = inverse ? value.substring(1) : value;
                     final boolean access = inverse ? !config.getAttributeValueAsBoolean(key)
                                     : config.getAttributeValueAsBoolean(key);
+                    if (!access) {
+                        ret.remove(entry.getKey());
+                    }
+                }
+                if (containsProperty(_parameter, accessAttributeExists)) {
+                    final String value = getProperty(_parameter, accessAttributeExists);
+                    final boolean inverse = value.startsWith("!");
+                    final String key = inverse ? value.substring(1) : value;
+                    final boolean access = inverse ? !config.containsAttributeValue(key)
+                                    : config.containsAttributeValue(key);
                     if (!access) {
                         ret.remove(entry.getKey());
                     }
@@ -958,13 +1003,13 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
-
     @Override
     protected Long getLifespan(final Parameter _parameter)
         throws EFapsException
     {
         return Long.parseLong(ERP.FILTERREPORTCONFIG.get().getProperty(getClass().getName() + " .LifeSpan", "5"));
     }
+
 
     /**
      * Gets the enum value.
@@ -1063,13 +1108,39 @@ public abstract class FilteredReport_Base
     }
 
     /**
+     * The Interface IFilterValue.
+     */
+    public interface IFilterValue
+        extends Serializable
+    {
+
+        /**
+         * Gets the label.
+         *
+         * @param _parameter Parameter as passed by the eFaps API
+         * @return the label
+         * @throws EFapsException on error
+         */
+        String getLabel(final Parameter _parameter)
+            throws EFapsException;
+
+        /**
+         * Parses the object.
+         *
+         * @param _values the values
+         * @return the filter value
+         */
+        IFilterValue parseObject(final String[] _values);
+    }
+
+    /**
      * Basic filter class.
      *
      * @author The eFaps Team
      * @param <T> the generic type
      */
     public abstract static class AbstractFilterValue<T>
-        implements Serializable
+        implements IFilterValue
     {
 
         /**
@@ -1087,6 +1158,7 @@ public abstract class FilteredReport_Base
          * @return the label for this filter
          * @throws EFapsException on error
          */
+        @Override
         public String getLabel(final Parameter _parameter)
             throws EFapsException
         {
@@ -1121,6 +1193,7 @@ public abstract class FilteredReport_Base
          * @param _values the values
          * @return the abstract filter value< t>
          */
+        @Override
         public AbstractFilterValue<T> parseObject(final String[] _values)
         {
             return this;
@@ -1253,7 +1326,6 @@ public abstract class FilteredReport_Base
     public static class CurrencyFilterValue
         extends AbstractFilterValue<Instance>
     {
-
         /**
          *
          */
@@ -1263,7 +1335,7 @@ public abstract class FilteredReport_Base
         public String getLabel(final Parameter _parameter)
             throws EFapsException
         {
-            String ret;
+            final String ret;
             if ("BASE".equals(getObject().getKey())) {
                 ret = DBProperties.getProperty(FilteredReport.class.getName() + ".BaseCurrency");
             } else if (getObject().isValid()) {
