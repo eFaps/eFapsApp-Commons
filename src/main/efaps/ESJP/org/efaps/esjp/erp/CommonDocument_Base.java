@@ -1176,6 +1176,7 @@ public abstract class CommonDocument_Base
     protected String getDocName4Create(final Parameter _parameter)
         throws EFapsException
     {
+        //first priority are values
         final boolean useNumGen = "true".equalsIgnoreCase(getProperty(_parameter, "UseNumberGenerator4Name"));
         String ret;
         if (useNumGen) {
