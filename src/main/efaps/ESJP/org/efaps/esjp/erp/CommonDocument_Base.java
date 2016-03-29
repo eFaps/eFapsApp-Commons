@@ -1176,14 +1176,11 @@ public abstract class CommonDocument_Base
     protected String getDocName4Create(final Parameter _parameter)
         throws EFapsException
     {
-        //first priority are values
-        final boolean useNumGen = "true".equalsIgnoreCase(getProperty(_parameter, "UseNumberGenerator4Name"));
-        String ret;
-        if (useNumGen) {
+        //first priority are values from the UserInterface
+        String ret = _parameter.getParameterValue(getFieldName4Attribute(_parameter, CIERP.DocumentAbstract.Name.name));
+        if (StringUtils.isEmpty(ret)) {
             final Type type = getType4DocCreate(_parameter);
             ret = new Naming().fromNumberGenerator(_parameter, type.getName());
-        } else {
-            ret = _parameter.getParameterValue(getFieldName4Attribute(_parameter, CIERP.DocumentAbstract.Name.name));
         }
         return ret;
     }

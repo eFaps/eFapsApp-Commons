@@ -107,10 +107,12 @@ public abstract class Naming_Base
         }
         final NumberGenerator numGen = isUUID(ngKey) ? NumberGenerator.get(UUID.fromString(ngKey)) : NumberGenerator
                         .get(ngKey);
-        if (!argList.isEmpty()) {
-            ret = numGen.getNextVal(argList.toArray());
-        } else {
-            ret = numGen.getNextVal();
+        if (numGen != null) {
+            if (!argList.isEmpty()) {
+                ret = numGen.getNextVal(argList.toArray());
+            } else {
+                ret = numGen.getNextVal();
+            }
         }
         return ret;
     }
