@@ -35,7 +35,6 @@ import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.DecimalType;
-import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.IUIValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter;
@@ -101,12 +100,12 @@ public abstract class Currency_Base
     public Return getValidUntilUI(final Parameter _parameter)
         throws EFapsException
     {
-        final FieldValue fValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+        final IUIValue fValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
         final DateTime value;
-        if (fValue.getTargetMode().equals(TargetMode.CREATE)) {
+        if (TargetMode.CREATE.equals(_parameter.get(ParameterValues.ACCESSMODE))) {
             value = new DateTime().plusYears(10);
         } else {
-            value = (DateTime) fValue.getValue();
+            value = (DateTime) fValue.getObject();
         }
         final Return ret = new Return();
         ret.put(ReturnValues.VALUES, value);
@@ -266,19 +265,19 @@ public abstract class Currency_Base
         } else {
             // to prevent that the values are inverted more than one in a request,
             // the fieldvalues must be stored
-            Set<FieldValue> fieldValues;
+            final Set<IUIValue> fieldValues;
             if (Context.getThreadContext().containsRequestAttribute(Currency_Base.REQUEST_KEYRATE)) {
-                fieldValues = (Set<FieldValue>) Context.getThreadContext().getRequestAttribute(
+                fieldValues = (Set<IUIValue>) Context.getThreadContext().getRequestAttribute(
                                 Currency_Base.REQUEST_KEYRATE);
             } else {
-                fieldValues = new HashSet<FieldValue>();
+                fieldValues = new HashSet<IUIValue>();
                 Context.getThreadContext().setRequestAttribute(Currency_Base.REQUEST_KEYRATE, fieldValues);
             }
-            final FieldValue fieldValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+            final IUIValue fieldValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
             if (fieldValues.contains(fieldValue)) {
-                ret.put(ReturnValues.VALUES, fieldValue.getValue());
+                ret.put(ReturnValues.VALUES, fieldValue.getObject());
             } else {
-                final Object value = fieldValue.getValue();
+                final Object value = fieldValue.getObject();
                 if (value instanceof Object[]) {
                     final Object[] values = (Object[]) value;
                     if (values[2] != null) {
@@ -317,13 +316,13 @@ public abstract class Currency_Base
                 _values[1] = enomTmp;
             }
         }
-        BigDecimal numerator;
+        final BigDecimal numerator;
         if (_values[0] instanceof BigDecimal) {
             numerator = (BigDecimal) _values[0];
         } else {
             numerator = DecimalType.parseLocalized(_values[0].toString());
         }
-        BigDecimal denominator;
+        final BigDecimal denominator;
         if (_values[1] instanceof BigDecimal) {
             denominator = (BigDecimal) _values[1];
         } else {
@@ -545,7 +544,7 @@ public abstract class Currency_Base
                                       final String... _fieldNames)
         throws EFapsException
     {
-        String[] fieldNames;
+        final String[] fieldNames;
         if (ArrayUtils.isEmpty(_fieldNames)) {
             fieldNames = new String[] { "rateCurrencyId" };
         } else {
@@ -708,7 +707,7 @@ public abstract class Currency_Base
                                                    final Instance _target)
         throws EFapsException
     {
-        BigDecimal ret;
+        final BigDecimal ret;
         if (_target.equals(getBaseCurrency())) {
             ret = convertToBase(_parameter, _current, _rateInfo, _key == null ? "Default" : _key);
         } else {

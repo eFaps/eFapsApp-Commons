@@ -41,7 +41,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.BooleanUI;
 import org.efaps.admin.datamodel.ui.DateTimeUI;
 import org.efaps.admin.datamodel.ui.DateUI;
-import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.IUIProvider;
 import org.efaps.admin.datamodel.ui.IUIValue;
 import org.efaps.admin.datamodel.ui.UIValue;
@@ -253,7 +252,7 @@ public abstract class FilteredReport_Base
         throws EFapsException
     {
         final Return ret = new Return();
-        final FieldValue fieldValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+        final IUIValue fieldValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
         final String key = fieldValue.getField().getName();
         final Map<String, Object> map = getFilterMap(_parameter);
         if (!map.containsKey(key)) {
@@ -491,7 +490,7 @@ public abstract class FilteredReport_Base
         throws EFapsException
     {
         final Return ret = new Return();
-        final FieldValue fieldValue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+        final IUIValue fieldValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
         final String key = fieldValue.getField().getName();
         final Map<String, Object> map = getFilterMap(_parameter);
         if (!map.containsKey(key)) {
@@ -518,7 +517,7 @@ public abstract class FilteredReport_Base
             final UIValue uiValue = (UIValue) uiObject;
             key = uiValue.getField().getName();
         } else {
-            final FieldValue fieldValue = (FieldValue) uiObject;
+            final IUIValue fieldValue = (IUIValue) uiObject;
             key = fieldValue.getField().getName();
         }
 
@@ -548,7 +547,7 @@ public abstract class FilteredReport_Base
             final UIValue uiValue = (UIValue) uiObject;
             key = uiValue.getField().getName();
         } else {
-            final FieldValue fieldValue = (FieldValue) uiObject;
+            final IUIValue fieldValue = (IUIValue) uiObject;
             key = fieldValue.getField().getName();
         }
 
@@ -677,7 +676,7 @@ public abstract class FilteredReport_Base
             final UIValue uiValue = (UIValue) uiObject;
             key = uiValue.getField().getName();
         } else {
-            final FieldValue fieldValue = (FieldValue) uiObject;
+            final IUIValue fieldValue = (IUIValue) uiObject;
             key = fieldValue.getField().getName();
         }
 
