@@ -31,7 +31,7 @@
         <field name="warning">
             <property name="ModeEdit">READONLY</property>
             <property name="HideLabel">true</property>
-            <property name="ClassNameUI">org.efaps.admin.datamodel.ui.StringUI</property>
+            <property name="UIProvider">org.efaps.admin.datamodel.ui.StringUI</property>
             <trigger program="org.efaps.esjp.common.uiform.Field"
                 method="getDBPropertiesFieldValue"
                 name="ERP_DocumentAbstract_EditStatusForm.warning.UI_FIELD_VALUE"

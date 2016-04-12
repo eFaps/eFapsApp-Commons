@@ -28,7 +28,7 @@
         <name>ERP_ReportFilterForm4ContactDateFromTo</name>
         <field name="dateFrom">
             <property name="ModeEdit">EDITABLE</property>
-            <property name="ClassNameUI">org.efaps.admin.datamodel.ui.DateUI</property>
+            <property name="UIProvider">org.efaps.admin.datamodel.ui.DateUI</property>
             <property name="Label">ERP_ReportFilterForm4ContactDateFromTo.dateFrom.Label</property>
             <trigger program="org.efaps.esjp.erp.FilteredReport"
                 method="getDateFromFieldValue"
@@ -37,7 +37,7 @@
         </field>
         <field name="dateTo">
             <property name="ModeEdit">EDITABLE</property>
-            <property name="ClassNameUI">org.efaps.admin.datamodel.ui.DateUI</property>
+            <property name="UIProvider">org.efaps.admin.datamodel.ui.DateUI</property>
              <property name="Label">ERP_ReportFilterForm4ContactDateFromTo.dateTo.Label</property>
             <trigger program="org.efaps.esjp.erp.FilteredReport"
                 method="getDateToFieldValue"

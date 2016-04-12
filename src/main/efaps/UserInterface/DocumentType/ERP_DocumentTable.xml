@@ -40,7 +40,7 @@
             <property name="SelectAlternateOID">linkto[DocumentLinkAbstract].oid</property>
             <property name="Phrase">$&lt;linkto[DocumentLinkAbstract].type.label&gt; - $&lt;linkto[DocumentLinkAbstract].attribute[Name]&gt;</property>
             <property name="Label">ERP_DocumentAbstract/Name.Label</property>
-            <property name="ClassNameUI">org.efaps.admin.datamodel.ui.StringUI</property>
+            <property name="UIProvider">org.efaps.admin.datamodel.ui.StringUI</property>
         </field>
         <field name="date">
             <property name="Select">linkto[DocumentLinkAbstract].attribute[Date]</property>
@@ -50,7 +50,7 @@
             <property name="FilterRequired">TRUE</property>
             <property name="FilterBase">DATABASE</property>
             <property name="FilterDefault">WEEK</property>
-            <property name="ClassNameUI">org.efaps.admin.datamodel.ui.DateUI</property>
+            <property name="UIProvider">org.efaps.admin.datamodel.ui.DateUI</property>
         </field>
         <field name="vendorLink">
             <property name="Select">linkto[DocumentLinkAbstract].linkto[Salesperson].attribute[Name]</property>
