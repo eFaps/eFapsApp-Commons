@@ -34,6 +34,7 @@ import java.util.UUID;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Status;
@@ -511,19 +512,12 @@ public abstract class FilteredReport_Base
         throws EFapsException
     {
         final Return ret = new Return();
-        final Object uiObject = _parameter.get(ParameterValues.UIOBJECT);
-        final String key;
-        if (uiObject instanceof UIValue) {
-            final UIValue uiValue = (UIValue) uiObject;
-            key = uiValue.getField().getName();
-        } else {
-            final IUIValue fieldValue = (IUIValue) uiObject;
-            key = fieldValue.getField().getName();
-        }
+        final IUIValue uiValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
+        final String key = uiValue.getField().getName();
 
         final Map<String, Object> map = getFilterMap(_parameter);
         if (!map.containsKey(key)) {
-            map.put(key, new Boolean(true));
+            map.put(key, StringUtils.endsWith(key, "_negate") ? new Boolean(false) : new Boolean(true));
         }
         ret.put(ReturnValues.VALUES, map.get(key));
         return ret;
@@ -877,6 +871,12 @@ public abstract class FilteredReport_Base
         } else {
             obj = val;
         }
+        if (obj != null && obj instanceof AbstractFilterValue) {
+            final String negate = _parameter.getParameterValue(_field.getName() + "_negate");
+            if (StringUtils.isNotEmpty(negate)) {
+                ((AbstractFilterValue<?>) obj).setNegate(BooleanUtils.toBoolean(negate));
+            }
+        }
         return obj;
     }
 
@@ -910,8 +910,9 @@ public abstract class FilteredReport_Base
                     } else {
                         html.append("<br/>");
                     }
-                    html.append("<span style=\"font-weight: bold;\">").append(entry.getKey())
-                                    .append(": ").append("</span>").append(entry.getValue());
+                    html.append("<span style=\"font-weight: bold;\">")
+                        .append(entry.getKey())
+                        .append(": ").append("</span>").append(entry.getValue());
                 }
             } else {
                 final Table table = new Table();
@@ -919,11 +920,12 @@ public abstract class FilteredReport_Base
                 final Map<Integer, String> dBProperties = analyseProperty(_parameter, "DBProperty");
                 int i = 2;
                 for (final Entry<Integer, String> entry : fields.entrySet()) {
-                    if (i % 2 == 0 || filters.size() < 8) {
+                    if (i % 2 == 0 || fields.size() < 8) {
                         table.addRow();
                     }
                     String value = "-";
                     final Object valueTmp = filters.get(entry.getValue());
+                    boolean negate = false;
                     if (valueTmp != null) {
                         if (valueTmp instanceof DateTime) {
                             value = ((DateTime) valueTmp).toString(DateTimeFormat.mediumDate().withLocale(
@@ -932,12 +934,16 @@ public abstract class FilteredReport_Base
                             value = DBProperties.getProperty(dBProperties.get(entry.getKey()) + "." + valueTmp);
                         } else if (valueTmp instanceof IFilterValue) {
                             value = ((IFilterValue) valueTmp).getLabel(_parameter);
+                            negate  = ((IFilterValue) valueTmp).isNegate();
                         } else {
                             value = valueTmp.toString();
                         }
                     }
-                    final StringBuilder inner = new StringBuilder().append("<span style=\"font-weight: bold;\">")
-                                    .append(DBProperties.getProperty(dBProperties.get(entry.getKey()))).append(" ")
+                    final StringBuilder inner = new StringBuilder().append("<span style=\"font-weight: bold;");
+                    if (negate) {
+                        inner.append("color:red;");
+                    }
+                    inner.append("\">").append(DBProperties.getProperty(dBProperties.get(entry.getKey()))).append(" ")
                                     .append("</span>");
                     table.addColumn(inner).addColumn(value)
                         .getCurrentColumn().setStyle("max-width: 300px;white-space: normal");
@@ -1130,6 +1136,13 @@ public abstract class FilteredReport_Base
          * @return the filter value
          */
         IFilterValue parseObject(final String[] _values);
+
+        /**
+         * Negate the current filter elements.
+         *
+         * @return true, if successful
+         */
+        boolean isNegate();
     }
 
     /**
@@ -1151,6 +1164,9 @@ public abstract class FilteredReport_Base
          * The object for this filter.
          */
         private T object;
+
+        /** The negate. */
+        private boolean negate;
 
         /**
          * @param _parameter Parameter as passed by the eFaps API
@@ -1196,6 +1212,22 @@ public abstract class FilteredReport_Base
         public AbstractFilterValue<T> parseObject(final String[] _values)
         {
             return this;
+        }
+
+        @Override
+        public boolean isNegate()
+        {
+            return this.negate;
+        }
+
+        /**
+         * Setter method for instance variable {@link #negate}.
+         *
+         * @param _negate value for instance variable {@link #negate}
+         */
+        public void setNegate(final boolean _negate)
+        {
+            this.negate = _negate;
         }
     }
 
