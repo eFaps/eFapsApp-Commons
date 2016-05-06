@@ -905,14 +905,17 @@ public abstract class FilteredReport_Base
             boolean first = true;
             if (fields.isEmpty()) {
                 for (final Entry<String, Object> entry : map.get(filterKey).entrySet()) {
-                    if (first) {
-                        first = false;
-                    } else {
-                        html.append("<br/>");
+                    if (StringUtils.isNoneEmpty(entry.getKey()) && entry.getValue() != null
+                                    && !entry.getValue().toString().isEmpty()) {
+                        if (first) {
+                            first = false;
+                        } else {
+                            html.append("<br/>");
+                        }
+                        html.append("<span style=\"font-weight: bold;\">")
+                            .append(entry.getKey())
+                            .append(": ").append("</span>").append(entry.getValue());
                     }
-                    html.append("<span style=\"font-weight: bold;\">")
-                        .append(entry.getKey())
-                        .append(": ").append("</span>").append(entry.getValue());
                 }
             } else {
                 final Table table = new Table();
