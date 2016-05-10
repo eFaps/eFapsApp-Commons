@@ -88,19 +88,7 @@ Sales_DocumentAbstract.Frmt4Discount=#,##0.00</value>
          </attribute>
          <attribute>
             <key>org.efaps.commons.DocumentStatus4Create</key>
-            <value><![CDATA[Sales_IncomingInvoice.Status=Digitized
-Sales_IncomingCreditNote.Status=Digitized
-Sales_IncomingReceipt.Status=Digitized
-Sales_IncomingReminder.Status=Digitized
-Sales_Invoice.Status=Draft
-Sales_CreditNote.Status=Draft
-Sales_Receipt.Status=Draft
-Sales_Reminder.Status=Draft
-Sales_PaymentOrder.Status=Open
-Sales_CollectionOrder.Status=Open
-Sales_IncomingProfServReceipt.Status=Digitized
-Sales_ProductionOrder.Status=Digitized
-TimeReport_EmployeePreplannedAbsence.Status=Draft]]></value>
+            <value><![CDATA[TimeReport_EmployeePreplannedAbsence.Status=Draft]]></value>
          </attribute>
     </definition>
 </common-systemconfiguration>
