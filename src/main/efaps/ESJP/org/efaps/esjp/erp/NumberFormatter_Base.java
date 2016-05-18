@@ -167,6 +167,17 @@ public abstract class NumberFormatter_Base
      * @return DecimalFormat
      * @throws EFapsException on error
      */
+    public DecimalFormat getFrmt4Tax(final String _type)
+        throws EFapsException
+    {
+        return getFrmtFromSysConf(_type + ".Frmt4Tax", NumberFormatter_Base.TWOFRMTKEY);
+    }
+
+    /**
+     * @param _type TypeName
+     * @return DecimalFormat
+     * @throws EFapsException on error
+     */
     public DecimalFormat getFrmt4Total(final String _type)
         throws EFapsException
     {
