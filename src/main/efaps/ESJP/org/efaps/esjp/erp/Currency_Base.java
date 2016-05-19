@@ -252,7 +252,7 @@ public abstract class Currency_Base
                     final Object[] values = (Object[]) uiValue.getObject();
                     if (values.length > 2) {
                         final CurrencyInst currencyInst = CurrencyInst.get((Long) values[2]);
-                        if (currencyInst.isInvert()) {
+                        if (currencyInst.getInstance().isValid() && currencyInst.isInvert()) {
                             final Object enomTmp = values[0];
                             values[0] = values[1];
                             values[1] = enomTmp;
