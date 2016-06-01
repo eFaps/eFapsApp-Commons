@@ -72,6 +72,7 @@ import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
 import org.efaps.esjp.common.uiform.Field_Base.ListType;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.ui.html.Table;
+import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;
@@ -79,6 +80,12 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sf.dynamicreports.report.builder.DynamicReports;
+import net.sf.dynamicreports.report.builder.column.ComponentColumnBuilder;
+import net.sf.dynamicreports.report.builder.component.GenericElementBuilder;
+import net.sf.dynamicreports.report.builder.expression.AbstractComplexExpression;
+import net.sf.dynamicreports.report.definition.ReportParameters;
 
 /**
  * TODO comment!
@@ -1113,6 +1120,55 @@ public abstract class FilteredReport_Base
             }
         }
         return ret.toString();
+    }
+
+    /**
+     * Gets the link column.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _field the field
+     * @return the link column
+     */
+    protected static ComponentColumnBuilder getLinkColumn(final Parameter _parameter,
+                                                          final String _field)
+    {
+        final GenericElementBuilder linkElement = DynamicReports.cmp.genericElement(
+                        "http://www.efaps.org", "efapslink")
+                        .addParameter(EmbeddedLink.JASPER_PARAMETERKEY, new LinkExpression(_field))
+                        .setHeight(12).setWidth(25);
+        final ComponentColumnBuilder ret = DynamicReports.col.componentColumn(linkElement).setTitle("");
+        return ret;
+    }
+
+    /**
+     * Expression used to render a link for the UserInterface.
+     */
+    public static class LinkExpression
+        extends AbstractComplexExpression<EmbeddedLink>
+    {
+
+        /**
+         * Needed for serialization.
+         */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Costructor.
+         *
+         * @param _field the field
+         */
+        public LinkExpression(final String _field)
+        {
+            addExpression(DynamicReports.field(_field, String.class));
+        }
+
+        @Override
+        public EmbeddedLink evaluate(final List<?> _values,
+                                     final ReportParameters _reportParameters)
+        {
+            final String oid = (String) _values.get(0);
+            return EmbeddedLink.getJasperLink(oid);
+        }
     }
 
     /**
