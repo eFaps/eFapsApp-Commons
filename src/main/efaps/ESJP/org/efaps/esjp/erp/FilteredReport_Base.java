@@ -171,7 +171,7 @@ public abstract class FilteredReport_Base
         } else if ("Type".equalsIgnoreCase(_type)) {
             final Set<Long> set = new HashSet<>();
             if ("ALL".equals(_default)) {
-                final List<Type> types = getTypeList(_parameter);
+                final List<Type> types = getTypeList(_parameter, _field);
                 for (final Type type : types) {
                     set.add(type.getId());
                 }
@@ -580,11 +580,12 @@ public abstract class FilteredReport_Base
         final List<DropDownPosition> values = new ArrayList<>();
         final Map<String, Object> filter = getFilterMap(_parameter);
         final Set<Long> selected = new HashSet<>();
-        if (filter.containsKey("type")) {
-            final TypeFilterValue filters = (TypeFilterValue) filter.get("type");
+        final IUIValue uiValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
+        if (filter.containsKey(uiValue.getField().getName())) {
+            final TypeFilterValue filters = (TypeFilterValue) filter.get(uiValue.getField().getName());
             selected.addAll(filters.getObject());
         }
-        final List<Type> types = getTypeList(_parameter);
+        final List<Type> types = getTypeList(_parameter, uiValue.getField().getName());
         for (final Type type : types) {
             final DropDownPosition dropdown = new DropDownPosition(type.getId(), type.getLabel());
             dropdown.setSelected(selected.contains(type.getId()));
@@ -605,8 +606,23 @@ public abstract class FilteredReport_Base
     protected List<Type> getTypeList(final Parameter _parameter)
         throws EFapsException
     {
+        return getTypeList(_parameter, (String) null);
+    }
+
+    /**
+     * Gets the type list.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _fieldName the _field name
+     * @return list of types
+     * @throws EFapsException on error
+     */
+    protected List<Type> getTypeList(final Parameter _parameter,
+                                     final String _fieldName)
+        throws EFapsException
+    {
         final List<Type> ret = new ArrayList<>();
-        final Properties props = getProperties4TypeList(_parameter);
+        final Properties props = getProperties4TypeList(_parameter, _fieldName);
 
         if (props.containsKey("Type")) {
             final Type type = isUUID(props.getProperty("Type")) ? Type.get(UUID.fromString(props.getProperty("Type")))
@@ -627,11 +643,15 @@ public abstract class FilteredReport_Base
     }
 
     /**
+     * Gets the properties4 type list.
+     *
      * @param _parameter Parameter as passed by the eFaps API
+     * @param _fieldName the _field name
      * @return Properties
      * @throws EFapsException on error
      */
-    protected Properties getProperties4TypeList(final Parameter _parameter)
+    protected Properties getProperties4TypeList(final Parameter _parameter,
+                                                final String _fieldName)
         throws EFapsException
     {
         Properties ret = new Properties();
@@ -821,14 +841,6 @@ public abstract class FilteredReport_Base
             obj = new DateTime(val);
         } else if (uiProvider instanceof BooleanUI) {
             obj = BooleanUtils.toBoolean(val);
-        } else if ("type".equals(_field.getName())) {
-            final Set<Long> typeIds = new HashSet<>();
-            if (values != null) {
-                for (final String value : values) {
-                    typeIds.add(Long.valueOf(value));
-                }
-            }
-            obj = new TypeFilterValue().setObject(typeIds);
         } else if ("currency".equals(_field.getName())) {
             if ("BASE".equals(val)) {
                 obj = new CurrencyFilterValue().setObject(Instance.get("", "", "BASE"));
@@ -870,6 +882,14 @@ public abstract class FilteredReport_Base
                     }
                 }
                 obj = new AttrDefFilterValue().setObject(set);
+            } else if (oldObj instanceof TypeFilterValue) {
+                final Set<Long> typeIds = new HashSet<>();
+                if (values != null) {
+                    for (final String value : values) {
+                        typeIds.add(Long.valueOf(value));
+                    }
+                }
+                obj = new TypeFilterValue().setObject(typeIds);
             } else if (oldObj instanceof IFilterValue) {
                 obj = ((IFilterValue) oldObj).parseObject(values);
             } else {
