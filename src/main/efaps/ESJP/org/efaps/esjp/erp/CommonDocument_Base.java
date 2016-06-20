@@ -74,6 +74,7 @@ import org.efaps.esjp.common.uiform.Create;
 import org.efaps.esjp.common.uiform.Edit;
 import org.efaps.esjp.common.util.InterfaceUtils;
 import org.efaps.esjp.common.util.InterfaceUtils_Base.DojoLibs;
+import org.efaps.esjp.db.InstanceUtils;
 import org.efaps.esjp.erp.listener.IOnAction;
 import org.efaps.esjp.erp.listener.IOnCreateDocument;
 import org.efaps.esjp.erp.util.ERP;
@@ -126,36 +127,38 @@ public abstract class CommonDocument_Base
             new Delete(relInst).execute();
         }
 
-        final Create create = new Create()
-        {
-            @Override
-            protected void add2basicInsert(final Parameter _parameter,
-                                           final Insert _insert)
-                throws EFapsException
+        if (InstanceUtils.isValid(Instance.get(_parameter.getParameterValue("action")))) {
+            final Create create = new Create()
             {
-                super.add2basicInsert(_parameter, _insert);
-                final Instance actionInst = Instance.get(_parameter.getParameterValue("action"));
-                if (actionInst.isValid()) {
-                    _insert.add(CIERP.ActionDefinition2ObjectAbstract.FromLinkAbstract, actionInst);
+                @Override
+                protected void add2basicInsert(final Parameter _parameter,
+                                               final Insert _insert)
+                    throws EFapsException
+                {
+                    super.add2basicInsert(_parameter, _insert);
+                    final Instance actionInst = Instance.get(_parameter.getParameterValue("action"));
+                    if (actionInst.isValid()) {
+                        _insert.add(CIERP.ActionDefinition2ObjectAbstract.FromLinkAbstract, actionInst);
+                    }
                 }
+            };
+            final Instance actionInst = create.basicInsert(_parameter);
+            for (final IOnAction listener : Listener.get().<IOnAction>invoke(IOnAction.class)) {
+                listener.afterAssign(this, _parameter, actionInst);
             }
-        };
-        final Instance actionInst = create.basicInsert(_parameter);
-        for (final IOnAction listener : Listener.get().<IOnAction>invoke(IOnAction.class)) {
-            listener.afterAssign(this, _parameter, actionInst);
-        }
 
-        final Map<Status, Status> mapping = getStatusMapping(_parameter);
+            final Map<Status, Status> mapping = getStatusMapping(_parameter);
 
-        if (!mapping.isEmpty()) {
-            final PrintQuery print = new PrintQuery(_parameter.getInstance());
-            print.addAttribute(CIERP.DocumentAbstract.StatusAbstract);
-            print.execute();
-            final Status status = Status.get(print.<Long>getAttribute(CIERP.DocumentAbstract.StatusAbstract));
-            if (mapping.containsKey(status)) {
-                final Update update = new Update(_parameter.getInstance());
-                update.add(CIERP.DocumentAbstract.StatusAbstract, mapping.get(status));
-                update.execute();
+            if (!mapping.isEmpty()) {
+                final PrintQuery print = new PrintQuery(_parameter.getInstance());
+                print.addAttribute(CIERP.DocumentAbstract.StatusAbstract);
+                print.execute();
+                final Status status = Status.get(print.<Long>getAttribute(CIERP.DocumentAbstract.StatusAbstract));
+                if (mapping.containsKey(status)) {
+                    final Update update = new Update(_parameter.getInstance());
+                    update.add(CIERP.DocumentAbstract.StatusAbstract, mapping.get(status));
+                    update.execute();
+                }
             }
         }
         return ret;
