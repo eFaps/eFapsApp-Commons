@@ -563,9 +563,7 @@ public abstract class FilteredReport_Base
                 pos.setSelected(obj.equals(value.getObject()));
             }
         }
-
-        ret.put(ReturnValues.SNIPLETT,
-                        new org.efaps.esjp.common.uiform.Field().getInputField(_parameter, values, ListType.RADIO));
+        ret.put(ReturnValues.VALUES, values);
         return ret;
     }
 
