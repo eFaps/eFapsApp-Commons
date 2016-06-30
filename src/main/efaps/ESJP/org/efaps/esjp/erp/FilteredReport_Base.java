@@ -33,7 +33,6 @@ import java.util.UUID;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.common.SystemConfiguration;
@@ -590,9 +589,7 @@ public abstract class FilteredReport_Base
             values.add(dropdown);
         }
         final Return ret = new Return();
-        ret.put(ReturnValues.SNIPLETT,
-                        new org.efaps.esjp.common.uiform.Field().getInputField(_parameter, values,
-                                    EnumUtils.getEnum(ListType.class, getProperty(_parameter, "ListType", "RADIO"))));
+        ret.put(ReturnValues.VALUES, values);
         return ret;
     }
 
