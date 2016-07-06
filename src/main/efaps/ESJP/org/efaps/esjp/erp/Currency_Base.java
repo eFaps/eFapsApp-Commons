@@ -56,6 +56,7 @@ import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.uiform.Field;
 import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
+import org.efaps.esjp.db.InstanceUtils;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.ui.wicket.util.DateUtil;
 import org.efaps.util.EFapsException;
@@ -124,7 +125,7 @@ public abstract class Currency_Base
     {
         final Map<?, ?> values = (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
         final Instance rateInstance = _parameter.getInstance();
-        final Map<String, Object[]> name2Value = new HashMap<String, Object[]>();
+        final Map<String, Object[]> name2Value = new HashMap<>();
         for (final Entry<?, ?> entry : values.entrySet()) {
             final Attribute attr = (Attribute) entry.getKey();
             name2Value.put(attr.getName(), (Object[]) entry.getValue());
@@ -159,7 +160,7 @@ public abstract class Currency_Base
         throws EFapsException
     {
         // first correct the validFrom
-        List<Instance> lstInst = new ArrayList<Instance>();
+        List<Instance> lstInst = new ArrayList<>();
         QueryBuilder queryBldr = new QueryBuilder(_rateInstance.getType());
         queryBldr.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.CurrencyLink, _curId);
         queryBldr.addWhereAttrLessValue(CIERP.CurrencyRateAbstract.ValidFrom, _validFrom);
@@ -184,7 +185,7 @@ public abstract class Currency_Base
         }
 
         // correct the ValidUntil
-        lstInst = new ArrayList<Instance>();
+        lstInst = new ArrayList<>();
         QueryBuilder queryBldr2 = new QueryBuilder(_rateInstance.getType());
         queryBldr2.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.CurrencyLink, _curId);
         queryBldr2.addWhereAttrLessValue(CIERP.CurrencyRateAbstract.ValidFrom, _validUntil);
@@ -240,8 +241,14 @@ public abstract class Currency_Base
         if (_parameter.get(ParameterValues.ACCESSMODE) != null
                         && _parameter.get(ParameterValues.ACCESSMODE).equals(TargetMode.CREATE)) {
             final Instance instance = _parameter.getInstance();
-            if (instance != null && instance.getType().isKindOf(CIERP.Currency.getType())) {
+            final Instance callInstance = _parameter.getCallInstance();
+            if (InstanceUtils.isKindOf(instance, CIERP.Currency)) {
                 final CurrencyInst currencyInst = CurrencyInst.get(instance);
+                if (currencyInst.isInvert()) {
+                    ret.put(ReturnValues.TRUE, true);
+                }
+            } else if (InstanceUtils.isKindOf(callInstance, CIERP.Currency)) {
+                final CurrencyInst currencyInst = CurrencyInst.get(callInstance);
                 if (currencyInst.isInvert()) {
                     ret.put(ReturnValues.TRUE, true);
                 }
@@ -270,7 +277,7 @@ public abstract class Currency_Base
                 fieldValues = (Set<IUIValue>) Context.getThreadContext().getRequestAttribute(
                                 Currency_Base.REQUEST_KEYRATE);
             } else {
-                fieldValues = new HashSet<IUIValue>();
+                fieldValues = new HashSet<>();
                 Context.getThreadContext().setRequestAttribute(Currency_Base.REQUEST_KEYRATE, fieldValues);
             }
             final IUIValue fieldValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
@@ -617,7 +624,7 @@ public abstract class Currency_Base
     public Return currencyDropDownFieldValue(final Parameter _parameter)
         throws EFapsException
     {
-        final List<DropDownPosition> values = new ArrayList<DropDownPosition>();
+        final List<DropDownPosition> values = new ArrayList<>();
         final Field field = new Field();
         for (final CurrencyInst curInstObj : CurrencyInst.getAvailable()) {
             final DropDownPosition pos = field.getDropDownPosition(_parameter, curInstObj.getInstance().getOid(),
