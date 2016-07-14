@@ -610,9 +610,8 @@ public abstract class Currency_Base
                 return position;
             }
         };
-        return field.dropDownFieldValue(_parameter);
+        return field.getOptionListFieldValue(_parameter);
     }
-
 
     /**
      * Currency drop down field value.
