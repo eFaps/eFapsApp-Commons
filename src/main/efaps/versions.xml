@@ -80,9 +80,6 @@
 
             UIUpdate update = new UIUpdate();
 
-            <!-- ERP_AttributeAbstractMyDesk, Admin_Common_MyDesk -->
-            update.add2Menu("9427d507-4793-4751-83e8-f08dbf2df55d", "8d9aae87-fa36-4b62-aba0-dbd9c0ca273a", 1);
-
             <!-- Definitions_Definitions, Admin_Help_MainMenu -->
             update.add2Help("10c1efaf-af0a-4602-b6b5-8a5aff4ae38d", "dead549e-5cc6-49f9-9a79-8e33aa139f6d", -1);
 
