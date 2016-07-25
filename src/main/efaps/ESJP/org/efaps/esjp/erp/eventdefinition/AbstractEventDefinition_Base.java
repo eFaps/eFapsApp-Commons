@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2013 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 package org.efaps.esjp.erp.eventdefinition;
@@ -28,7 +25,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.efaps.admin.program.esjp.EFapsRevision;
+import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Company;
 import org.efaps.db.Instance;
@@ -46,18 +43,16 @@ import org.quartz.JobExecutionContext;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id: AbstractEventDefinition_Base.java 11608 2014-01-07 22:53:24Z
- *          jan@moxter.net $
  */
 @EFapsUUID("e318cf5c-63aa-45d1-bed8-8729e305e9c0")
-@EFapsRevision("$Rev$")
+@EFapsApplication("eFapsApp-Commons")
 public abstract class AbstractEventDefinition_Base
     implements IEventDefinition
 {
 
     private Properties properties;
 
-    private final List<EventSchedule> events = new ArrayList<EventSchedule>();
+    private final List<EventSchedule> events = new ArrayList<>();
 
     protected void init(final Instance _defInstance,
                         final JobExecutionContext _jobExec)

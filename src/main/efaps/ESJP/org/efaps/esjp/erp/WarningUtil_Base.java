@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2014 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
@@ -27,7 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.program.esjp.EFapsRevision;
+import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.util.EFapsException;
 
@@ -36,10 +33,9 @@ import org.efaps.util.EFapsException;
  * TODO comment!
  *
  * @author The eFaps Team
- * @version $Id$
  */
 @EFapsUUID("53910077-1cac-4966-af2f-8fcccbd5f2e2")
-@EFapsRevision("$Rev$")
+@EFapsApplication("eFapsApp-Commons")
 public abstract class WarningUtil_Base
 {
 
@@ -52,8 +48,8 @@ public abstract class WarningUtil_Base
         throws EFapsException
     {
         final StringBuilder html = new StringBuilder();
-        final List<IWarning> msgWarnings = new ArrayList<IWarning>();
-        final List<IPositionWarning> posWarnings = new ArrayList<IPositionWarning>();
+        final List<IWarning> msgWarnings = new ArrayList<>();
+        final List<IPositionWarning> posWarnings = new ArrayList<>();
 
         for (final IWarning warning : _warnings) {
             if (warning instanceof IPositionWarning) {

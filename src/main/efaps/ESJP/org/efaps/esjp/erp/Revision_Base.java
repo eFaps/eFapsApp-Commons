@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2010 The eFaps Team
+ * Copyright 2003 - 2016 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
  */
 
 
@@ -36,7 +33,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.program.esjp.EFapsRevision;
+import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -55,10 +52,9 @@ import org.slf4j.LoggerFactory;
  * The Class to create Revisions for a Document.
  *
  * @author The eFaps Team
- * @version $Id$
  */
 @EFapsUUID("63f7a789-bd28-4e7f-bae2-89c2425df2b3")
-@EFapsRevision("$Rev$")
+@EFapsApplication("eFapsApp-Commons")
 public abstract class Revision_Base
     extends AbstractCommon
 {
@@ -202,7 +198,7 @@ public abstract class Revision_Base
                                                     final Instance _newInst)
         throws EFapsException
     {
-        final Map<Instance, Instance> ret = new HashMap<Instance, Instance>();
+        final Map<Instance, Instance> ret = new HashMap<>();
         //TODO remove old api
         if (containsProperty(_parameter, "ReviseRelations")
                         && containsProperty(_parameter, "ReviseRelationsAttribute")) {
@@ -259,7 +255,7 @@ public abstract class Revision_Base
                                                    final Type _targetType)
         throws EFapsException
     {
-        final Map<Instance, Instance> ret = new HashMap<Instance, Instance>();
+        final Map<Instance, Instance> ret = new HashMap<>();
         final QueryBuilder queryBldr = new QueryBuilder(_reltype);
         queryBldr.addWhereAttrEqValue(_relAttr, _parameter.getInstance().getId());
         final InstanceQuery query = queryBldr.getQuery();
@@ -268,7 +264,7 @@ public abstract class Revision_Base
             final Insert insert = new Insert(_targetType == null ? instance.getType() : _targetType);
             final Attribute attr = instance.getType().getAttribute(_relAttr.getName());
             insert.add(attr, _newInst.getId());
-            final Set<String> added = new HashSet<String>();
+            final Set<String> added = new HashSet<>();
             added.add(attr.getSqlColNames().toString());
             addAttributes(_parameter, instance, insert, added);
             insert.execute();
@@ -373,7 +369,7 @@ public abstract class Revision_Base
     {
         final Instance origInst = _parameter.getInstance();
         final Insert insert = new Insert(origInst.getType());
-        final Set<String> added = new HashSet<String>();
+        final Set<String> added = new HashSet<>();
         addAttributes(_parameter, origInst, insert, added);
         insert.execute();
         return insert.getInstance();
