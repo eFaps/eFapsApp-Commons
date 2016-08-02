@@ -103,7 +103,7 @@ public abstract class CurrencyPanel_Base
     public CharSequence getHtmlSnipplet()
         throws EFapsException
     {
-        CharSequence ret;
+        final CharSequence ret;
         if (isCached()) {
             ret = getFromCache();
         } else {
@@ -153,7 +153,7 @@ public abstract class CurrencyPanel_Base
                     series = seriesMap.get(currInst.getISOCode());
                 } else {
                     series = new HashMap<>();
-                    final Serie<Data> serie = new Serie<Data>();
+                    final Serie<Data> serie = new Serie<>();
                     final DateTime validFrom = currInst.getLatestValidFrom();
                     serie.setName(currInst.getName() + " " + (validFrom == null
                                     ? "" : validFrom.toString(getDateFormat())));
