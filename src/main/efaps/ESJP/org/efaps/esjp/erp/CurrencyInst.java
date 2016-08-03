@@ -17,7 +17,7 @@
 
 package org.efaps.esjp.erp;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.UUID;
 
 import org.efaps.admin.program.esjp.EFapsApplication;
@@ -97,7 +97,7 @@ public class CurrencyInst
      * @return Set of available CurrencyInst
      * @throws EFapsException on error
      */
-    public static Set<CurrencyInst> getAvailable()
+    public static Collection<CurrencyInst> getAvailable()
         throws EFapsException
     {
         return CurrencyInst_Base.getAvailable();

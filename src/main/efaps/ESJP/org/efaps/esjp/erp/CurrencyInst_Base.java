@@ -17,7 +17,8 @@
 
 package org.efaps.esjp.erp;
 
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -356,10 +357,10 @@ public abstract class CurrencyInst_Base
      * @return Set of available CurrencyInst
      * @throws EFapsException on error
      */
-    protected static Set<CurrencyInst> getAvailable()
+    protected static Collection<CurrencyInst> getAvailable()
         throws EFapsException
     {
-        final Set<CurrencyInst> ret = new HashSet<>();
+        final Set<CurrencyInst> ret = new LinkedHashSet<>();
         final QueryBuilder queryBldr = new QueryBuilder(CIERP.Currency);
         final CachedInstanceQuery query = queryBldr.getCachedQuery(QueryCache.DEFAULTKEY)
                         .setLifespan(1).setLifespanUnit(TimeUnit.HOURS);
