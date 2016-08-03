@@ -30,6 +30,7 @@
         <type>ERP_BinUser</type>
         <childs>
             <child>ERP_BinUserTree_Document</child>
+            <child>Admin_Access_Access4Object</child>
         </childs>
         <property name="Target">content</property>
         <property name="TargetMode">view</property>

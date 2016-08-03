@@ -23,12 +23,24 @@
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_BinUserMyDesk</name>
+        <access>
+            <role>Administration</role>
+            <role>ERP_BinUser</role>
+        </access>
         <target>
             <menu>ERP_BinUserMyDesk_Menu</menu>
             <table>ERP_BinUserTable</table>
             <evaluate program="org.efaps.esjp.common.uitable.MultiPrint">
                 <property name="Type">ERP_BinUser</property>
             </evaluate>
+            <trigger program="org.efaps.esjp.admin.access.AccessCheck4UI"
+                method="configCheck"
+                name="ERP_BinUserMyDesk.UI_ACCESSCHECK"
+                event="UI_ACCESSCHECK">
+                <!-- Commons-Configuration -->
+                <property name="SystemConfig">9ac2673a-18f9-41ba-b9be-5b0980bdf6f3</property>
+                <property name="Attribute">org.efaps.commons.BinUser.Activate</property>
+            </trigger>
         </target>
         <parents>
             <parent>Common_Main_Preferences</parent>

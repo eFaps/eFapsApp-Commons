@@ -25,6 +25,12 @@
         <target>
             <form>ERP_BinUserForm</form>
             <execute program="org.efaps.esjp.common.uiform.Edit" />
+            <trigger program="org.efaps.esjp.admin.access.AccessCheck4UI"
+                method="check4InstanceAccess"
+                name="ERP_BinUserTree_Menu_Action_Edit.UI_ACCESSCHECK"
+                event="UI_ACCESSCHECK" >
+                <property name="AccessType">MODIFY</property>
+            </trigger>
         </target>
         <property name="Target">modal</property>
         <property name="TargetMode">edit</property>

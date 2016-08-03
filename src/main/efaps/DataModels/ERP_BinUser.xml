@@ -23,5 +23,22 @@
         <version-expression>(version==latest)</version-expression>
         <name>ERP_BinUser</name>
         <parent>ERP_BinAbstract</parent>
+        <trigger program="org.efaps.esjp.admin.access.AccessCheck4Object"
+            name="ERP_BinUser.ACCESSCHECK"
+            event="ACCESSCHECK">
+            <!-- Commons-Configuration -->
+            <property name="SystemConfig">9ac2673a-18f9-41ba-b9be-5b0980bdf6f3</property>
+            <property name="Attribute">org.efaps.commons.BinUser.Activate</property>
+        </trigger>
+        <trigger program="org.efaps.esjp.admin.access.AccessCheck4Object"
+            method="insertPostTrigger4Object"
+            name="ERP_BinUser.INSERT_POST"
+            event="INSERT_POST">
+        </trigger>
+        <trigger program="org.efaps.esjp.admin.access.AccessCheck4Object"
+            method="deleteOverrideTrigger4Object"
+            name="ERP_BinUser.DELETE_OVERRIDE"
+            event="DELETE_OVERRIDE">
+        </trigger>
     </definition>
 </datamodel-type>

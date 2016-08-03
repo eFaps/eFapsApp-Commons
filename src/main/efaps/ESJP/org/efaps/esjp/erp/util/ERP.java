@@ -27,6 +27,7 @@ import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.api.annotation.EFapsSysConfAttribute;
 import org.efaps.api.annotation.EFapsSysConfLink;
 import org.efaps.api.annotation.EFapsSystemConfiguration;
+import org.efaps.esjp.admin.common.systemconfiguration.BooleanSysConfAttribute;
 import org.efaps.esjp.admin.common.systemconfiguration.PropertiesSysConfAttribute;
 import org.efaps.esjp.admin.common.systemconfiguration.StringSysConfAttribute;
 import org.efaps.esjp.admin.common.systemconfiguration.SysConfLink;
@@ -190,6 +191,13 @@ public final class ERP
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CurrencyBase")
                     .description("Base Currency.");
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final BooleanSysConfAttribute BIN_ACTIVATE = new BooleanSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "BinUser.Activate")
+                    .description("Activate the mechanism for BinUser");
 
     /**
      * Enum used for a multistate for Activation in ERP_DocumentType.

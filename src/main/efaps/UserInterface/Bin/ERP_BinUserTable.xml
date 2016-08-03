@@ -35,5 +35,9 @@
             <property name="Attribute">Date</property>
             <property name="Label">ERP_BinUser/Date.Label</property>
         </field>
+         <field name="creator">
+            <property name="Attribute">Creator</property>
+            <property name="Label">ERP_BinUser/Creator.Label</property>
+        </field>
     </definition>
 </ui-table>
