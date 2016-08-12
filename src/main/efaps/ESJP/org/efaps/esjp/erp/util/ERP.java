@@ -159,8 +159,12 @@ public final class ERP
     @EFapsSysConfAttribute
     public static final PropertiesSysConfAttribute RATEINFO = new PropertiesSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
-                    .key(BASE + "RateInfo4Type")
+                    .key(BASE + "RateInfo4Key")
                     .description("Set Info information for rates.")
+                    .addDefaultValue("DOCDATEPURCHASE", "purchase")
+                    .addDefaultValue("DOCDATESALE", "sale")
+                    .addDefaultValue("TRANSDATEPURCHASE", "purchase")
+                    .addDefaultValue("TRANSDATESALE", "sale")
                     .concatenate(true);
 
     /** See description. */

@@ -37,7 +37,10 @@ public class RateInfo
 {
 
     /**
-     * {@inheritDoc}
+     * Gets the dummy rate info.
+     *
+     * @return the dummy rate info
+     * @throws EFapsException on error
      */
     public static RateInfo getDummyRateInfo()
         throws EFapsException
@@ -46,55 +49,85 @@ public class RateInfo
     }
 
     /**
-     * {@inheritDoc}
+     * Gets the rate.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _rateInfo the rate info
+     * @param _key the key
+     * @return the rate
+     * @throws EFapsException on error
      */
     public static BigDecimal getRate(final Parameter _parameter,
-                                        final RateInfo _rateInfo,
-                                        final String _key)
+                                     final RateInfo _rateInfo,
+                                     final String _key)
         throws EFapsException
     {
         return RateInfo_Base.getRate(_parameter, _rateInfo, _key);
     }
 
     /**
-     * {@inheritDoc}
+     * Gets the rate frmt.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _rateInfo the rate info
+     * @param _key the key
+     * @return the rate frmt
+     * @throws EFapsException on error
      */
     public static String getRateFrmt(final Parameter _parameter,
-                                        final RateInfo _rateInfo,
-                                        final String _key)
+                                     final RateInfo _rateInfo,
+                                     final String _key)
         throws EFapsException
     {
         return RateInfo_Base.getRateUIFrmt(_parameter, _rateInfo, _key);
     }
 
     /**
-     * {@inheritDoc}
+     * Gets the rate UI.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _rateInfo the rate info
+     * @param _key the key
+     * @return the rate UI
+     * @throws EFapsException on error
      */
     public static BigDecimal getRateUI(final Parameter _parameter,
-                                          final RateInfo _rateInfo,
-                                          final String _key)
+                                       final RateInfo _rateInfo,
+                                       final String _key)
         throws EFapsException
     {
         return RateInfo_Base.getRateUI(_parameter, _rateInfo, _key);
     }
 
     /**
-     * {@inheritDoc}
+     * Gets the rate UI frmt.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _rateInfo the rate info
+     * @param _key the key
+     * @return the rate UI frmt
+     * @throws EFapsException on error
      */
     public static String getRateUIFrmt(final Parameter _parameter,
-                                          final RateInfo _rateInfo,
-                                          final String _key)
+                                       final RateInfo _rateInfo,
+                                       final String _key)
         throws EFapsException
     {
         return RateInfo_Base.getRateUIFrmt(_parameter, _rateInfo, _key);
     }
 
     /**
-     * {@inheritDoc}
+     * Gets the rate object.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _rateInfo the rate info
+     * @param _key the key
+     * @return the rate object
+     * @throws EFapsException on error
      */
     public static Object[] getRateObject(final Parameter _parameter,
-                                            final RateInfo _rateInfo,
-                                            final String _key)
+                                         final RateInfo _rateInfo,
+                                         final String _key)
         throws EFapsException
     {
         return RateInfo_Base.getRateObject(_parameter, _rateInfo, _key);

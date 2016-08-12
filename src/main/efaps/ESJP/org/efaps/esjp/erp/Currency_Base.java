@@ -714,8 +714,8 @@ public abstract class Currency_Base
         throws EFapsException
     {
         final BigDecimal ret;
-        if (_target.equals(getBaseCurrency())) {
-            ret = convertToBase(_parameter, _current, _rateInfo, _key == null ? "Default" : _key);
+        if (_target.equals(Currency.getBaseCurrency())) {
+            ret = Currency.convertToBase(_parameter, _current, _rateInfo, _key == null ? "Default" : _key);
         } else {
             LOG.error("TODOOOOOOOOOO");
             ret = BigDecimal.ZERO;

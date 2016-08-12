@@ -51,12 +51,12 @@ public abstract class RateInfo_Base
     private int scale = 12;
 
     /**
-     * Buy Rate for calculation use.
+     * Purchase Rate for calculation use.
      */
     private BigDecimal rate;
 
     /**
-     * Buy Rate for use in UserInterface. (equals rate if currency is not
+     * Purchase Rate for use in UserInterface. (equals rate if currency is not
      * inverse)
      */
     private BigDecimal rateUI;
@@ -96,7 +96,7 @@ public abstract class RateInfo_Base
     public boolean isInvert()
         throws EFapsException
     {
-        boolean ret;
+        final boolean ret;
         // if this rate is against the base currency the definition form the DB
         // must be get
         if (getTargetCurrencyInstance().equals(Currency.getBaseCurrency())) {
@@ -221,7 +221,7 @@ public abstract class RateInfo_Base
     /**
      * Setter method for instance variable {@link #instance4Currency}.
      *
-     * @param _instance4Currency value for instance variable
+     * @param _currencyInst value for instance variable
      *            {@link #instance4Currency}
      */
     public void setCurrencyInstance(final Instance _currencyInst)
@@ -389,9 +389,9 @@ public abstract class RateInfo_Base
                                         final String _key)
         throws EFapsException
     {
-        BigDecimal ret;
+        final BigDecimal ret;
         final Properties props =  ERP.RATEINFO.get();
-        final String rate = props.getProperty(_key, "buy");
+        final String rate = props.getProperty(_key, "purchase");
         if (rate.equalsIgnoreCase("sale")) {
             ret = _rateInfo.getSaleRate();
         } else {
@@ -414,9 +414,9 @@ public abstract class RateInfo_Base
                                         final String _key)
         throws EFapsException
     {
-        String ret;
+        final String ret;
         final Properties props =  ERP.RATEINFO.get();
-        final String rate = props.getProperty(_key, "buy");
+        final String rate = props.getProperty(_key, "purchase");
         if (rate.equalsIgnoreCase("sale")) {
             ret = _rateInfo.getSaleRateFrmt();
         } else {
@@ -439,9 +439,9 @@ public abstract class RateInfo_Base
                                           final String _key)
         throws EFapsException
     {
-        BigDecimal ret;
+        final BigDecimal ret;
         final Properties props =  ERP.RATEINFO.get();
-        final String rate = props.getProperty(_key, "buy");
+        final String rate = props.getProperty(_key, "purchase");
         if (rate.equalsIgnoreCase("sale")) {
             ret = _rateInfo.getSaleRateUI();
         } else {
@@ -464,9 +464,9 @@ public abstract class RateInfo_Base
                                           final String _key)
         throws EFapsException
     {
-        String ret;
+        final String ret;
         final Properties props =  ERP.RATEINFO.get();
-        final String rate = props.getProperty(_key, "buy");
+        final String rate = props.getProperty(_key, "purchase");
         if (rate.equalsIgnoreCase("sale")) {
             ret = _rateInfo.getSaleRateUIFrmt();
         } else {
@@ -489,9 +489,9 @@ public abstract class RateInfo_Base
                                             final String _key)
         throws EFapsException
     {
-        Object[] ret;
+        final Object[] ret;
         final Properties props =  ERP.RATEINFO.get();
-        final String rate = props.getProperty(_key, "buy");
+        final String rate = props.getProperty(_key, "purchase");
         if (rate.equalsIgnoreCase("sale")) {
             ret = _rateInfo.getSaleRateObject();
         } else {
