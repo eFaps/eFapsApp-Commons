@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
 
  Copyright 2003 - 2016 The eFaps Team
 
@@ -29,9 +30,52 @@
             <property name="Label">ERP_DocumentAbstract/Name.Label</property>
             <property name="UIProvider">org.efaps.admin.datamodel.ui.StringUI</property>
         </field>
+         <field name="contact">
+            <property name="HRef">TREE</property>
+            <property name="SelectAlternateOID">linkto[ToLink].linkto[Contact].oid</property>
+            <property name="Select">linkto[ToLink].linkto[Contact].attribute[Name]&gt;</property>
+            <property name="Label">ERP_DocumentAbstract/Contact.Label</property>
+        </field>
         <field name="date">
             <property name="Select">linkto[ToLink].attribute[Date]</property>
             <property name="Label">ERP_DocumentAbstract/Date.Label</property>
+        </field>
+        <field name="total">
+            <property name="SelectAlternateOID">linkto[ToLink].oid</property>
+            <property name="Label">ERP_BinUserDocumentTable.total.Label</property>
+            <property name="UIProvider">org.efaps.admin.datamodel.ui.DecimalUI</property>
+            <property name="Align">right</property>
+            <trigger program="org.efaps.esjp.admin.access.AccessCheck4UI"
+                method="check4Application"
+                name="ERP_BinUserDocumentTable.total.UI_ACCESSCHECK"
+                event="UI_ACCESSCHECK">
+                <property name="Application">eFapsApp-Sales</property>
+            </trigger>
+            <trigger program="org.efaps.esjp.common.uiform.Field"
+                method="getLazyFieldValue"
+                name="ERP_BinUserDocumentTable.total.UI_FIELD_VALUE"
+                event="UI_FIELD_VALUE">
+                <property name="Type01">Sales_DocumentSumAbstract</property>
+                <property name="Select01">attribute[RateCrossTotal]</property>
+            </trigger>
+        </field>
+        <field name="currency">
+            <property name="SelectAlternateOID">linkto[ToLink].oid</property>
+            <property name="Label">ERP_BinUserDocumentTable.currency.Label</property>
+            <property name="UIProvider">org.efaps.admin.datamodel.ui.StringUI</property>
+            <trigger program="org.efaps.esjp.admin.access.AccessCheck4UI"
+                method="check4Application"
+                name="ERP_BinUserDocumentTable.currency.UI_ACCESSCHECK"
+                event="UI_ACCESSCHECK">
+                <property name="Application">eFapsApp-Sales</property>
+            </trigger>
+            <trigger program="org.efaps.esjp.common.uiform.Field"
+                method="getLazyFieldValue"
+                name="ERP_BinUserDocumentTable.currency.UI_FIELD_VALUE"
+                event="UI_FIELD_VALUE">
+                <property name="Type01">Sales_DocumentSumAbstract</property>
+                <property name="Select01">linkto[RateCurrencyId].attribute[Symbol]</property>
+            </trigger>
         </field>
         <field name="status">
             <property name="SelectAlternateOID">linkto[ToLink].oid</property>
