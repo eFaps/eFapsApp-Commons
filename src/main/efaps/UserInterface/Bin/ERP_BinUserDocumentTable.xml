@@ -33,7 +33,7 @@
          <field name="contact">
             <property name="HRef">TREE</property>
             <property name="SelectAlternateOID">linkto[ToLink].linkto[Contact].oid</property>
-            <property name="Select">linkto[ToLink].linkto[Contact].attribute[Name]&gt;</property>
+            <property name="Select">linkto[ToLink].linkto[Contact].attribute[Name]</property>
             <property name="Label">ERP_DocumentAbstract/Contact.Label</property>
         </field>
         <field name="date">
