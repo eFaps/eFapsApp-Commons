@@ -361,6 +361,25 @@ public abstract class RateInfo_Base
     }
 
     /**
+     * Reverse.
+     *
+     * @return the rate info
+     * @throws EFapsException on error
+     */
+    public RateInfo reverse()
+        throws EFapsException
+    {
+        final RateInfo ret = new RateInfo();
+        ret.setRate(getRateUI());
+        ret.setRateUI(getRate());
+        ret.setSaleRate(getSaleRateUI());
+        ret.setSaleRateUI(getSaleRate());
+        ret.setCurrencyInstance(getTargetCurrencyInstance());
+        ret.setTargetCurrencyInstance(getCurrencyInstance());
+        return ret;
+    }
+
+    /**
      * @return RateInfo with all values set to BigDecimal.ONE
      * @throws EFapsException on error
      */

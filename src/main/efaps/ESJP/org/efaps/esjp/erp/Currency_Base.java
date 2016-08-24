@@ -713,12 +713,17 @@ public abstract class Currency_Base
                                                    final Instance _target)
         throws EFapsException
     {
-        final BigDecimal ret;
+        BigDecimal ret = BigDecimal.ZERO;
         if (_target.equals(Currency.getBaseCurrency())) {
             ret = Currency.convertToBase(_parameter, _current, _rateInfo, _key == null ? "Default" : _key);
-        } else {
-            LOG.error("TODOOOOOOOOOO");
-            ret = BigDecimal.ZERO;
+        } else if (_target.equals(_rateInfo.getTargetCurrencyInstance())) {
+            if (_rateInfo.getCurrencyInstObj().isInvert()) {
+                final BigDecimal rate = RateInfo.getRateUI(_parameter, _rateInfo, _key == null ? "Default" : _key);
+                ret = _current.multiply(rate);
+            } else {
+                final BigDecimal rate = RateInfo.getRate(_parameter, _rateInfo, _key == null ? "Default" : _key);
+                ret = _current.setScale(12, RoundingMode.HALF_UP).divide(rate, RoundingMode.HALF_UP);
+            }
         }
         return ret;
     }
