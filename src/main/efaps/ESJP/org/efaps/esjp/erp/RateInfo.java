@@ -49,6 +49,19 @@ public class RateInfo
     }
 
     /**
+     * Gets the rate info.
+     *
+     * @param _rateObj the rate obj
+     * @return the rate info
+     * @throws EFapsException the e faps exception
+     */
+    public static RateInfo getRateInfo(final Object[] _rateObj)
+        throws EFapsException
+    {
+        return RateInfo_Base.getRateInfo(_rateObj);
+    }
+
+    /**
      * Gets the rate.
      *
      * @param _parameter Parameter as passed by the eFaps API

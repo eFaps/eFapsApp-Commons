@@ -101,6 +101,14 @@ public final class ERP
 
     /** See description. */
     @EFapsSysConfAttribute
+    public static final StringSysConfAttribute COMPANYCOUNTRY = new StringSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "CompanyCountry")
+                    .defaultValue("PERU")
+                    .description("Country of the selected company.");
+
+    /** See description. */
+    @EFapsSysConfAttribute
     public static final PropertiesSysConfAttribute FILTERREPORTCONFIG = new PropertiesSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "Config4FilteredReport")

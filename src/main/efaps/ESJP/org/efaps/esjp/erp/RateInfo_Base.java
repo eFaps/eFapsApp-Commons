@@ -397,6 +397,26 @@ public abstract class RateInfo_Base
     }
 
     /**
+     * Gets the rate info.
+     *
+     * @param _rateObj the rate obj
+     * @return the rate info
+     * @throws EFapsException the e faps exception
+     */
+    protected static RateInfo getRateInfo(final Object[] _rateObj)
+        throws EFapsException
+    {
+        final RateInfo ret = new RateInfo();
+        ret.setRate((BigDecimal) _rateObj[0]);
+        ret.setRateUI((BigDecimal) _rateObj[1]);
+        ret.setSaleRate((BigDecimal) _rateObj[0]);
+        ret.setSaleRateUI((BigDecimal) _rateObj[1]);
+        ret.setCurrencyInstance(CurrencyInst.get(_rateObj[2]).getInstance());
+        ret.setTargetCurrencyInstance(CurrencyInst.get(_rateObj[3]).getInstance());
+        return ret;
+    }
+
+    /**
      * @param _parameter Parameter as passed by the eFaps API
      * @param _rateInfo rateinfo
      * @param _key key for the properties
