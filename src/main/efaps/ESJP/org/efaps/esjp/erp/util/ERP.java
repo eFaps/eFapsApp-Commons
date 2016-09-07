@@ -195,7 +195,10 @@ public final class ERP
     public static final PropertiesSysConfAttribute CURRENCIES = new PropertiesSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "Currencies")
-                    .description(" Key: Normally the type name");
+                    .description("Configuration related to Currencies.\n"
+                                    + "CURRENCY: UUID or ISOCODE of Currency\n"
+                                    + "CURRENCY.ForceDailyRate=true\n"
+                                    + "CURRENCY.Force4Role01=ROLE\n");
 
     /** See description. */
     @EFapsSysConfLink
