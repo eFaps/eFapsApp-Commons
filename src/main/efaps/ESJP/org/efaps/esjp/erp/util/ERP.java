@@ -198,7 +198,8 @@ public final class ERP
                     .description("Configuration related to Currencies.\n"
                                     + "CURRENCY: UUID or ISOCODE of Currency\n"
                                     + "CURRENCY.ForceDailyRate=true\n"
-                                    + "CURRENCY.Force4Role01=ROLE\n");
+                                    + "CURRENCY.Force4Role01=ROLE\n"
+                                    + "CURRENCY.Warn4Role01=ROLE\n");
 
     /** See description. */
     @EFapsSysConfLink

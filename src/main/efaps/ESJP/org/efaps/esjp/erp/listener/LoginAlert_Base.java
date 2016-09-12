@@ -52,6 +52,9 @@ public abstract class LoginAlert_Base
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
+    /** The logout. */
+    private boolean logout = false;
+
     @Override
     public void add2Alert(final StringBuilder _html)
         throws EFapsException
@@ -65,21 +68,21 @@ public abstract class LoginAlert_Base
             props.putAll(tmpProp2);
 
             if (BooleanUtils.toBoolean(props.getProperty("ForceDailyRate"))) {
-                final Collection<String> roles = PropertiesUtil.analyseProperty(props, "Force4Role", 0).values();
-                boolean val = false;
-                for (final String roleStr : roles) {
-                    Role role;
+                final Collection<String> forceRoles = PropertiesUtil.analyseProperty(props, "Force4Role", 0).values();
+                boolean force = false;
+                for (final String roleStr : forceRoles) {
+                    final Role role;
                     if (UUIDUtil.isUUID(roleStr)) {
                         role = Role.get(UUID.fromString(roleStr));
                     } else {
                         role = Role.get(roleStr);
                     }
                     if (role.isAssigned()) {
-                        val = true;
+                        force = true;
                         break;
                     }
                 }
-                if (val) {
+                if (force) {
                     final QueryBuilder queryBldr = new QueryBuilder(CIERP.CurrencyRateAbstract);
                     queryBldr.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.CurrencyLink, curInst.getInstance());
                     queryBldr.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.ValidFrom, new DateTime()
@@ -87,23 +90,73 @@ public abstract class LoginAlert_Base
                     if (queryBldr.getQuery().execute().isEmpty()) {
                         _html.append(DBProperties.getFormatedDBProperty(LoginAlert.class.getName() + ".ForceDailyRate",
                                         (Object) curInst.getName()));
+                        setLogout(true);
                         break;
+                    }
+                } else {
+                    final Collection<String> warnRoles = PropertiesUtil.analyseProperty(props, "Warn4Role", 0).values();
+                    final boolean warn = false;
+                    for (final String roleStr : warnRoles) {
+                        final Role role;
+                        if (UUIDUtil.isUUID(roleStr)) {
+                            role = Role.get(UUID.fromString(roleStr));
+                        } else {
+                            role = Role.get(roleStr);
+                        }
+                        if (role.isAssigned()) {
+                            force = true;
+                            break;
+                        }
+                    }
+                    if (warn) {
+                        final QueryBuilder queryBldr = new QueryBuilder(CIERP.CurrencyRateAbstract);
+                        queryBldr.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.CurrencyLink, curInst.getInstance());
+                        queryBldr.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.ValidFrom, new DateTime()
+                                        .withTimeAtStartOfDay());
+                        if (queryBldr.getQuery().execute().isEmpty()) {
+                            _html.append(DBProperties.getFormatedDBProperty(LoginAlert.class.getName()
+                                            + ".WarnDailyRate", (Object) curInst.getName()));
+                            break;
+                        }
                     }
                 }
             }
+
         }
     }
 
     @Override
     public void onClose()
     {
-        EFapsSession.get().logout();
-        throw new RestartResponseException(LoginPage.class);
+        if (isLogout()) {
+            EFapsSession.get().logout();
+            throw new RestartResponseException(LoginPage.class);
+        }
     }
 
     @Override
     public int getWeight()
     {
         return 0;
+    }
+
+    /**
+     * Checks if is logout.
+     *
+     * @return the logout
+     */
+    protected boolean isLogout()
+    {
+        return this.logout;
+    }
+
+    /**
+     * Sets the logout.
+     *
+     * @param _logout the new logout
+     */
+    protected void setLogout(final boolean _logout)
+    {
+        this.logout = _logout;
     }
 }
