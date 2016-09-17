@@ -337,7 +337,7 @@ public abstract class CommonDocument_Base
                 final String groupsStr = (String) props.get("Groups");
                 if (rolesStr != null && !rolesStr.isEmpty()) {
                     final String[] roles = rolesStr.split(";");
-                    final List<Long> roleIds = new ArrayList<Long>();
+                    final List<Long> roleIds = new ArrayList<>();
                     for (final String role : roles) {
                         final Role aRole = Role.get(role);
                         if (aRole != null) {
@@ -362,7 +362,7 @@ public abstract class CommonDocument_Base
                         and = false;
                     }
 
-                    final List<Long> groupIds = new ArrayList<Long>();
+                    final List<Long> groupIds = new ArrayList<>();
                     for (final String group : groups) {
                         final Group aGroup = Group.get(group);
                         if (aGroup != null) {
@@ -1057,7 +1057,7 @@ public abstract class CommonDocument_Base
                 add2Report(_parameter, _createdDoc, report);
                 ret = report.getFile(_parameter);
 
-                ret = new FileUtil().convert(_parameter, ret, fileName);
+                ret = new FileUtil().convertPdf(_parameter, ret, fileName);
                 if (ret != null) {
                     final InputStream input = new FileInputStream(ret);
                     final Checkin checkin = new Checkin(_createdDoc.getInstance());
@@ -1510,12 +1510,12 @@ public abstract class CommonDocument_Base
         /**
          * Positions of the created Document.
          */
-        private final List<Instance> positions = new ArrayList<Instance>();
+        private final List<Instance> positions = new ArrayList<>();
 
         /**
          * Map can be used to pass values from one method to another.
          */
-        private final Map<String, Object> values = new HashMap<String, Object>();
+        private final Map<String, Object> values = new HashMap<>();
 
         /**
          *
