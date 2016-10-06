@@ -36,6 +36,9 @@ public class RateInfo
     extends RateInfo_Base
 {
 
+    /** The Constant DEFAULTKEY. */
+    public static final String DEFAULTKEY = RateInfo_Base.DEFAULTKEY;
+
     /**
      * Gets the dummy rate info.
      *

@@ -40,6 +40,9 @@ import org.slf4j.LoggerFactory;
 public abstract class RateInfo_Base
 {
 
+    /** The Constant DEFAULTKEY. */
+    protected static final String DEFAULTKEY = "sale";
+
     /**
      * Logging instance used in this class.
      */
@@ -430,7 +433,7 @@ public abstract class RateInfo_Base
     {
         final BigDecimal ret;
         final Properties props =  ERP.RATEINFO.get();
-        final String rate = props.getProperty(_key, "purchase");
+        final String rate = props.getProperty(_key, RateInfo.DEFAULTKEY);
         if (rate.equalsIgnoreCase("sale")) {
             ret = _rateInfo.getSaleRate();
         } else {
@@ -455,7 +458,7 @@ public abstract class RateInfo_Base
     {
         final String ret;
         final Properties props =  ERP.RATEINFO.get();
-        final String rate = props.getProperty(_key, "purchase");
+        final String rate = props.getProperty(_key, RateInfo.DEFAULTKEY);
         if (rate.equalsIgnoreCase("sale")) {
             ret = _rateInfo.getSaleRateFrmt();
         } else {
@@ -480,7 +483,7 @@ public abstract class RateInfo_Base
     {
         final BigDecimal ret;
         final Properties props =  ERP.RATEINFO.get();
-        final String rate = props.getProperty(_key, "purchase");
+        final String rate = props.getProperty(_key, RateInfo.DEFAULTKEY);
         if (rate.equalsIgnoreCase("sale")) {
             ret = _rateInfo.getSaleRateUI();
         } else {
@@ -505,7 +508,7 @@ public abstract class RateInfo_Base
     {
         final String ret;
         final Properties props =  ERP.RATEINFO.get();
-        final String rate = props.getProperty(_key, "purchase");
+        final String rate = props.getProperty(_key, RateInfo.DEFAULTKEY);
         if (rate.equalsIgnoreCase("sale")) {
             ret = _rateInfo.getSaleRateUIFrmt();
         } else {
@@ -530,7 +533,7 @@ public abstract class RateInfo_Base
     {
         final Object[] ret;
         final Properties props =  ERP.RATEINFO.get();
-        final String rate = props.getProperty(_key, "purchase");
+        final String rate = props.getProperty(_key, RateInfo.DEFAULTKEY);
         if (rate.equalsIgnoreCase("sale")) {
             ret = _rateInfo.getSaleRateObject();
         } else {
