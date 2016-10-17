@@ -180,7 +180,9 @@ public final class ERP
     public static final PropertiesSysConfAttribute ACTIONDEF = new PropertiesSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "ActionDefinition")
-                    .description(" Key: Normally the type name.Values: One of EDIT, CREATE, NONE")
+                    .description(" Key: Normally the type name.Values: One of EDIT, CREATE, NONE\n"
+                                    + "To be able to set the date:\n"
+                                    + "KEY.Date=true")
                     .concatenate(true);
 
     /** See description. */

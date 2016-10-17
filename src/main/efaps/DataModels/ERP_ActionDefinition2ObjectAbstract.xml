@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
 
- Copyright 2003 - 2014 The eFaps Team
+ Copyright 2003 - 2016 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,19 +15,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          The eFaps Team
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
-
 -->
 
 <datamodel-type  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
     <uuid>76a6fda5-7f1c-481c-a02e-ac63da1d8b7f</uuid>
     <file-application>eFapsApp-Commons</file-application>
-    <file-revision>$Rev$</file-revision>
-    <specification></specification>
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_ActionDefinition2ObjectAbstract</name>
@@ -57,6 +49,12 @@
             <typelink>ERP_ActionDefinitionAbstract</typelink>
             <sqltable>ERP_ActionDefinition2ObjectSQLTable</sqltable>
             <sqlcolumn>FROMID</sqlcolumn>
+        </attribute>
+         <attribute>
+            <name>Date</name>
+            <type>Date</type>
+            <sqltable>ERP_ActionDefinition2ObjectSQLTable</sqltable>
+            <sqlcolumn>DATE</sqlcolumn>
         </attribute>
         <attribute>
             <name>Creator</name>
