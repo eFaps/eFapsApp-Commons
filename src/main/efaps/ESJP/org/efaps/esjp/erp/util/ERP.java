@@ -280,6 +280,34 @@ public final class ERP
     }
 
     /**
+     * Enum used for a multistate for Configuration in ERP_DocumentType.
+     */
+    public enum DocRelationSituation
+        implements IBitEnum
+    {
+        /** The partial. */
+        PARTIAL;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int getInt()
+        {
+            return BitEnumType.getInt4Index(ordinal());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int getBitIndex()
+        {
+            return ordinal();
+        }
+    }
+
+    /**
      * Singelton.
      */
     private ERP()
