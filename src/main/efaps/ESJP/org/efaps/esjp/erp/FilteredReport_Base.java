@@ -31,8 +31,11 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.common.SystemConfiguration;
@@ -69,6 +72,8 @@ import org.efaps.esjp.common.datetime.JodaTimeUtils;
 import org.efaps.esjp.common.jasperreport.AbstractCachedReport;
 import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
 import org.efaps.esjp.common.uiform.Field_Base.ListType;
+import org.efaps.esjp.common.util.InterfaceUtils;
+import org.efaps.esjp.common.util.InterfaceUtils_Base.DojoLibs;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.ui.html.Table;
 import org.efaps.ui.wicket.models.EmbeddedLink;
@@ -187,7 +192,7 @@ public abstract class FilteredReport_Base
         } else if ("InstanceSet".equalsIgnoreCase(_type)) {
             final Instance inst = Instance.get(_default);
             ret = new InstanceSetFilterValue().setObject(inst.isValid()
-                            ? new HashSet<Instance>(Arrays.asList(inst)) : new HashSet<Instance>());
+                            ? new HashSet<>(Arrays.asList(inst)) : new HashSet<Instance>());
         } else if ("Boolean".equalsIgnoreCase(_type)) {
             ret = BooleanUtils.toBoolean(_default);
         } else if ("Currency".equalsIgnoreCase(_type)) {
@@ -219,9 +224,11 @@ public abstract class FilteredReport_Base
             queryBldr.addWhereAttrEqValue(CIERP.AttributeDefinitionAbstract.StatusAbstract,
                             Status.find(CIERP.AttributeDefinitionStatus.Active));
             final InstanceQuery query = queryBldr.getQuery();
-            ret = new AttrDefFilterValue().setObject(new HashSet<Instance>(query.execute()));
+            ret = new AttrDefFilterValue().setObject(new HashSet<>(query.execute()));
         }  else if ("FilterValue".equalsIgnoreCase(_type)) {
             ret = getFilterValue(_parameter, _default);
+        } else if ("GroupBy".equalsIgnoreCase(_type)) {
+            ret = getGroupByFilterValue(_parameter, _default);
         }
         return ret;
     }
@@ -245,6 +252,22 @@ public abstract class FilteredReport_Base
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             LOG.error("Could not find IFilterValue class {}", e);
         }
+        return ret;
+    }
+
+    /**
+     * Gets the group by filter value.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _className the class name
+     * @return the group by filter value
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected GroupByFilterValue getGroupByFilterValue(final Parameter _parameter,
+                                                       final String _className)
+    {
+        final GroupByFilterValue ret = new GroupByFilterValue().setClassName(_className);
+        ret.setObject(new ArrayList());
         return ret;
     }
 
@@ -357,7 +380,7 @@ public abstract class FilteredReport_Base
         final String key = value.getField().getName();
         final Map<String, Object> map = getFilterMap(_parameter);
 
-        final List<IOption> tokens = new ArrayList<IOption>();
+        final List<IOption> tokens = new ArrayList<>();
         if (map.containsKey(key)) {
             final Object obj = map.get(key);
             if (obj instanceof InstanceSetFilterValue) {
@@ -453,7 +476,7 @@ public abstract class FilteredReport_Base
         throws EFapsException
     {
         final Return ret = new Return();
-        final List<DropDownPosition> values = new ArrayList<DropDownPosition>();
+        final List<DropDownPosition> values = new ArrayList<>();
         final IUIValue uiValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
         final String key = uiValue.getField().getName();
         final Map<String, Object> map = getFilterMap(_parameter);
@@ -699,7 +722,7 @@ public abstract class FilteredReport_Base
         final Map<String, Object> map = getFilterMap(_parameter);
         final StatusFilterValue value = (StatusFilterValue) map.get(key);
 
-        final List<DropDownPosition> values = new ArrayList<DropDownPosition>();
+        final List<DropDownPosition> values = new ArrayList<>();
         final List<Status> statusList = getStatusListFromProperties(_parameter);
 
         for (final Status status : statusList) {
@@ -725,6 +748,137 @@ public abstract class FilteredReport_Base
     }
 
     /**
+     * Gets the group by field value.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return the group by field value
+     * @throws EFapsException on error
+     */
+    public Return getGroupByFieldValue(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+
+        final IUIValue fieldValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
+        final String fieldName = fieldValue.getField().getName();
+
+        final Map<String, Object> map = getFilterMap(_parameter);
+        final GroupByFilterValue filterValue = (GroupByFilterValue) map.get(fieldName);
+
+        final String divId = RandomStringUtils.randomAlphabetic(8);
+
+        final StringBuilder html =  new StringBuilder()
+                .append("<div class=\"groupByFilter\" id=\"").append(divId).append("\">")
+                .append("<div class=\"groupByContainer\">\n")
+                .append("<h3>")
+                .append(DBProperties.getProperty(FilteredReport.class.getName() + ".GroupByActive"))
+                .append("</h3>")
+                .append("<ol id=\"groupByNodeActive\" class=\"container\">\n")
+                .append("</ol>\n")
+                .append("</div>\n")
+                .append("<div class=\"groupByContainer\">\n")
+                .append("<h3>")
+                .append(DBProperties.getProperty(FilteredReport.class.getName() + ".GroupByInactive"))
+                .append("</h3>")
+                .append("<ol id=\"groupByNodeInactive\" class=\"container\">\n")
+                .append("</ol>\n")
+                .append("</div>\n")
+                .append("</div>\n");
+
+        final String key = RandomStringUtils.randomAlphabetic(8);
+
+        final List<Enum<?>> active = filterValue.getObject();
+        final List<Enum<?>> inactive = filterValue.getInactive();
+
+        final StringBuilder js = new StringBuilder()
+                        .append("var acList = new Source(\"groupByNodeActive\", ")
+                            .append("{ accept: [ \"").append(key).append("\"] });\n")
+                        .append("var inacList = new Source(\"groupByNodeInactive\",")
+                            .append("{ accept: [ \"").append(key).append("\"] });\n")
+                        .append("var data =  [\n");
+
+        for (final Enum<?> val : inactive) {
+            js.append("{ data: \"").append(DBProperties.getProperty(val.getClass().getName() + "." + val.toString()))
+                .append("\",")
+                .append(" key: \"").append(val.toString()).append("\",\n")
+                .append(" type: [ \"").append(key).append("\" ] },\n");
+        }
+        js.append("];\n")
+            .append("var acData =  [\n");
+
+        for (final Enum<?> val : active) {
+            js.append("{ data: \"").append(DBProperties.getProperty(val.getClass().getName() + "." + val.toString()))
+                .append("\",")
+                .append(" key: \"").append(val.toString()).append("\",\n")
+                .append(" type: [ \"").append(key).append("\" ] },\n");
+        }
+        js.append("];\n")
+            .append(" for(i = 0; i < data.length; ++i){\n")
+            .append("t = inacList._normalizedCreator(data[i]);\n")
+            .append("data[i].id = t.node.id;")
+            .append(" inacList.setItem(t.node.id, {data: t.data, type: t.type});\n")
+            .append(" inacList.parent.appendChild(t.node);\n")
+            .append(" }\n")
+
+            .append("for(i = 0; i < acData.length; ++i){\n")
+            .append(" domConstruct.place(\"<input type='hidden' name='").append(fieldName)
+                .append("' value='\" + acData[i].key + \"'/>\", \"").append(divId).append("\");\n")
+            .append("t = acList._normalizedCreator(acData[i]);\n")
+            .append("acData[i].id = t.node.id;")
+            .append(" acList.setItem(t.node.id, {data: t.data, type: t.type});\n")
+            .append(" acList.parent.appendChild(t.node);\n")
+            .append(" }\n")
+            .append("var all = data.concat(acData);")
+            .append("var sv = function() {\n")
+            .append("query(\"[name=")
+                .append(fieldName)
+                .append("]\").forEach(domConstruct.destroy);\n")
+            .append("query(\"[name=")
+                .append(fieldName)
+                .append("_inactive]\").forEach(domConstruct.destroy);\n")
+            .append("inacList.getAllNodes().forEach(function(_node) {\n  ")
+            .append("var sel;")
+            .append("array.some(all, function(item){\n")
+            .append("if (item.id === _node.id) {\n")
+            .append("sel = item;")
+            .append("return true;\n")
+            .append("}\n")
+            .append("return false;\n")
+            .append(" });\n")
+                .append(" domConstruct.place(\"<input type='hidden' name='")
+                .append(fieldName)
+                .append("_inactive' value='\" + sel.key + \"'/>\", \"")
+                .append(divId)
+                .append("\");\n")
+            .append("});\n")
+            .append("acList.getAllNodes().forEach(function(_node) {\n  ")
+            .append("var sel;")
+            .append("array.some(all, function(item){\n")
+            .append("if (item.id === _node.id) {\n")
+            .append("sel = item;")
+            .append("return true;\n")
+            .append("}\n")
+            .append("return false;\n")
+            .append(" });\n")
+                .append(" domConstruct.place(\"<input type='hidden' name='")
+                .append(fieldName)
+                .append("' value='\" + sel.key + \"'/>\", \"")
+                .append(divId)
+                .append("\");\n")
+            .append("});\n")
+            .append("}\n")
+            .append("aspect.after(acList, \"onDrop\", sv);\n")
+            .append("aspect.after(inacList, \"onDrop\", sv);\n");
+
+        html.append(InterfaceUtils.wrappInScriptTag(_parameter,
+                            InterfaceUtils.wrapInDojoRequire(_parameter, js, DojoLibs.DNDSOURCE, DojoLibs.QUERY,
+                                            DojoLibs.DOMCONSTRUCT, DojoLibs.ASPECT, DojoLibs.ARRAY), true, 0));
+
+        ret.put(ReturnValues.SNIPLETT, html);
+        return ret;
+    }
+
+    /**
      * Get the filter map from the context.
      *
      * @param _parameter Parameter as passed by the eFaps API
@@ -738,7 +892,7 @@ public abstract class FilteredReport_Base
         final String filterKey = getFilterKey(_parameter);
         Map<String, Object> ret = map.get(filterKey);
         if (ret == null) {
-            ret = new HashMap<String, Object>();
+            ret = new HashMap<>();
             map.put(filterKey, ret);
         }
         return ret;
@@ -760,7 +914,7 @@ public abstract class FilteredReport_Base
             map = (Map<String, Map<String, Object>>) Context.getThreadContext().getSessionAttribute(
                             FilteredReport_Base.KEY4SESSION);
         } else {
-            map = new HashMap<String, Map<String, Object>>();
+            map = new HashMap<>();
             Context.getThreadContext().setSessionAttribute(FilteredReport_Base.KEY4SESSION, map);
         }
         return map;
@@ -804,7 +958,7 @@ public abstract class FilteredReport_Base
         throws EFapsException
     {
         final Map<String, Object> oldFilter = getFilterMap(_parameter);
-        final Map<String, Object> newFilter = new HashMap<String, Object>();
+        final Map<String, Object> newFilter = new HashMap<>();
 
         final AbstractCommand cmd = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
         final Form form = cmd.getTargetForm();
@@ -1040,7 +1194,6 @@ public abstract class FilteredReport_Base
         return Long.parseLong(ERP.FILTERREPORTCONFIG.get().getProperty(getClass().getName() + " .LifeSpan", "5"));
     }
 
-
     /**
      * Gets the enum value.
      *
@@ -1200,7 +1353,7 @@ public abstract class FilteredReport_Base
          * @return the label
          * @throws EFapsException on error
          */
-        String getLabel(final Parameter _parameter)
+        String getLabel(Parameter _parameter)
             throws EFapsException;
 
         /**
@@ -1209,7 +1362,7 @@ public abstract class FilteredReport_Base
          * @param _values the values
          * @return the filter value
          */
-        IFilterValue parseObject(final String[] _values);
+        IFilterValue parseObject(String[] _values);
 
         /**
          * Negate the current filter elements.
@@ -1475,6 +1628,103 @@ public abstract class FilteredReport_Base
     /**
      * FilterClass.
      */
+    public static class GroupByFilterValue
+        extends AbstractFilterValue<List<Enum<?>>>
+    {
+        /** */
+        private static final long serialVersionUID = 1L;
+
+        /** The class name. */
+        private String className;
+
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        public AbstractFilterValue<List<Enum<?>>> parseObject(final String[] _values)
+        {
+            if (ArrayUtils.isNotEmpty(_values)) {
+                try {
+                    final Class<? extends Enum> clazz = (Class<? extends Enum>) Class.forName(getClassName());
+                    final List<Enum<?>> values = new ArrayList<>();
+                    setObject(values);
+                    for (final String value : _values) {
+                        values.add(Enum.valueOf(clazz, value));
+                    }
+                } catch (final ClassNotFoundException e) {
+                    LOG.error("Could not find enum class {}", e);
+                }
+            } else {
+                setObject(new ArrayList());
+            }
+            return this;
+        }
+
+        /**
+         * Gets the inactive.
+         *
+         * @return the inactive
+         */
+        public List<Enum<?>> getInactive()
+        {
+            final List<Enum<?>> ret = new ArrayList<>();
+            try {
+                final Class<?> clazz = Class.forName(getClassName());
+                if (clazz.isEnum()) {
+                    final Object[] consts = clazz.getEnumConstants();
+                    for (final Object obj : consts) {
+                        if (!getObject().contains(obj)) {
+                            ret.add((Enum<?>) obj);
+                        }
+                    }
+                }
+            } catch (final ClassNotFoundException e) {
+                LOG.error("Could not find enum class {}", e);
+            }
+            return ret;
+        }
+
+        @Override
+        public String getLabel(final Parameter _parameter)
+            throws EFapsException
+        {
+            final StringBuilder ret = new StringBuilder();
+            if (CollectionUtils.isNotEmpty(getObject())) {
+                for (final Enum<?> val : getObject()) {
+                    if (ret.length() > 0) {
+                        ret.append(", ");
+                    }
+                    ret.append(DBProperties.getProperty(val.getClass().getName() + "." + val.toString()));
+                }
+            }
+            return ret.toString();
+        }
+
+        /**
+         * Gets the class name.
+         *
+         * @return the class name
+         */
+        public String getClassName()
+        {
+            return this.className;
+        }
+
+        /**
+         * Sets the class name.
+         *
+         * @param _className the new class name
+         * @return this
+         */
+        public GroupByFilterValue setClassName(final String _className)
+        {
+            this.className = _className;
+            return this;
+        }
+    }
+
+
+    /**
+     * FilterClass.
+     */
     public static class AttrDefFilterValue
         extends AbstractFilterValue<Set<Instance>>
     {
@@ -1487,7 +1737,7 @@ public abstract class FilteredReport_Base
         {
             final StringBuilder ret = new StringBuilder();
             final List<String> labels = new ArrayList<>();
-            final MultiPrintQuery multi = new MultiPrintQuery(new ArrayList<Instance>(getObject()));
+            final MultiPrintQuery multi = new MultiPrintQuery(new ArrayList<>(getObject()));
             multi.addAttribute(CIERP.AttributeDefinitionAbstract.Value, CIERP.AttributeDefinitionAbstract.Description);
             multi.execute();
             while (multi.next()) {
