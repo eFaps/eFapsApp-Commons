@@ -1095,31 +1095,31 @@ public abstract class CommonDocument_Base
                               final StandartReport _report)
         throws EFapsException
     {
-        final String companyName = ERP.COMPANYNAME.get();
+        final String companyName = ERP.COMPANY_NAME.get();
         if (companyName != null && !companyName.isEmpty()) {
             _report.getJrParameters().put("CompanyName", companyName);
         }
-        final String companyTaxNum = ERP.COMPANYTAX.get();
+        final String companyTaxNum = ERP.COMPANY_TAX.get();
         if (companyTaxNum != null && !companyTaxNum.isEmpty()) {
             _report.getJrParameters().put("CompanyTaxNum", companyTaxNum);
         }
-        final String companyActivity = ERP.COMPANYACTIVITY.get();
+        final String companyActivity = ERP.COMPANY_ACTIVITY.get();
         if (companyActivity != null && !companyActivity.isEmpty()) {
             _report.getJrParameters().put("CompanyActivity", companyActivity);
         }
-        final String companyStreet = ERP.COMPANYSTREET.get();
+        final String companyStreet = ERP.COMPANY_STREET.get();
         if (companyStreet != null && !companyStreet.isEmpty()) {
             _report.getJrParameters().put("CompanyStreet", companyStreet);
         }
-        final String companyRegion = ERP.COMPANYREGION.get();
+        final String companyRegion = ERP.COMPANY_REGION.get();
         if (companyRegion != null && !companyRegion.isEmpty()) {
             _report.getJrParameters().put("CompanyRegion", companyRegion);
         }
-        final String companyCity = ERP.COMPANYCITY.get();
+        final String companyCity = ERP.COMPANY_CITY.get();
         if (companyCity != null && !companyCity.isEmpty()) {
             _report.getJrParameters().put("CompanyCity", companyCity);
         }
-        final String companyDistrict = ERP.COMPANYDISTRICT.get();
+        final String companyDistrict = ERP.COMPANY_DISTRICT.get();
         if (companyDistrict != null && !companyDistrict.isEmpty()) {
             _report.getJrParameters().put("CompanyDistrict", companyDistrict);
         }

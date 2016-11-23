@@ -52,59 +52,67 @@ public final class ERP
 
     /** See description. */
     @EFapsSysConfAttribute
-    public static final StringSysConfAttribute COMPANYNAME = new StringSysConfAttribute()
+    public static final StringSysConfAttribute COMPANY_NAME = new StringSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CompanyName")
                     .description("Name of the selected company.");
 
     /** See description. */
     @EFapsSysConfAttribute
-    public static final StringSysConfAttribute COMPANYTAX = new StringSysConfAttribute()
+    public static final StringSysConfAttribute COMPANY_TAX = new StringSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CompanyTaxNumber")
                     .description("Tax number of the selected company.");
 
     /** See description. */
     @EFapsSysConfAttribute
-    public static final StringSysConfAttribute COMPANYACTIVITY = new StringSysConfAttribute()
+    public static final StringSysConfAttribute COMPANY_ACTIVITY = new StringSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CompanyActivity")
                     .description("Activity of the selected company.");
 
     /** See description. */
     @EFapsSysConfAttribute
-    public static final StringSysConfAttribute COMPANYSTREET = new StringSysConfAttribute()
+    public static final StringSysConfAttribute COMPANY_STREET = new StringSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CompanyStreet")
                     .description("Street of the selected company.");
 
     /** See description. */
     @EFapsSysConfAttribute
-    public static final StringSysConfAttribute COMPANYREGION = new StringSysConfAttribute()
+    public static final StringSysConfAttribute COMPANY_REGION = new StringSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CompanyRegion")
                     .description("Region of the selected company.");
 
     /** See description. */
     @EFapsSysConfAttribute
-    public static final StringSysConfAttribute COMPANYCITY = new StringSysConfAttribute()
+    public static final StringSysConfAttribute COMPANY_CITY = new StringSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CompanyCity")
                     .description("City of the selected company.");
 
     /** See description. */
     @EFapsSysConfAttribute
-    public static final StringSysConfAttribute COMPANYDISTRICT = new StringSysConfAttribute()
+    public static final StringSysConfAttribute COMPANY_DISTRICT = new StringSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CompanyDistrict")
                     .description("District of the selected company.");
 
     /** See description. */
     @EFapsSysConfAttribute
-    public static final StringSysConfAttribute COMPANYCOUNTRY = new StringSysConfAttribute()
+    public static final StringSysConfAttribute COMPANY_COUNTRY = new StringSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CompanyCountry")
-                    .defaultValue("PERU")
+                    .defaultValue("PE")
+                    .description("Country of the selected company.");
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final StringSysConfAttribute COMPANY_UBIGEO = new StringSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "CompanyUbigeo")
+                    .defaultValue("150101")
                     .description("Country of the selected company.");
 
     /** See description. */
