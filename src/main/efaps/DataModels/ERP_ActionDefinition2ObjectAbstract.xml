@@ -50,6 +50,12 @@
             <sqltable>ERP_ActionDefinition2ObjectSQLTable</sqltable>
             <sqlcolumn>FROMID</sqlcolumn>
         </attribute>
+        <attribute>
+            <name>ToID</name>
+            <type>Long</type>
+            <sqltable>ERP_ActionDefinition2ObjectSQLTable</sqltable>
+            <sqlcolumn>TOID</sqlcolumn>
+        </attribute>
          <attribute>
             <name>Date</name>
             <type>Date</type>

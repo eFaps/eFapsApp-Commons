@@ -81,6 +81,7 @@ import org.efaps.esjp.erp.util.ERP;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 import org.jfree.util.Log;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,6 +125,19 @@ public abstract class CommonDocument_Base
         final QueryBuilder queryBldr = new QueryBuilder(command.getTargetCreateType());
         queryBldr.addWhereAttrEqValue(command.getTargetConnectAttribute(), _parameter.getInstance());
         for (final Instance relInst : queryBldr.getQuery().executeWithoutAccessCheck()) {
+            final PrintQuery print = new PrintQuery(relInst);
+            print.addAttribute(CIERP.ActionDefinition2DocumentAbstract.FromLinkAbstract,
+                            CIERP.ActionDefinition2DocumentAbstract.ToLinkAbstract,
+                            CIERP.ActionDefinition2DocumentAbstract.Date);
+            print.executeWithoutAccessCheck();
+            final Insert insert = new Insert(CIERP.ActionDefinition2DocumentHistorical);
+            insert.add(CIERP.ActionDefinition2DocumentHistorical.FromLinkAbstract, print.<Long>getAttribute(
+                            CIERP.ActionDefinition2DocumentAbstract.FromLinkAbstract));
+            insert.add(CIERP.ActionDefinition2DocumentHistorical.ToLinkAbstract, print.<Long>getAttribute(
+                            CIERP.ActionDefinition2DocumentAbstract.ToLinkAbstract));
+            insert.add(CIERP.ActionDefinition2DocumentHistorical.Date, print.<DateTime>getAttribute(
+                            CIERP.ActionDefinition2DocumentAbstract.Date));
+            insert.executeWithoutAccessCheck();
             new Delete(relInst).execute();
         }
 
@@ -189,7 +203,7 @@ public abstract class CommonDocument_Base
     {
         final Return ret = new Return();
         final Properties properties = ERP.ACTIONDEF.get();
-        String key;
+        final String key;
         if (containsProperty(_parameter, "Key")) {
             key = getProperty(_parameter, "Key");
         } else {
