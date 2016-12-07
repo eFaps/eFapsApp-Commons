@@ -33,6 +33,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.datamodel.Attribute;
@@ -1093,9 +1094,37 @@ public abstract class CommonDocument_Base
     public Return createReport(final Parameter _parameter)
         throws EFapsException
     {
+        final Return ret = new Return();
         final StandartReport report = new StandartReport();
+
+        if (InstanceUtils.isKindOf(_parameter.getInstance(), CIERP.DocumentAbstract)) {
+            final PrintQuery print = new PrintQuery(_parameter.getInstance());
+            print.addAttribute(CIERP.DocumentAbstract.Name);
+            print.execute();
+            final String name = print.<String>getAttribute(CIERP.DocumentAbstract.Name);
+            final String fileName = DBProperties.getProperty(_parameter.getInstance().getType().getLabelKey(), "es")
+                            + "_" + name;
+            report.setFileName(fileName);
+        }
         add2Report(_parameter, null, report);
-        return report.execute(_parameter);
+        File file = report.getFile(_parameter);
+
+        if (BooleanUtils.toBoolean(getProperty(_parameter, "Checkin"))) {
+            try {
+                file = new FileUtil().convertPdf(_parameter, file, report.getFileName());
+                if (file != null) {
+                    final InputStream input = new FileInputStream(file);
+                    final Checkin checkin = new Checkin(_parameter.getInstance());
+                    checkin.execute(report.getFileName() + "." + report.getMime(_parameter).getExtension(), input,
+                                    ((Long) file.length()).intValue());
+                }
+            } catch (final FileNotFoundException e) {
+                CommonDocument_Base.LOG.error("Catched FileNotFoundException", e);
+            }
+        }
+        ret.put(ReturnValues.VALUES, file);
+        ret.put(ReturnValues.TRUE, true);
+        return ret;
     }
 
     /**
