@@ -64,7 +64,7 @@ public abstract class DocumentTablePanel_Base
     {
         final List<String> ret = new ArrayList<>();
 
-        final Properties properties = getConfig();
+        final Properties properties = this.getConfig();
         final String formatStr = "Select%02d";
         for (int i = 1; i < 100; i++) {
             final String nameTmp = String.format(formatStr, i);
@@ -86,13 +86,13 @@ public abstract class DocumentTablePanel_Base
     protected String getLabel(final int _idx)
     {
         final String ret;
-        final Properties properties = getConfig();
+        final Properties properties = this.getConfig();
         final String formatStr = "Label%02d";
         final String nameTmp = String.format(formatStr, _idx);
         if (properties.containsKey(nameTmp)) {
             ret = properties.getProperty(nameTmp);
         } else {
-            ret= null;
+            ret = null;
         }
         return ret;
     }
@@ -102,9 +102,9 @@ public abstract class DocumentTablePanel_Base
         throws EFapsException
     {
         final List<Map<String, Object>> ret = new ArrayList<>();
-        final QueryBuilder queryBldr = AbstractCommon.getQueryBldrFromProperties(getConfig());
+        final QueryBuilder queryBldr = AbstractCommon.getQueryBldrFromProperties(this.getConfig());
         final MultiPrintQuery multi = queryBldr.getPrint();
-        final List<String> selects = getSelects();
+        final List<String> selects = this.getSelects();
         for (final String select : selects) {
             multi.addSelect(select);
         }
@@ -115,10 +115,14 @@ public abstract class DocumentTablePanel_Base
             for (final String select : selects) {
                 idx++;
                 final Object value = multi.getSelect(select);
-                final String label = getLabel(idx);
+                final String label = this.getLabel(idx);
                 if (label == null) {
                     final Attribute attr = multi.getAttribute4Select(select);
-                    map.put(DBProperties.getProperty(attr.getLabelKey()), value);
+                    if (attr == null) {
+                        map.put("?? - LABEL - ??", value);
+                    } else {
+                        map.put(DBProperties.getProperty(attr.getLabelKey()), value);
+                    }
                 } else {
                     map.put(label, value);
                 }
