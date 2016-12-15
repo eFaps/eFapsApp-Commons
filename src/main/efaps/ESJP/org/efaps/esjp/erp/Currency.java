@@ -18,6 +18,7 @@
 package org.efaps.esjp.erp;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsApplication;
@@ -86,5 +87,15 @@ public class Currency
         throws EFapsException
     {
         return Currency_Base.convertToCurrency(_parameter, _current, _rateInfo, _key, _periodCurrenycInstance);
+    }
+
+    /**
+     * @return Set of available CurrencyInst
+     * @throws EFapsException on error
+     */
+    public static Collection<Instance> getAvailable()
+        throws EFapsException
+    {
+        return Currency_Base.getAvailable();
     }
 }

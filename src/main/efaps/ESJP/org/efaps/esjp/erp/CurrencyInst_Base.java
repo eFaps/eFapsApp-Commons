@@ -24,6 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.efaps.admin.datamodel.Status;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.CachedInstanceQuery;
@@ -344,11 +345,11 @@ public abstract class CurrencyInst_Base
     {
         CurrencyInst ret = null;
         if (_object instanceof Long) {
-            ret = get((Long) _object);
+            ret = CurrencyInst_Base.get((Long) _object);
         } else if (_object instanceof Instance) {
-            ret = get((Instance) _object);
+            ret = CurrencyInst_Base.get((Instance) _object);
         } else if (_object instanceof UUID) {
-            ret = get((UUID) _object);
+            ret = CurrencyInst_Base.get((UUID) _object);
         }
         return ret;
     }
@@ -364,6 +365,7 @@ public abstract class CurrencyInst_Base
         final QueryBuilder queryBldr = new QueryBuilder(CIERP.Currency);
         final CachedInstanceQuery query = queryBldr.getCachedQuery(QueryCache.DEFAULTKEY)
                         .setLifespan(1).setLifespanUnit(TimeUnit.HOURS);
+        queryBldr.addWhereAttrEqValue(CIERP.Currency.Status, Status.find(CIERP.CurrencyStatus.Active));
         queryBldr.addOrderByAttributeAsc(CIERP.Currency.ISOCode);
         query.executeWithoutAccessCheck();
         while (query.next()) {

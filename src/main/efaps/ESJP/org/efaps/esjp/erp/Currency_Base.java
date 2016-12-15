@@ -20,6 +20,7 @@ package org.efaps.esjp.erp;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -429,7 +430,7 @@ public abstract class Currency_Base
         throws EFapsException
     {
 
-        final Instance baseInst = getBaseCurrency();
+        final Instance baseInst = Currency_Base.getBaseCurrency();
 
         final RateInfo currentRateInfo;
         if (_currentCurrencyInst.equals(baseInst)) {
@@ -724,6 +725,20 @@ public abstract class Currency_Base
                 final BigDecimal rate = RateInfo.getRate(_parameter, _rateInfo, _key == null ? "Default" : _key);
                 ret = _current.setScale(12, RoundingMode.HALF_UP).divide(rate, RoundingMode.HALF_UP);
             }
+        }
+        return ret;
+    }
+
+    /**
+     * @return Set of available CurrencyInst
+     * @throws EFapsException on error
+     */
+    protected static Collection<Instance> getAvailable()
+        throws EFapsException
+    {
+        final List<Instance> ret = new ArrayList<>();
+        for (final CurrencyInst cur : CurrencyInst.getAvailable()) {
+            ret.add(cur.getInstance());
         }
         return ret;
     }
