@@ -30,8 +30,8 @@
             <menu>ERP_DocumentTypeTree_Document_Menu</menu>
             <table>ERP_DocumentTable</table>
             <evaluate program="org.efaps.esjp.common.uitable.MultiPrint">
-                <property name="Types">ERP_Document2DocumentTypeAbstract</property>
-                <property name="LinkFroms">DocumentTypeLinkAbstract</property>
+                <property name="Type">ERP_Document2DocumentTypeAbstract</property>
+                <property name="LinkFrom">DocumentTypeLinkAbstract</property>
                 <property name="ExpandChildTypes">true</property>
             </evaluate>
         </target>

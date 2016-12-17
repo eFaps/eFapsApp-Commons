@@ -30,7 +30,7 @@
             <menu>ERP_DocumentTypeMyDesk_Menu</menu>
             <table>ERP_DocumentTypeTable</table>
             <evaluate program="org.efaps.esjp.common.uitable.MultiPrint">
-                <property name="Types">ERP_DocumentType</property>
+                <property name="Type">ERP_DocumentType</property>
             </evaluate>
         </target>
         <!-- properties -->
