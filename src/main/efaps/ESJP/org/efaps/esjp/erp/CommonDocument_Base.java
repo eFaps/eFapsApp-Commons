@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -66,13 +67,16 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.Update;
+import org.efaps.esjp.admin.access.AccessCheck4UI;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.common.file.FileUtil;
 import org.efaps.esjp.common.jasperreport.StandartReport;
 import org.efaps.esjp.common.listener.ITypedClass;
+import org.efaps.esjp.common.parameter.ParameterUtil;
 import org.efaps.esjp.common.uiform.Create;
 import org.efaps.esjp.common.uiform.Edit;
+import org.efaps.esjp.common.uiform.Field_Base;
 import org.efaps.esjp.common.util.InterfaceUtils;
 import org.efaps.esjp.common.util.InterfaceUtils_Base.DojoLibs;
 import org.efaps.esjp.db.InstanceUtils;
@@ -122,59 +126,88 @@ public abstract class CommonDocument_Base
     {
         final Return ret = new Return();
         final AbstractCommand command = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
-
-        final QueryBuilder queryBldr = new QueryBuilder(command.getTargetCreateType());
-        queryBldr.addWhereAttrEqValue(command.getTargetConnectAttribute(), _parameter.getInstance());
-        for (final Instance relInst : queryBldr.getQuery().executeWithoutAccessCheck()) {
-            final PrintQuery print = new PrintQuery(relInst);
-            print.addAttribute(CIERP.ActionDefinition2DocumentAbstract.FromLinkAbstract,
-                            CIERP.ActionDefinition2DocumentAbstract.ToLinkAbstract,
-                            CIERP.ActionDefinition2DocumentAbstract.Date);
-            print.executeWithoutAccessCheck();
-            final Insert insert = new Insert(CIERP.ActionDefinition2DocumentHistorical);
-            insert.add(CIERP.ActionDefinition2DocumentHistorical.FromLinkAbstract, print.<Long>getAttribute(
-                            CIERP.ActionDefinition2DocumentAbstract.FromLinkAbstract));
-            insert.add(CIERP.ActionDefinition2DocumentHistorical.ToLinkAbstract, print.<Long>getAttribute(
-                            CIERP.ActionDefinition2DocumentAbstract.ToLinkAbstract));
-            insert.add(CIERP.ActionDefinition2DocumentHistorical.Date, print.<DateTime>getAttribute(
-                            CIERP.ActionDefinition2DocumentAbstract.Date));
-            insert.executeWithoutAccessCheck();
-            new Delete(relInst).execute();
+        final Set<Instance> instances = new HashSet<>();
+        if (InstanceUtils.isValid(_parameter.getInstance())) {
+            instances.add(_parameter.getInstance());
+        } else {
+            instances.addAll(getSelectedInstances(_parameter));
         }
+        for (final Instance instance : instances) {
+            final QueryBuilder queryBldr = new QueryBuilder(command.getTargetCreateType());
+            queryBldr.addWhereAttrEqValue(command.getTargetConnectAttribute(), instance);
+            for (final Instance relInst : queryBldr.getQuery().executeWithoutAccessCheck()) {
+                final PrintQuery print = new PrintQuery(relInst);
+                print.addAttribute(CIERP.ActionDefinition2DocumentAbstract.FromLinkAbstract,
+                                CIERP.ActionDefinition2DocumentAbstract.ToLinkAbstract,
+                                CIERP.ActionDefinition2DocumentAbstract.Date);
+                print.executeWithoutAccessCheck();
+                final Insert insert = new Insert(CIERP.ActionDefinition2DocumentHistorical);
+                insert.add(CIERP.ActionDefinition2DocumentHistorical.FromLinkAbstract, print.<Long>getAttribute(
+                                CIERP.ActionDefinition2DocumentAbstract.FromLinkAbstract));
+                insert.add(CIERP.ActionDefinition2DocumentHistorical.ToLinkAbstract, print.<Long>getAttribute(
+                                CIERP.ActionDefinition2DocumentAbstract.ToLinkAbstract));
+                insert.add(CIERP.ActionDefinition2DocumentHistorical.Date, print.<DateTime>getAttribute(
+                                CIERP.ActionDefinition2DocumentAbstract.Date));
+                insert.executeWithoutAccessCheck();
+                new Delete(relInst).execute();
+            }
 
-        if (InstanceUtils.isValid(Instance.get(_parameter.getParameterValue("action")))) {
-            final Create create = new Create()
-            {
-                @Override
-                protected void add2basicInsert(final Parameter _parameter,
-                                               final Insert _insert)
-                    throws EFapsException
+            if (InstanceUtils.isValid(Instance.get(_parameter.getParameterValue("action")))) {
+                final Parameter parameter = ParameterUtil.clone(_parameter,
+                                Parameter.ParameterValues.INSTANCE, instance);
+                final Create create = new Create()
                 {
-                    super.add2basicInsert(_parameter, _insert);
-                    final Instance actionInst = Instance.get(_parameter.getParameterValue("action"));
-                    if (actionInst.isValid()) {
-                        _insert.add(CIERP.ActionDefinition2ObjectAbstract.FromLinkAbstract, actionInst);
+                    @Override
+                    protected void add2basicInsert(final Parameter _parameter,
+                                                   final Insert _insert)
+                        throws EFapsException
+                    {
+                        super.add2basicInsert(_parameter, _insert);
+                        final Instance actionInst = Instance.get(_parameter.getParameterValue("action"));
+                        if (actionInst.isValid()) {
+                            _insert.add(CIERP.ActionDefinition2ObjectAbstract.FromLinkAbstract, actionInst);
+                        }
+                    }
+                };
+                final Instance actionInst = create.basicInsert(parameter);
+                for (final IOnAction listener : Listener.get().<IOnAction>invoke(IOnAction.class)) {
+                    listener.afterAssign(this, parameter, actionInst);
+                }
+
+                final Map<Status, Status> mapping = getStatusMapping(parameter);
+
+                if (!mapping.isEmpty()) {
+                    final PrintQuery print = new PrintQuery(instance);
+                    print.addAttribute(CIERP.DocumentAbstract.StatusAbstract);
+                    print.execute();
+                    final Status status = Status.get(print.<Long>getAttribute(CIERP.DocumentAbstract.StatusAbstract));
+                    if (mapping.containsKey(status)) {
+                        final Update update = new Update(instance);
+                        update.add(CIERP.DocumentAbstract.StatusAbstract, mapping.get(status));
+                        update.execute();
                     }
                 }
-            };
-            final Instance actionInst = create.basicInsert(_parameter);
-            for (final IOnAction listener : Listener.get().<IOnAction>invoke(IOnAction.class)) {
-                listener.afterAssign(this, _parameter, actionInst);
-            }
 
-            final Map<Status, Status> mapping = getStatusMapping(_parameter);
-
-            if (!mapping.isEmpty()) {
-                final PrintQuery print = new PrintQuery(_parameter.getInstance());
-                print.addAttribute(CIERP.DocumentAbstract.StatusAbstract);
-                print.execute();
-                final Status status = Status.get(print.<Long>getAttribute(CIERP.DocumentAbstract.StatusAbstract));
-                if (mapping.containsKey(status)) {
-                    final Update update = new Update(_parameter.getInstance());
-                    update.add(CIERP.DocumentAbstract.StatusAbstract, mapping.get(status));
-                    update.execute();
-                }
             }
+        }
+        return ret;
+    }
+
+    /**
+     * Validate selected for assign action.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @return the return
+     * @throws EFapsException on error
+     */
+    public Return validateSelected4AssignAction(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new AccessCheck4UI().check4SelectedOnStatus(_parameter);
+        if (ret.isEmpty()) {
+            final List<IWarning> warnings = new ArrayList<>();
+            warnings.add(new Selected4AssignActionInvalidWarning());
+            ret.put(ReturnValues.SNIPLETT, WarningUtil.getHtml4Warning(warnings).toString());
         }
         return ret;
     }
@@ -321,7 +354,7 @@ public abstract class CommonDocument_Base
             {
                 final Map<?, ?> props = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
                 final IUIValue uiValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
-                DropDownPosition pos;
+                final DropDownPosition pos;
                 if (TargetMode.EDIT.equals(_parameter.get(ParameterValues.ACCESSMODE))) {
                     final Long persId = (Long) uiValue.getObject();
                     pos = new DropDownPosition(_value, _option).setSelected(_value.equals(persId));
@@ -332,7 +365,7 @@ public abstract class CommonDocument_Base
                             persId = Context.getThreadContext().getPerson().getId();
                         } catch (final EFapsException e) {
                             // nothing must be done at all
-                            LOG.error("Catched error", e);
+                            Field_Base.LOG.error("Catched error", e);
                         }
                         pos = new DropDownPosition(_value, _option).setSelected(new Long(persId).equals(_value));
                     } else {
@@ -1431,7 +1464,7 @@ public abstract class CommonDocument_Base
                         for (final String foreign : foreigns) {
                             if (!foreign.isEmpty()) {
                                 final String typeStr = entry.getValue();
-                                Insert insert;
+                                final Insert insert;
                                 if (isUUID(typeStr)) {
                                     insert = new Insert(UUID.fromString(typeStr));
                                 } else {
@@ -1656,6 +1689,21 @@ public abstract class CommonDocument_Base
         public EditedDoc(final Instance _instance)
         {
             super(_instance);
+        }
+    }
+
+    /**
+     * Warning for not enough Stock.
+     */
+    public static class Selected4AssignActionInvalidWarning
+        extends AbstractWarning
+    {
+        /**
+         * Constructor.
+         */
+        public Selected4AssignActionInvalidWarning()
+        {
+            setError(true);
         }
     }
 }
