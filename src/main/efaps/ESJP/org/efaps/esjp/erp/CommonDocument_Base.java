@@ -1338,6 +1338,22 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Get the name for the document on creation.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _rateInfo  rateinfo
+     * @return formated rate
+     * @throws EFapsException on error
+     */
+    protected Object[] getRateObject(final Parameter _parameter,
+                                     final RateInfo _rateInfo)
+        throws EFapsException
+    {
+        final Type type = getType4SysConf(_parameter);
+        return RateInfo.getRateObject(_parameter, _rateInfo, type.getName());
+    }
+
+    /**
      * @param _parameter Parameter as passed by the eFaps API
      * @return new Name
      * @throws EFapsException on error
