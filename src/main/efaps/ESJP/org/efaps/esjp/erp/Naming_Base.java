@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.NumberGenerator;
+import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
@@ -32,7 +34,6 @@ import org.efaps.db.PrintQuery;
 import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.util.EFapsException;
-
 /**
  * TODO comment!
  *
@@ -72,49 +73,58 @@ public abstract class Naming_Base
         throws EFapsException
     {
         String ret = null;
-        final Properties props = ERP.NUMBERGENERATOR.get();
         final List<Object> argList = new ArrayList<>();
-        // first priority is the SystemConfiguration
-        String ngKey = "";
-        if (props.containsKey(_key)) {
-            ngKey = props.getProperty(_key);
-            final List<String> selects = new ArrayList<>();
-            for (int i = 1; i < 10; i++) {
-                final String params = props.getProperty(_key + ".Parameter" + String.format("%02d", i));
-                if (params == null) {
-                    break;
-                } else {
-                    if ("date".equalsIgnoreCase(params)) {
-                        argList.add(new Date());
+        String ngKey = null;
+        if (_key != null) {
+            final Properties props = ERP.NUMBERGENERATOR.get();
+            // first priority is the SystemConfiguration
+            if (props.containsKey(_key)) {
+                ngKey = props.getProperty(_key);
+                final List<String> selects = new ArrayList<>();
+                for (int i = 1; i < 10; i++) {
+                    final String params = props.getProperty(_key + ".Parameter" + String.format("%02d", i));
+                    if (params == null) {
+                        break;
                     } else {
-                        selects.add(params);
+                        if ("date".equalsIgnoreCase(params)) {
+                            argList.add(new Date());
+                        } else {
+                            selects.add(params);
+                        }
                     }
                 }
-            }
-            if (!selects.isEmpty() && _instance != null && _instance.isValid()) {
-                final PrintQuery print = new PrintQuery(_instance);
-                print.addSelect(selects.toArray(new String[selects.size()]));
-                print.executeWithoutAccessCheck();
-                for (final String select : selects) {
-                    argList.add(print.getSelect(select));
+                if (!selects.isEmpty() && _instance != null && _instance.isValid()) {
+                    final PrintQuery print = new PrintQuery(_instance);
+                    print.addSelect(selects.toArray(new String[selects.size()]));
+                    print.executeWithoutAccessCheck();
+                    for (final String select : selects) {
+                        argList.add(print.getSelect(select));
+                    }
+                }
+            } else {
+                // search in the properties
+                if (containsProperty(_parameter, "NumberGenerator")) {
+                    ngKey = getProperty(_parameter, "NumberGenerator");
                 }
             }
-        } else {
-            // search in the properties
-            if (containsProperty(_parameter, "NumberGenerator")) {
-                ngKey = getProperty(_parameter, "NumberGenerator");
-            }
+        } else if (containsProperty(_parameter, "NumGenSystemConfig")) {
+            final String sysConf = getProperty(_parameter, "NumGenSystemConfig");
+            final SystemConfiguration sysconf = isUUID(sysConf)
+                            ? SystemConfiguration.get(UUID.fromString(sysConf)) : SystemConfiguration.get(sysConf);
+            ngKey = sysconf.getAttributeValue(getProperty(_parameter, "NumGenSystemConfigAttribute"));
         }
-        final NumberGenerator numGen = isUUID(ngKey) ? NumberGenerator.get(UUID.fromString(ngKey)) : NumberGenerator
-                        .get(ngKey);
-        if (numGen != null) {
-            if (!argList.isEmpty()) {
-                ret = numGen.getNextVal(argList.toArray());
-            } else {
-                ret = numGen.getNextVal();
+
+        if (StringUtils.isNotEmpty(ngKey)) {
+            final NumberGenerator numGen = isUUID(ngKey) ? NumberGenerator.get(UUID.fromString(ngKey)) : NumberGenerator
+                            .get(ngKey);
+            if (numGen != null) {
+                if (!argList.isEmpty()) {
+                    ret = numGen.getNextVal(argList.toArray());
+                } else {
+                    ret = numGen.getNextVal();
+                }
             }
         }
         return ret;
     }
-
 }
