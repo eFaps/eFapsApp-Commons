@@ -17,14 +17,18 @@
 
 package org.efaps.esjp.erp;
 
+import java.util.UUID;
+
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Insert;
+import org.efaps.db.Instance;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.uiform.Create;
 import org.efaps.util.EFapsException;
+import org.efaps.util.UUIDUtil;
 
 /**
  * The Class Bin_Base.
@@ -59,6 +63,24 @@ public abstract class Bin_Base
                     _insert.add(CIERP.BinAbstract.Name, name);
                 }
                 super.add2basicInsert(_parameter, _insert);
+            }
+
+            @Override
+            public void connect(final Parameter _parameter,
+                                final Instance _instance)
+                throws EFapsException
+            {
+                super.connect(_parameter, _instance);
+                if (getProperty(_parameter, "BinConnectType") != null) {
+                    final String type = getProperty(_parameter, "BinConnectType");
+                    for (final Instance inst : getSelectedInstances(_parameter)) {
+                        final Insert insert = UUIDUtil.isUUID(type) ? new Insert(UUID.fromString(type))
+                                        : new Insert(type);
+                        insert.add(CIERP.BinAbstract2ObjectAbstract.FromLinkAbstract, _instance.getId());
+                        insert.add(CIERP.BinDocumentAbstract2Document.ToLinkAbstract, inst);
+                        insert.execute();
+                    }
+                }
             }
         };
         return create.execute(_parameter);
