@@ -78,5 +78,10 @@
             <sqltable>ERP_PaymentDocumentSQLTable</sqltable>
             <sqlcolumn>CODE</sqlcolumn>
         </attribute>
+        <index msgPhrase="ERP_IndexPaymentDocumentMsgPhrase">
+            <field id="codeLong" key="index.ERP_DocumentAbstract.Name" select="attribute[Code]" type="SEARCHLONG"
+                transform="org.efaps.esjp.admin.index.transformer.StringRight2Long"/>
+            <field id="code"    key="index.ERP_DocumentAbstract.Name" select="attribute[Code]" type="STRING" />
+        </index>
     </definition>
 </datamodel-type>
