@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -58,6 +59,7 @@ import org.efaps.admin.user.Role;
 import org.efaps.ci.CIAdminUser;
 import org.efaps.ci.CIType;
 import org.efaps.db.AttributeQuery;
+import org.efaps.db.CachedPrintQuery;
 import org.efaps.db.Checkin;
 import org.efaps.db.Context;
 import org.efaps.db.Delete;
@@ -126,13 +128,30 @@ public abstract class CommonDocument_Base
     {
         final Return ret = new Return();
         final AbstractCommand command = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
+
         final Set<Instance> instances = new HashSet<>();
-        if (InstanceUtils.isValid(_parameter.getInstance())) {
+        if (InstanceUtils.isValid(_parameter.getInstance()) && _parameter.getInstance().getType().isKindOf(command
+                        .getTargetConnectAttribute().getLink())) {
             instances.add(_parameter.getInstance());
         } else {
             instances.addAll(getSelectedInstances(_parameter));
         }
-        for (final Instance instance : instances) {
+        for (final Instance inst : instances) {
+            Instance instance = null;
+            if (containsProperty(_parameter, "Select4Instance")) {
+                final String select4Instance = getProperty(_parameter, "Select4Instance");
+                final PrintQuery print = new CachedPrintQuery(inst, getRequestKey())
+                                .setLifespanUnit(TimeUnit.SECONDS).setLifespan(30);
+                print.addSelect(select4Instance);
+                print.executeWithoutAccessCheck();
+                final Object obj = print.getSelect(select4Instance);
+                if (obj instanceof Instance) {
+                    instance = (Instance) obj;
+                }
+            } else {
+                instance = inst;
+            }
+
             final QueryBuilder queryBldr = new QueryBuilder(command.getTargetCreateType());
             queryBldr.addWhereAttrEqValue(command.getTargetConnectAttribute(), instance);
             for (final Instance relInst : queryBldr.getQuery().executeWithoutAccessCheck()) {
