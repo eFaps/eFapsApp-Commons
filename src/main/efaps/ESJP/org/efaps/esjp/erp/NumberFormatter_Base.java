@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
 
 package org.efaps.esjp.erp;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -32,6 +34,7 @@ import org.efaps.db.Context;
 import org.efaps.esjp.admin.common.IReloadCacheListener;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.util.EFapsException;
+import org.jfree.util.Log;
 
 /**
  * The Class NumberFormatter_Base.
@@ -211,6 +214,23 @@ public abstract class NumberFormatter_Base
     }
 
     /**
+     * Checks if the given value is parseable.
+     *
+     * @param _strValue the str value
+     * @return true, if is parses the able
+     */
+    public boolean isParseAble(final String _strValue)
+    {
+        boolean ret = true;
+        try {
+            getFormatter().parse(_strValue);
+        } catch (EFapsException | ParseException e) {
+            ret = false;
+        }
+        return ret;
+    }
+
+    /**
      * @param _key key to the Formatter
      * @param _default default key for a formatter
      * @return DecimalFormat
@@ -228,8 +248,11 @@ public abstract class NumberFormatter_Base
     }
 
     /**
+     * Gets the frmt from properties.
+     *
      * @param _key key to the Formatter
      * @param _default default key for a formatter
+     * @param _properties the properties
      * @return DecimalFormat
      * @throws EFapsException on error
      */
@@ -272,6 +295,41 @@ public abstract class NumberFormatter_Base
         return new FormatterKey(_baseKey, Context.getThreadContext().getLocale().toString(),
                         Context.getThreadContext().getCompany() == null ? "0"
                                         : String.valueOf(Context.getThreadContext().getCompany().getId()));
+    }
+
+    /**
+     * Parses the.
+     *
+     * @param _strValue the str value
+     * @return the big decimal
+     * @throws EFapsException on error
+     */
+    protected static BigDecimal parse(final String _strValue)
+        throws EFapsException
+    {
+        return NumberFormatter.parse(_strValue, NumberFormatter_Base.get().getFormatter());
+    }
+
+    /**
+     * Parses the.
+     *
+     * @param _strValue the str value
+     * @param _format the format
+     * @return the big decimal
+     * @throws EFapsException on error
+     */
+    protected static BigDecimal parse(final String _strValue,
+                                      final DecimalFormat _format)
+        throws EFapsException
+    {
+        BigDecimal ret;
+        try {
+            ret = (BigDecimal) _format.parse(_strValue);
+        } catch (final ParseException e) {
+            Log.warn("Catched parsing exception", e);
+            ret = BigDecimal.ZERO;
+        }
+        return ret;
     }
 
     /**
@@ -343,7 +401,7 @@ public abstract class NumberFormatter_Base
         @Override
         public boolean equals(final Object _obj)
         {
-            boolean ret;
+            final boolean ret;
             if (_obj instanceof FormatterKey) {
                 ret = this.baseKey.equals(((FormatterKey) _obj).baseKey)
                                 && this.locale.equals(((FormatterKey) _obj).locale)
