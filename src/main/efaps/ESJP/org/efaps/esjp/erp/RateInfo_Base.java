@@ -18,6 +18,7 @@
 package org.efaps.esjp.erp;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Properties;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -410,10 +411,20 @@ public abstract class RateInfo_Base
         throws EFapsException
     {
         final RateInfo ret = new RateInfo();
-        ret.setRate((BigDecimal) _rateObj[0]);
-        ret.setRateUI((BigDecimal) _rateObj[1]);
-        ret.setSaleRate((BigDecimal) _rateObj[0]);
-        ret.setSaleRateUI((BigDecimal) _rateObj[1]);
+
+        final BigDecimal tmpRate1 = (BigDecimal) _rateObj[0];
+        final BigDecimal tmpRate2 = (BigDecimal) _rateObj[1];
+        if (tmpRate1.compareTo(BigDecimal.ONE) != 0) {
+            ret.setRate(tmpRate1);
+            ret.setRateUI(tmpRate1);
+            ret.setSaleRate(tmpRate1);
+            ret.setSaleRateUI(tmpRate1);
+        } else {
+            ret.setRate(BigDecimal.ONE.divide(tmpRate2, 12, RoundingMode.HALF_UP));
+            ret.setRateUI(tmpRate2);
+            ret.setSaleRate(BigDecimal.ONE.divide(tmpRate2, 12, RoundingMode.HALF_UP));
+            ret.setSaleRateUI(tmpRate2);
+        }
         ret.setCurrencyInstance(CurrencyInst.get(_rateObj[2]).getInstance());
         ret.setTargetCurrencyInstance(CurrencyInst.get(_rateObj[3]).getInstance());
         return ret;
