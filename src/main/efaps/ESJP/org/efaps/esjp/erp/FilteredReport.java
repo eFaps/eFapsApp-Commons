@@ -15,15 +15,14 @@
  *
  */
 
-
 package org.efaps.esjp.erp;
 
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 
+import net.sf.dynamicreports.report.builder.column.ColumnBuilder;
 import net.sf.dynamicreports.report.builder.column.ComponentColumnBuilder;
-
 
 /**
  * This class must be replaced for customization, therefore it is left empty.
@@ -37,6 +36,7 @@ import net.sf.dynamicreports.report.builder.column.ComponentColumnBuilder;
 public class FilteredReport
     extends FilteredReport_Base
 {
+
     /**
      * @param _object object to be cast to enum value
      * @return enum value
@@ -58,5 +58,20 @@ public class FilteredReport
                                                        final String _field)
     {
         return FilteredReport_Base.getLinkColumn(_parameter, _field);
+    }
+
+    /**
+     * Gets the custom text subtotal builder.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _field the field
+     * @param _showInColumn the show in column
+     * @return the custom text subtotal builder
+     */
+    public static CustomTextSubtotalBuilder getCustomTextSubtotalBuilder(final Parameter _parameter,
+                                                                         final String _field,
+                                                                         final ColumnBuilder<?, ?> _showInColumn)
+    {
+        return FilteredReport_Base.getCustomTextSubtotalBuilder(_parameter, _field, _showInColumn);
     }
 }

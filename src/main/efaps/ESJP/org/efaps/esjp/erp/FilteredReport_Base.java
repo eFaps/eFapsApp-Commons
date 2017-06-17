@@ -85,10 +85,14 @@ import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sf.dynamicreports.report.base.expression.AbstractSimpleExpression;
 import net.sf.dynamicreports.report.builder.DynamicReports;
+import net.sf.dynamicreports.report.builder.column.ColumnBuilder;
 import net.sf.dynamicreports.report.builder.column.ComponentColumnBuilder;
 import net.sf.dynamicreports.report.builder.component.GenericElementBuilder;
 import net.sf.dynamicreports.report.builder.expression.AbstractComplexExpression;
+import net.sf.dynamicreports.report.builder.subtotal.AggregationSubtotalBuilder;
+import net.sf.dynamicreports.report.constant.Calculation;
 import net.sf.dynamicreports.report.definition.ReportParameters;
 
 /**
@@ -211,7 +215,7 @@ public abstract class FilteredReport_Base
                     ret = new EnumFilterValue().setObject((Enum<?>) consts[0]);
                 }
             } catch (final ClassNotFoundException e) {
-                LOG.error("Could not find enum class {}", e);
+                FilteredReport_Base.LOG.error("Could not find enum class {}", e);
             }
         } else if ("AttributeDefinition".equalsIgnoreCase(_type)) {
             final Type type;
@@ -250,7 +254,7 @@ public abstract class FilteredReport_Base
             final Class<?> clazz = Class.forName(_className);
             ret = (IFilterValue) clazz.newInstance();
         } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            LOG.error("Could not find IFilterValue class {}", e);
+            FilteredReport_Base.LOG.error("Could not find IFilterValue class {}", e);
         }
         return ret;
     }
@@ -386,7 +390,7 @@ public abstract class FilteredReport_Base
             if (obj instanceof InstanceSetFilterValue) {
                 for (final Instance instance : ((InstanceSetFilterValue) obj).getObject()) {
                     if (instance.isValid()) {
-                        tokens.add(new InstanceOption(instance.getOid(), getInstanceLabel(_parameter, instance)));
+                        tokens.add(new InstanceOption(instance.getOid(), FilteredReport_Base.getInstanceLabel(_parameter, instance)));
                     }
                 }
             }
@@ -1309,6 +1313,21 @@ public abstract class FilteredReport_Base
     }
 
     /**
+     * Gets the custom text subtotal builder.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _field the field
+     * @param _showInColumn the show in column
+     * @return the custom text subtotal builder
+     */
+    protected static CustomTextSubtotalBuilder getCustomTextSubtotalBuilder(final Parameter _parameter,
+                                                                            final String _field,
+                                                                            final ColumnBuilder<?, ?> _showInColumn)
+    {
+        return new CustomTextSubtotalBuilder(_field, _showInColumn);
+    }
+
+    /**
      * Expression used to render a link for the UserInterface.
      */
     public static class LinkExpression
@@ -1336,6 +1355,43 @@ public abstract class FilteredReport_Base
         {
             final String oid = (String) _values.get(0);
             return EmbeddedLink.getJasperLink(oid);
+        }
+    }
+
+    /**
+     * The Class CustomTextSubtotalBuilder.
+     *
+     * @author The eFaps Team
+     */
+    public static class CustomTextSubtotalBuilder
+        extends AggregationSubtotalBuilder<String>
+    {
+
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Instantiates a new custom text subtotal builder.
+         *
+         * @param _fieldName the field name
+         * @param _showInColumn the show in column
+         */
+        public CustomTextSubtotalBuilder(final String _fieldName,
+                                         final ColumnBuilder<?, ?> _showInColumn)
+        {
+            super(new AbstractSimpleExpression<String>()
+            {
+
+                /** The Constant serialVersionUID. */
+                private static final long serialVersionUID = 1L;
+
+                @Override
+
+                public String evaluate(final ReportParameters _reportParameters)
+                {
+                    final Object value = _reportParameters.getFieldValue(_fieldName);
+                    return  String.format("Total '%s':", value);
+                }
+            }, _showInColumn, Calculation.NOTHING);
         }
     }
 
@@ -1553,7 +1609,7 @@ public abstract class FilteredReport_Base
         public String getLabel(final Parameter _parameter)
             throws EFapsException
         {
-            return getInstanceLabel(_parameter, getObject());
+            return FilteredReport_Base.getInstanceLabel(_parameter, getObject());
         }
     }
 
@@ -1574,7 +1630,7 @@ public abstract class FilteredReport_Base
         public String getLabel(final Parameter _parameter)
             throws EFapsException
         {
-            return getInstanceLabel(_parameter, getObject().toArray(new Instance[getObject().size()]));
+            return FilteredReport_Base.getInstanceLabel(_parameter, getObject().toArray(new Instance[getObject().size()]));
         }
     }
 
@@ -1650,7 +1706,7 @@ public abstract class FilteredReport_Base
                         values.add(Enum.valueOf(clazz, value));
                     }
                 } catch (final ClassNotFoundException e) {
-                    LOG.error("Could not find enum class {}", e);
+                    FilteredReport_Base.LOG.error("Could not find enum class {}", e);
                 }
             } else {
                 setObject(new ArrayList());
@@ -1677,7 +1733,7 @@ public abstract class FilteredReport_Base
                     }
                 }
             } catch (final ClassNotFoundException e) {
-                LOG.error("Could not find enum class {}", e);
+                FilteredReport_Base.LOG.error("Could not find enum class {}", e);
             }
             return ret;
         }
