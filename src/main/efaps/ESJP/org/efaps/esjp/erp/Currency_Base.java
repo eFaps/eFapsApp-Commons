@@ -708,10 +708,10 @@ public abstract class Currency_Base
      * @throws EFapsException the eFaps exception
      */
     protected static BigDecimal convertToCurrency(final Parameter _parameter,
-                                                   final BigDecimal _current,
-                                                   final RateInfo _rateInfo,
-                                                   final String _key,
-                                                   final Instance _target)
+                                                  final BigDecimal _current,
+                                                  final RateInfo _rateInfo,
+                                                  final String _key,
+                                                  final Instance _target)
         throws EFapsException
     {
         BigDecimal ret = BigDecimal.ZERO;
@@ -725,6 +725,8 @@ public abstract class Currency_Base
                 final BigDecimal rate = RateInfo.getRate(_parameter, _rateInfo, _key == null ? "Default" : _key);
                 ret = _current.setScale(12, RoundingMode.HALF_UP).divide(rate, RoundingMode.HALF_UP);
             }
+        } else if (_target.equals(_rateInfo.getCurrencyInstance())) {
+            ret = _current;
         }
         return ret;
     }

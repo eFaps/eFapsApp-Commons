@@ -75,18 +75,18 @@ public class Currency
      * @param _current the _current
      * @param _rateInfo the _rate info
      * @param _key the _key
-     * @param _periodCurrenycInstance the _period currenyc instance
+     * @param _targetCurrenycInstance the target currenyc instance
      * @return the big decimal
-     * @throws EFapsException the e faps exception
+     * @throws EFapsException the eFaps exception
      */
     public static BigDecimal convertToCurrency(final Parameter _parameter,
                                                final BigDecimal _current,
                                                final RateInfo _rateInfo,
                                                final String _key,
-                                               final Instance _periodCurrenycInstance)
+                                               final Instance _targetCurrenycInstance)
         throws EFapsException
     {
-        return Currency_Base.convertToCurrency(_parameter, _current, _rateInfo, _key, _periodCurrenycInstance);
+        return Currency_Base.convertToCurrency(_parameter, _current, _rateInfo, _key, _targetCurrenycInstance);
     }
 
     /**
