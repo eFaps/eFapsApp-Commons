@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.SystemConfiguration;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -404,8 +405,8 @@ public abstract class Currency_Base
                                         final Instance _targetCurrencyInst)
         throws EFapsException
     {
-        return evaluateRateInfos(_parameter, _dateStr != null && _dateStr.length() > 0
-                        ? DateUtil.getDateFromParameter(_dateStr) : new DateTime(), _currentCurrencyInst,
+        return evaluateRateInfos(_parameter, StringUtils.isEmpty(_dateStr) ? new DateTime().withTimeAtStartOfDay()
+                        : DateUtil.getDateFromParameter(_dateStr), _currentCurrencyInst,
                                         _targetCurrencyInst);
     }
 
