@@ -19,7 +19,7 @@ package org.efaps.esjp.erp;
 
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
