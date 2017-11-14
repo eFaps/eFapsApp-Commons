@@ -68,6 +68,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.InstanceQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.db.SelectBuilder;
 import org.efaps.db.Update;
 import org.efaps.esjp.admin.access.AccessCheck4UI;
 import org.efaps.esjp.ci.CIERP;
@@ -93,7 +94,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
+ * TODO comment!.
  *
  * @author The eFaps Team
  */
@@ -119,6 +120,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Assign action.
+     *
      * @param _parameter Parameter as passed by the eFasp API
      * @return empty Return
      * @throws EFapsException on error
@@ -213,6 +216,66 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Validate assign different action.
+     *
+     * @param _parameter the parameter
+     * @return the return
+     * @throws EFapsException the e faps exception
+     */
+    public Return validateAssignDifferentAction(final Parameter _parameter)
+        throws EFapsException
+    {
+        final Return ret = new Return();
+        final Instance actionInst = Instance.get(_parameter.getParameterValue("action"));
+        if (InstanceUtils.isValid(actionInst)) {
+            final AbstractCommand command = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
+            final Set<Instance> instances = new HashSet<>();
+            if (InstanceUtils.isValid(_parameter.getInstance()) && _parameter.getInstance().getType().isKindOf(command
+                            .getTargetConnectAttribute().getLink())) {
+                instances.add(_parameter.getInstance());
+            } else {
+                instances.addAll(getSelectedInstances(_parameter));
+            }
+            for (final Instance inst : instances) {
+                Instance instance = null;
+                if (containsProperty(_parameter, "Select4Instance")) {
+                    final String select4Instance = getProperty(_parameter, "Select4Instance");
+                    final PrintQuery print = new CachedPrintQuery(inst, getRequestKey()).setLifespanUnit(
+                                    TimeUnit.SECONDS).setLifespan(30);
+                    print.addSelect(select4Instance);
+                    print.executeWithoutAccessCheck();
+                    final Object obj = print.getSelect(select4Instance);
+                    if (obj instanceof Instance) {
+                        instance = (Instance) obj;
+                    }
+                } else {
+                    instance = inst;
+                }
+                final QueryBuilder queryBldr = new QueryBuilder(command.getTargetCreateType());
+                queryBldr.addWhereAttrEqValue(command.getTargetConnectAttribute(), instance);
+                for (final Instance relInst : queryBldr.getQuery().executeWithoutAccessCheck()) {
+                    final PrintQuery print = new PrintQuery(relInst);
+                    final SelectBuilder selInst = SelectBuilder.get()
+                                    .linkto(CIERP.ActionDefinition2DocumentAbstract.FromLinkAbstract).instance();
+                    print.addSelect(selInst);
+                    print.executeWithoutAccessCheck();
+                    final Instance existingActionInst = print.getSelect(selInst);
+                    if (InstanceUtils.isValid(existingActionInst) && existingActionInst.equals(actionInst)) {
+                        final List<IWarning> warnings = new ArrayList<>();
+                        warnings.add(new AssignDifferentActionWarning());
+                        ret.put(ReturnValues.SNIPLETT, WarningUtil.getHtml4Warning(warnings).toString());
+                        break;
+                    }
+                }
+            }
+        }
+        if (!ret.contains(ReturnValues.SNIPLETT)) {
+            ret.put(ReturnValues.TRUE, true);
+        }
+        return ret;
+    }
+
+    /**
      * Validate selected for assign action.
      *
      * @param _parameter Parameter as passed by the eFaps API
@@ -232,6 +295,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Call action.
+     *
      * @param _parameter Parameter as passed by the eFasp API
      * @return empty Return
      * @throws EFapsException on error
@@ -247,6 +312,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Access check for action.
+     *
      * @param _parameter Parameter as passed by the eFasp API
      * @return Return containing access
      * @throws EFapsException on error
@@ -285,6 +352,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Access check for action relation.
+     *
      * @param _parameter Parameter as passed by the eFasp API
      * @return Return containing access
      * @throws EFapsException on error
@@ -303,6 +372,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Sets the scale for read value.
+     *
      * @param _parameter Parameter as passed by the eFasp API
      * @return scale corrected BigDecimal
      * @throws EFapsException on error
@@ -356,6 +427,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Gets the sales person field value.
+     *
      * @param _parameter    Parameter as passed by the eFasp API
      * @return Sales Person Field Value
      * @throws EFapsException on error
@@ -817,9 +890,10 @@ public abstract class CommonDocument_Base
      * JavaScript Snipplet that removes from all SELECT with
      * <code>fieldname</code> all other options except the one
      * identified by the given <code>_idvalue</code>.
+     *
      * @param _parameter    Parameter as passed by the eFaps API
-     * @param _idvalue      value that will be set for the dropdown
      * @param _field        fieldname
+     * @param _idvalue      value that will be set for the dropdown
      * @return JavaScript
      * @throws EFapsException on error
      */
@@ -836,9 +910,10 @@ public abstract class CommonDocument_Base
      * <code>fieldname</code> and index <code>_idx</code> (if null from all)
      * the other options except the one identified by the given
      * <code>_idvalue</code>.
+     *
      * @param _parameter    Parameter as passed by the eFaps API
-     * @param _idvalue      value that will be set for the dropdown
      * @param _field        fieldname
+     * @param _idvalue      value that will be set for the dropdown
      * @param _idx          index
      * @return JavaScript
      * @throws EFapsException on error
@@ -1003,6 +1078,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Gets the uo M field str by uo M.
+     *
      * @param _uoMId id of the UoM
      * @return Field String
      * @throws CacheReloadException on error
@@ -1014,6 +1091,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Adds the status two doc create.
+     *
      * @param _parameter    Parameter as passed by the eFaps API
      * @param _insert       insert to add to
      * @param _createdDoc   document created
@@ -1046,6 +1125,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Adds the status two doc edit.
+     *
      * @param _parameter    Parameter as passed by the eFaps API
      * @param _update       insert to add to
      * @param _editDoc      document edited
@@ -1095,6 +1176,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Creates the report.
+     *
      * @param _parameter Parameter as passed by the eFaps API
      * @param _createdDoc   document created
      * @return the created file
@@ -1139,6 +1222,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Creates the report.
+     *
      * @param _parameter Parameter as passed by the eFaps API
      * @return the created file
      * @throws EFapsException on error
@@ -1180,6 +1265,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Adds the two report.
+     *
      * @param _parameter Parameter as passed by the eFaps API
      * @param _createdDoc   document created
      * @param _report report
@@ -1252,6 +1339,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Gets the field name for attribute.
+     *
      * @param _parameter Parameter as passed by the eFaps API
      * @param _attributeName attributerName the FieldName is wanted for
      * @return fieldname
@@ -1284,6 +1373,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Gets the type for sys conf.
+     *
      * @param _parameter Parameter as passed by the eFaps API
      * @return type
      * @throws EFapsException on error
@@ -1295,6 +1386,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Gets the rate.
+     *
      * @param _parameter Parameter as passed by the eFaps API
      * @param _rateInfo  rateinfo
      * @return rate value
@@ -1373,6 +1466,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Gets the java script for edit massive table.
+     *
      * @param _parameter Parameter as passed by the eFaps API
      * @return new Name
      * @throws EFapsException on error
@@ -1387,6 +1482,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Execute process.
+     *
      * @param _parameter Parameter as passed from the eFaps API.
      * @param _createdDoc CreatedDoc the process must be executed for
      * @throws EFapsException on error
@@ -1594,6 +1691,8 @@ public abstract class CommonDocument_Base
     }
 
     /**
+     * Gets the java script for doc.
+     *
      * @param _parameter    Parameter as passed by the eFasp API
      * @return JavaScript to be used for UI
      * @throws EFapsException on error
@@ -1629,7 +1728,7 @@ public abstract class CommonDocument_Base
         private final Map<String, Object> values = new HashMap<>();
 
         /**
-         *
+         * Instantiates a new created doc.
          */
         public CreatedDoc()
         {
@@ -1637,6 +1736,8 @@ public abstract class CommonDocument_Base
 
 
         /**
+         * Instantiates a new created doc.
+         *
          * @param _instance Instance of the Document
          */
         public CreatedDoc(final Instance _instance)
@@ -1655,6 +1756,8 @@ public abstract class CommonDocument_Base
         }
 
         /**
+         * Gets the value.
+         *
          * @param _key key
          * @return value
          */
@@ -1664,6 +1767,8 @@ public abstract class CommonDocument_Base
         }
 
         /**
+         * Adds the value.
+         *
          * @param _key  key
          * @param _value value
          */
@@ -1703,7 +1808,10 @@ public abstract class CommonDocument_Base
         {
             return this.positions;
         }
+
         /**
+         * Adds the position.
+         *
          * @param _instance Instance to add
          */
         public void addPosition(final Instance _instance)
@@ -1718,7 +1826,10 @@ public abstract class CommonDocument_Base
     public static class EditedDoc
         extends CreatedDoc
     {
+
         /**
+         * Instantiates a new edited doc.
+         *
          * @param _instance Instance the document belongs to
          */
         public EditedDoc(final Instance _instance)
@@ -1737,6 +1848,21 @@ public abstract class CommonDocument_Base
          * Constructor.
          */
         public Selected4AssignActionInvalidWarning()
+        {
+            setError(true);
+        }
+    }
+
+    /**
+     * The Class AssignDifferentActionWarning.
+     */
+    public static class AssignDifferentActionWarning
+        extends AbstractWarning
+    {
+        /**
+         * Constructor.
+         */
+        public AssignDifferentActionWarning()
         {
             setError(true);
         }
