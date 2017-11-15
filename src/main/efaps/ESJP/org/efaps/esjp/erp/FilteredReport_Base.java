@@ -35,7 +35,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.common.SystemConfiguration;
@@ -79,6 +78,7 @@ import org.efaps.esjp.ui.html.Table;
 import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RandomUtil;
 import org.efaps.util.UUIDUtil;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -355,15 +355,8 @@ public abstract class FilteredReport_Base
             dropdown.setSelected(current != null && "BASE".equals(((Instance) current).getKey()));
             values.add(dropdown);
         }
-        Collections.sort(values, new Comparator<DropDownPosition>()
-        {
-            @Override
-            public int compare(final DropDownPosition _o1,
-                               final DropDownPosition _o2)
-            {
-                return String.valueOf(_o1.getOrderValue()).compareTo(String.valueOf(_o2.getOrderValue()));
-            }
-        });
+        Collections.sort(values, (_o1,
+         _o2) -> String.valueOf(_o1.getOrderValue()).compareTo(String.valueOf(_o2.getOrderValue())));
         final Return ret = new Return();
         ret.put(ReturnValues.VALUES, values);
         return ret;
@@ -390,22 +383,15 @@ public abstract class FilteredReport_Base
             if (obj instanceof InstanceSetFilterValue) {
                 for (final Instance instance : ((InstanceSetFilterValue) obj).getObject()) {
                     if (instance.isValid()) {
-                        tokens.add(new InstanceOption(instance.getOid(), FilteredReport_Base.getInstanceLabel(_parameter, instance)));
+                        tokens.add(new InstanceOption(instance.getOid(),
+                                        FilteredReport_Base.getInstanceLabel(_parameter, instance)));
                     }
                 }
             }
         } else {
             map.put(key, "");
         }
-        Collections.sort(tokens, new Comparator<IOption>()
-        {
-            @Override
-            public int compare(final IOption _arg0,
-                               final IOption _arg1)
-            {
-                return _arg0.getLabel().compareTo(_arg1.getLabel());
-            }
-        });
+        Collections.sort(tokens, (_arg0, _arg1) -> _arg0.getLabel().compareTo(_arg1.getLabel()));
         ret.put(ReturnValues.VALUES, tokens);
         return ret;
     }
@@ -769,7 +755,7 @@ public abstract class FilteredReport_Base
         final Map<String, Object> map = getFilterMap(_parameter);
         final GroupByFilterValue filterValue = (GroupByFilterValue) map.get(fieldName);
 
-        final String divId = RandomStringUtils.randomAlphabetic(8);
+        final String divId = RandomUtil.randomAlphabetic(8);
 
         final StringBuilder html =  new StringBuilder()
                 .append("<div class=\"groupByFilter\" id=\"").append(divId).append("\">")
@@ -789,7 +775,7 @@ public abstract class FilteredReport_Base
                 .append("</div>\n")
                 .append("</div>\n");
 
-        final String key = RandomStringUtils.randomAlphabetic(8);
+        final String key = RandomUtil.randomAlphabetic(8);
 
         final List<Enum<?>> active = filterValue.getObject();
         final List<Enum<?>> inactive = filterValue.getInactive();
@@ -1533,16 +1519,8 @@ public abstract class FilteredReport_Base
             for (final Long val : getObject()) {
                 labels.add(Type.get(val).getLabel());
             }
-            Collections.sort(labels, new Comparator<String>()
-            {
-
-                @Override
-                public int compare(final String _o1,
-                                   final String _o2)
-                {
-                    return _o1.compareTo(_o2);
-                }
-            });
+            Collections.sort(labels, (_o1,
+             _o2) -> _o1.compareTo(_o2));
             for (final String label : labels) {
                 if (ret.length() > 0) {
                     ret.append(", ");
@@ -1574,16 +1552,8 @@ public abstract class FilteredReport_Base
             for (final Long val : getObject()) {
                 labels.add(Status.get(val).getLabel());
             }
-            Collections.sort(labels, new Comparator<String>()
-            {
-
-                @Override
-                public int compare(final String _o1,
-                                   final String _o2)
-                {
-                    return _o1.compareTo(_o2);
-                }
-            });
+            Collections.sort(labels, (_o1,
+             _o2) -> _o1.compareTo(_o2));
             for (final String label : labels) {
                 if (ret.length() > 0) {
                     ret.append(", ");
@@ -1630,7 +1600,8 @@ public abstract class FilteredReport_Base
         public String getLabel(final Parameter _parameter)
             throws EFapsException
         {
-            return FilteredReport_Base.getInstanceLabel(_parameter, getObject().toArray(new Instance[getObject().size()]));
+            return FilteredReport_Base.getInstanceLabel(_parameter,
+                            getObject().toArray(new Instance[getObject().size()]));
         }
     }
 
@@ -1802,15 +1773,8 @@ public abstract class FilteredReport_Base
                 labels.add(value + (description != null && !description.isEmpty() ? " - " + description : ""));
             }
 
-            Collections.sort(labels, new Comparator<String>()
-            {
-                @Override
-                public int compare(final String _o1,
-                                   final String _o2)
-                {
-                    return _o1.compareTo(_o2);
-                }
-            });
+            Collections.sort(labels, (_o1,
+             _o2) -> _o1.compareTo(_o2));
             for (final String label : labels) {
                 if (ret.length() > 0) {
                     ret.append(", ");
