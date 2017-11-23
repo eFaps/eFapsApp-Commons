@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
 import org.efaps.db.PrintQuery;
+import org.efaps.esjp.admin.common.systemconfiguration.StringSysConfAttribute;
+import org.efaps.esjp.admin.common.systemconfiguration.SysConfResourceConfig;
 import org.efaps.esjp.common.AbstractCommon;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.util.EFapsException;
@@ -107,11 +109,19 @@ public abstract class Naming_Base
                     ngKey = getProperty(_parameter, "NumberGenerator");
                 }
             }
-        } else if (containsProperty(_parameter, "NumGenSystemConfig")) {
+        }
+        if (containsProperty(_parameter, "NumGenSystemConfig")) {
             final String sysConf = getProperty(_parameter, "NumGenSystemConfig");
-            final SystemConfiguration sysconf = isUUID(sysConf)
-                            ? SystemConfiguration.get(UUID.fromString(sysConf)) : SystemConfiguration.get(sysConf);
-            ngKey = sysconf.getAttributeValue(getProperty(_parameter, "NumGenSystemConfigAttribute"));
+            final SystemConfiguration sysconf = isUUID(sysConf) ? SystemConfiguration.get(UUID.fromString(sysConf))
+                            : SystemConfiguration.get(sysConf);
+            final String attrName = getProperty(_parameter, "NumGenSystemConfigAttribute");
+            final StringSysConfAttribute attr = (StringSysConfAttribute) SysConfResourceConfig.getResourceConfig()
+                            .getAttribute(sysconf.getUUID().toString(), attrName);
+            if (attr == null) {
+                ngKey = sysconf.getAttributeValue(attrName);
+            } else {
+                ngKey = attr.get();
+            }
         }
 
         if (StringUtils.isNotEmpty(ngKey)) {

@@ -1364,7 +1364,11 @@ public abstract class CommonDocument_Base
         throws EFapsException
     {
         //first priority are values from the UserInterface
-        String ret = _parameter.getParameterValue(getFieldName4Attribute(_parameter, CIERP.DocumentAbstract.Name.name));
+        final String fieldName = getFieldName4Attribute(_parameter, CIERP.DocumentAbstract.Name.name);
+        String ret = _parameter.getParameterValue(fieldName);
+        if (StringUtils.isEmpty(ret)) {
+            ret = _parameter.getParameterValue(fieldName + "4Create");
+        }
         if (StringUtils.isEmpty(ret)) {
             final Type type = getType4DocCreate(_parameter);
             ret = new Naming().fromNumberGenerator(_parameter, type.getName());
