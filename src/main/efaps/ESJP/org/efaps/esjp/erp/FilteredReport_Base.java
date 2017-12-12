@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2017 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 package org.efaps.esjp.erp;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -85,19 +86,22 @@ import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
 import net.sf.dynamicreports.report.base.expression.AbstractSimpleExpression;
 import net.sf.dynamicreports.report.builder.DynamicReports;
+import net.sf.dynamicreports.report.builder.VariableBuilder;
 import net.sf.dynamicreports.report.builder.column.ColumnBuilder;
 import net.sf.dynamicreports.report.builder.column.ComponentColumnBuilder;
+import net.sf.dynamicreports.report.builder.column.ValueColumnBuilder;
 import net.sf.dynamicreports.report.builder.component.GenericElementBuilder;
 import net.sf.dynamicreports.report.builder.expression.AbstractComplexExpression;
+import net.sf.dynamicreports.report.builder.group.GroupBuilder;
 import net.sf.dynamicreports.report.builder.subtotal.AggregationSubtotalBuilder;
+import net.sf.dynamicreports.report.builder.subtotal.CustomSubtotalBuilder;
 import net.sf.dynamicreports.report.constant.Calculation;
 import net.sf.dynamicreports.report.definition.ReportParameters;
 
 /**
- * TODO comment!
- *
  * @author The eFaps Team
  */
 @EFapsUUID("fc64ff47-d1f6-4aed-8d7d-2a9128a51a19")
@@ -355,8 +359,8 @@ public abstract class FilteredReport_Base
             dropdown.setSelected(current != null && "BASE".equals(((Instance) current).getKey()));
             values.add(dropdown);
         }
-        Collections.sort(values, (_o1,
-         _o2) -> String.valueOf(_o1.getOrderValue()).compareTo(String.valueOf(_o2.getOrderValue())));
+        Collections.sort(values, (_o1, _o2) -> String.valueOf(_o1.getOrderValue()).compareTo(
+                        String.valueOf(_o2.getOrderValue())));
         final Return ret = new Return();
         ret.put(ReturnValues.VALUES, values);
         return ret;
@@ -1314,6 +1318,36 @@ public abstract class FilteredReport_Base
     }
 
     /**
+     * Gets the uo M subtotal builder.
+     *
+     * @param _parameter the parameter
+     * @param _builder the builder
+     * @param _uoMColumn the uo M column
+     * @param _quantityColumn the quantity column
+     * @param _resetGroup the reset group
+     * @return the uo M subtotal builder
+     */
+    protected static UoMSubtotalBuilder getUoMSubtotalBuilder(final Parameter _parameter,
+                                                              final JasperReportBuilder _builder,
+                                                              final ValueColumnBuilder<?, ?> _uoMColumn,
+                                                              final ValueColumnBuilder<?, ?> _quantityColumn,
+                                                              final GroupBuilder<?> _resetGroup)
+    {
+        final String uoM = "uom_" + RandomUtil.randomAlphabetic(4);
+        final String quantity = "qauntity_" + RandomUtil.randomAlphabetic(4);
+
+        final VariableBuilder<String> uoMVar = DynamicReports.variable(uoM, _uoMColumn, Calculation.DISTINCT_COUNT);
+        final VariableBuilder<BigDecimal> quantityVar = DynamicReports.variable(quantity, _quantityColumn,
+                        Calculation.SUM);
+        if (_resetGroup != null) {
+            uoMVar.setResetGroup(_resetGroup);
+            quantityVar.setResetGroup(_resetGroup);
+        }
+        _builder.addVariable(uoMVar, quantityVar);
+        return new UoMSubtotalBuilder(uoM, quantity, _quantityColumn);
+    }
+
+    /**
      * Expression used to render a link for the UserInterface.
      */
     public static class LinkExpression
@@ -1378,6 +1412,44 @@ public abstract class FilteredReport_Base
                     return  String.format("Total '%s':", value);
                 }
             }, _showInColumn, Calculation.NOTHING);
+        }
+    }
+
+    /**
+     * The Class UoMSubtotalBuilder.
+     */
+    public static class UoMSubtotalBuilder
+        extends CustomSubtotalBuilder<BigDecimal>
+    {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Instantiates a new uo M subtotal builder.
+         *
+         * @param _uoMKey the uo M key
+         * @param _qauntityKey the qauntity key
+         * @param _showInColumn the show in column
+         */
+        protected UoMSubtotalBuilder(final String _uoMKey,
+                                     final String _qauntityKey,
+                                     final ColumnBuilder<?, ?> _showInColumn)
+        {
+            super(new AbstractSimpleExpression<BigDecimal>() {
+
+                /** The Constant serialVersionUID. */
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public BigDecimal evaluate(final ReportParameters _reportParameters)
+                {
+                    final Long distinctCount = _reportParameters.getVariableValue(_uoMKey);
+                    final BigDecimal quantity = _reportParameters.getVariableValue(_qauntityKey);
+                    return distinctCount > 1 ? null : quantity;
+                }
+            }, _showInColumn);
+            setDataType(DynamicReports.type.bigDecimalType());
         }
     }
 

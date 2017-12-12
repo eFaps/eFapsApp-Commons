@@ -21,8 +21,11 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 
+import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
 import net.sf.dynamicreports.report.builder.column.ColumnBuilder;
 import net.sf.dynamicreports.report.builder.column.ComponentColumnBuilder;
+import net.sf.dynamicreports.report.builder.column.ValueColumnBuilder;
+import net.sf.dynamicreports.report.builder.group.GroupBuilder;
 
 /**
  * This class must be replaced for customization, therefore it is left empty.
@@ -54,8 +57,7 @@ public class FilteredReport
      * @param _field the field
      * @return the link column
      */
-    public static ComponentColumnBuilder getLinkColumn(final Parameter _parameter,
-                                                       final String _field)
+    public static ComponentColumnBuilder getLinkColumn(final Parameter _parameter, final String _field)
     {
         return FilteredReport_Base.getLinkColumn(_parameter, _field);
     }
@@ -73,5 +75,25 @@ public class FilteredReport
                                                                          final ColumnBuilder<?, ?> _showInColumn)
     {
         return FilteredReport_Base.getCustomTextSubtotalBuilder(_parameter, _field, _showInColumn);
+    }
+
+    /**
+     * Gets the uo M subtotal builder.
+     *
+     * @param _parameter the parameter
+     * @param _builder the builder
+     * @param _uoMColumn the uo M column
+     * @param _quantityColumn the quantity column
+     * @param _resetGroup the reset group
+     * @return the uo M subtotal builder
+     */
+    public static UoMSubtotalBuilder getUoMSubtotalBuilder(final Parameter _parameter,
+                                                           final JasperReportBuilder _builder,
+                                                           final ValueColumnBuilder<?, ?> _uoMColumn,
+                                                           final ValueColumnBuilder<?, ?> _quantityColumn,
+                                                           final GroupBuilder<?> _resetGroup)
+    {
+        return FilteredReport_Base.getUoMSubtotalBuilder(_parameter, _builder, _uoMColumn, _quantityColumn,
+                        _resetGroup);
     }
 }
