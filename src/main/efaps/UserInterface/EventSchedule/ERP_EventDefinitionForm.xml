@@ -46,9 +46,10 @@
             <property name="ModeEdit">EDITABLE</property>
             <property name="ModeCreate">EDITABLE</property>
             <property name="ModeView">NONE</property>
+            <property name="UIType">DROPDOWN</property>
             <trigger name="ERP_EventDefinitionForm.quartzDefinition.UI_FIELD_VALUE"
                      event="UI_FIELD_VALUE" program="org.efaps.esjp.common.uiform.Field"
-                     method="dropDownFieldValue" >
+                     method="getOptionListFieldValue" >
                 <property name="Type">Admin_Common_QuartzTriggerAbstract</property>
                 <property name="Select">attribute[Name]</property>
                 <property name="OrderSelect">attribute[Name]</property>

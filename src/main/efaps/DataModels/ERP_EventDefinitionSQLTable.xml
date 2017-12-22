@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
 
- Copyright 2003 - 2013 The eFaps Team
+ Copyright 2003 - 2017 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,20 +15,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          The eFaps Team
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
-
 -->
 <datamodel-sqltable xmlns="http://www.efaps.org/xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-
     <uuid>503c9dfa-cb57-48bb-b3be-7771460ed615</uuid>
     <file-application>eFapsApp-Commons</file-application>
-    <file-revision>$Rev$</file-revision>
-
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_EventDefinitionSQLTable</name>
@@ -36,10 +29,10 @@
             <table-name>T_ERPEVENTDEFINITION</table-name>
             <column name="TYPEID"      not-null="true" type="INTEGER"/>
             <column name="COMPANYID"   not-null="true" type="INTEGER"/>
+            <column name="STATUS"      not-null="true" type="INTEGER"/>
             <column name="NAME"        not-null="true" type="STRING_SHORT" length="128" />
             <column name="DESCR"                       type="STRING_SHORT" length="256" />
             <column name="PROPERTIES"                  type="CLOB" />
-            <column name="ACTIVE"      not-null="true" type="BOOLEAN"/>
             <column name="QUARTZDEFID" not-null="true" type="INTEGER"/>
             <column name="CREATOR"     not-null="true" type="INTEGER"/>
             <column name="CREATED"     not-null="true" type="DATETIME"/>

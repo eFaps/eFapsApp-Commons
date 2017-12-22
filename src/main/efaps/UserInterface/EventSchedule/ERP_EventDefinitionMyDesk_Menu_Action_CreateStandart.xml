@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
 
- Copyright 2003 - 2013 The eFaps Team
+ Copyright 2003 - 2017 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,29 +15,21 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          The eFaps Team
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
-
 -->
 <ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-
     <uuid>38c03a07-6007-45fb-b725-11009d54f09b</uuid>
     <file-application>eFapsApp-Commons</file-application>
-    <file-revision>$Rev$</file-revision>
-
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_EventDefinitionMyDesk_Menu_Action_CreateStandart</name>
-
-        <!-- target definitions -->
         <target>
             <form>ERP_EventDefinitionForm</form>
-            <execute program="org.efaps.esjp.common.uiform.Create" />
+            <execute program="org.efaps.esjp.common.uiform.Create" >
+                <property name="StatusGroup">ERP_EventDefinitionStatus</property>
+                <property name="Status">Active</property>
+            </execute>
         </target>
-        <!-- properties -->
         <property name="Target">modal</property>
         <property name="TargetCreateType">ERP_EventDefinitionStandart</property>
         <property name="TargetMode">create</property>

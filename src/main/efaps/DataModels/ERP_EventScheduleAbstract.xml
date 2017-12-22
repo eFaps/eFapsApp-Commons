@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
 <!--
 
- Copyright 2003 - 2012 The eFaps Team
+ Copyright 2003 - 2017 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,24 +15,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          The eFaps Team
- Revision:        $Rev: 6018 $
- Last Changed:    $Date: 2011-01-04 13:49:04 -0500 (mar, 04 ene 2011) $
- Last Changed By: $Author: jan@moxter.net $
-
 -->
-
-<datamodel-type xmlns="http://www.efaps.org/xsd"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-
+<datamodel-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
     <uuid>f7c8ccce-03a5-4d6f-a863-f1bd4be3e4ae</uuid>
     <file-application>eFapsApp-Commons</file-application>
-    <file-revision>$Rev: 6018 $</file-revision>
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_EventScheduleAbstract</name>
-        <purpose abstract="true"/>
+        <purpose abstract="true" />
         <attribute>
             <name>Type</name>
             <type>Type</type>
@@ -114,8 +104,8 @@ xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.
             <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
             <sqlcolumn>STATUS</sqlcolumn>
             <trigger program="org.efaps.esjp.admin.datamodel.StatusValue"
-                    name="ERP_EventSchedule.StatusAbstract.RANGE_VALUE"
-                    event="RANGE_VALUE">
+                name="ERP_EventSchedule.StatusAbstract.RANGE_VALUE"
+                event="RANGE_VALUE">
             </trigger>
         </attribute>
     </definition>

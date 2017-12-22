@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
 
- Copyright 2003 - 2013 The eFaps Team
+ Copyright 2003 - 2017 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,19 +15,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          The eFaps Team
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
-
 -->
-<datamodel-type xmlns="http://www.efaps.org/xsd"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<datamodel-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-
     <uuid>847cf68b-c23a-4826-a154-dc38ff7f76fd</uuid>
     <file-application>eFapsApp-Commons</file-application>
-    <file-revision>$Rev$</file-revision>
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_EventDefinitionAbstract</name>
@@ -56,6 +49,17 @@
             <sqlcolumn>COMPANYID</sqlcolumn>
         </attribute>
         <attribute>
+            <name>StatusAbstract</name>
+            <type>Status</type>
+            <typelink>ERP_EventDefinitionStatus</typelink>
+            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
+            <sqlcolumn>STATUS</sqlcolumn>
+            <trigger program="org.efaps.esjp.admin.datamodel.StatusValue"
+                name="ERP_EventDefinitionAbstract.StatusAbstract.RANGE_VALUE"
+                event="RANGE_VALUE">
+            </trigger>
+        </attribute>
+        <attribute>
             <name>Name</name>
             <type>String</type>
             <sqltable>ERP_EventDefinitionSQLTable</sqltable>
@@ -72,13 +76,6 @@
             <type>String</type>
             <sqltable>ERP_EventDefinitionSQLTable</sqltable>
             <sqlcolumn>PROPERTIES</sqlcolumn>
-        </attribute>
-        <attribute>
-            <name>Active</name>
-            <type>Boolean</type>
-            <sqltable>ERP_EventDefinitionSQLTable</sqltable>
-            <sqlcolumn>ACTIVE</sqlcolumn>
-            <defaultvalue>true</defaultvalue>
         </attribute>
         <attribute>
             <name>QuartzDefinitionLink</name>
