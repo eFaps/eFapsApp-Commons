@@ -31,10 +31,12 @@
             <column name="TYPEID"       not-null="true" type="INTEGER"/>
             <column name="COMPANYID"    not-null="true" type="INTEGER"/>
             <column name="DEFID"                        type="INTEGER"/>
+            <column name="OBJID"                        type="INTEGER"/>
+            <column name="STATUS"       not-null="true" type="INTEGER"/>
             <column name="NAME"                         type="STRING_SHORT" length="128" />
             <column name="DESCRIPTION"                  type="STRING_SHORT" length="1024" />
-            <column name="DATE"         not-null="true" type="DATETIME"/>
-            <column name="STATUS"       not-null="true" type="INTEGER"/>
+            <column name="DATE"                         type="DATETIME"/>
+            <column name="INTVALUE"                     type="INTEGER"/>
             <column name="CREATOR"      not-null="true" type="INTEGER"/>
             <column name="CREATED"      not-null="true" type="DATETIME"/>
             <column name="MODIFIER"     not-null="true" type="INTEGER"/>

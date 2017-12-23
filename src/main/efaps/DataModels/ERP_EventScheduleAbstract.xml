@@ -56,6 +56,12 @@
             <sqlcolumn>DEFID</sqlcolumn>
         </attribute>
         <attribute>
+            <name>ObjectID</name>
+            <type>Long</type>
+            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
+            <sqlcolumn>OBJID</sqlcolumn>
+        </attribute>
+        <attribute>
             <name>Name</name>
             <type>String</type>
             <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
@@ -72,6 +78,12 @@
             <type>Date</type>
             <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
             <sqlcolumn>DATE</sqlcolumn>
+        </attribute>
+         <attribute>
+            <name>IntValue</name>
+            <type>Integer</type>
+            <sqltable>ERP_EventScheduleAbstractSQLTable</sqltable>
+            <sqlcolumn>INTVALUE</sqlcolumn>
         </attribute>
         <attribute>
             <name>Creator</name>
