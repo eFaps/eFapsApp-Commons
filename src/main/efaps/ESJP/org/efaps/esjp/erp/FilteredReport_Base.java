@@ -605,6 +605,7 @@ public abstract class FilteredReport_Base
             dropdown.setSelected(selected.contains(type.getId()));
             values.add(dropdown);
         }
+        Collections.sort(values, (o1, o2) -> o1.getLabel().compareTo(o2.getLabel()));
         final Return ret = new Return();
         ret.put(ReturnValues.VALUES, values);
         return ret;
@@ -1589,10 +1590,11 @@ public abstract class FilteredReport_Base
             final StringBuilder ret = new StringBuilder();
             final List<String> labels = new ArrayList<>();
             for (final Long val : getObject()) {
-                labels.add(Type.get(val).getLabel());
+                if (val > 0) {
+                    labels.add(Type.get(val).getLabel());
+                }
             }
-            Collections.sort(labels, (_o1,
-             _o2) -> _o1.compareTo(_o2));
+            Collections.sort(labels, (_o1, _o2) -> _o1.compareTo(_o2));
             for (final String label : labels) {
                 if (ret.length() > 0) {
                     ret.append(", ");
