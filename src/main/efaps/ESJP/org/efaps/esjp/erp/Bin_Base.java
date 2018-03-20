@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2018 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,10 @@ import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
+import org.efaps.db.QueryBuilder;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.uiform.Create;
+import org.efaps.esjp.common.uitable.CommonDelete;
 import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;
 
@@ -76,7 +78,7 @@ public abstract class Bin_Base
                     for (final Instance inst : getSelectedInstances(_parameter)) {
                         final Insert insert = UUIDUtil.isUUID(type) ? new Insert(UUID.fromString(type))
                                         : new Insert(type);
-                        insert.add(CIERP.BinAbstract2ObjectAbstract.FromLinkAbstract, _instance.getId());
+                        insert.add(CIERP.BinAbstract2ObjectAbstract.FromLinkAbstract, _instance);
                         insert.add(CIERP.BinDocumentAbstract2Document.ToLinkAbstract, inst);
                         insert.execute();
                     }
@@ -84,5 +86,28 @@ public abstract class Bin_Base
             }
         };
         return create.execute(_parameter);
+    }
+
+    /**
+     * Delete.
+     *
+     * @param _parameter the parameter
+     * @return the return
+     * @throws EFapsException the e faps exception
+     */
+    public Return delete(final Parameter _parameter)
+        throws EFapsException
+    {
+        return new CommonDelete()
+        {
+            @Override
+            protected boolean getValidate4Instance(final Parameter _parameter, final Instance _instance)
+                throws EFapsException
+            {
+                final QueryBuilder queryBldr = new QueryBuilder(CIERP.BinDocumentAbstract2Document);
+                queryBldr.addWhereAttrEqValue(CIERP.BinDocumentAbstract2Document.FromLinkAbstract, _instance);
+                return queryBldr.getQuery().execute().isEmpty();
+            };
+        }.execute(_parameter);
     }
 }
