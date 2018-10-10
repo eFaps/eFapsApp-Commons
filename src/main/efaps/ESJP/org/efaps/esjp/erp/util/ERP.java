@@ -113,7 +113,15 @@ public final class ERP
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CompanyUbigeo")
                     .defaultValue("150101")
-                    .description("Country of the selected company.");
+                    .description("Ubigeo of the company.");
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final StringSysConfAttribute COMPANY_ESTABLECIMIENTO = new StringSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "CompanyEstablecimiento")
+                    .defaultValue("1000")
+                    .description("Establecimiento of the company.");
 
     /** See description. */
     @EFapsSysConfAttribute
