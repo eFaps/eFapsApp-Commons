@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
 
- Copyright 2003 - 2013 The eFaps Team
+ Copyright 2003 - 2019 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,18 +15,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          The eFaps Team
- Revision:        $Rev: 9301 $
- Last Changed:    $Date: 2013-04-27 18:41:43 -0500 (sáb, 27 abr 2013) $
- Last Changed By: $Author: jan@moxter.net $
-
 -->
-<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
-                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
     <uuid>2bee0b01-7a3f-4c0e-a8c4-8b5c33e0d6b3</uuid>
     <file-application>eFapsApp-Commons</file-application>
-    <file-revision>$Rev: 9301 $</file-revision>
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_DocumentTypeSQLTable</name>
@@ -37,6 +31,7 @@
             <column name="DESCR"    type="STRING_SHORT"                 length="256" />
             <column name="INTV"     type="INTEGER"/>
             <column name="INTC"     type="INTEGER"/>
+            <column name="LINKID"   type="INTEGER"/>
             <column name="CREATOR"  type="INTEGER"      not-null="true" />
             <column name="CREATED"  type="DATETIME"     not-null="true" />
             <column name="MODIFIER" type="INTEGER"      not-null="true" />
