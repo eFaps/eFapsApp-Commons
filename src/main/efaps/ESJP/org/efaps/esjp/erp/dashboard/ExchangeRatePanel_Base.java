@@ -99,11 +99,11 @@ public abstract class ExchangeRatePanel_Base
                     .addRow()
                         .addColumn(DBProperties.getProperty("ERP_CurrencyRateClient/Rate.Label"))
                             .getCurrentColumn().setStyle("font-style: italic;").getCurrentTable()
-                        .addColumn(rateInfo.getRateUIFrmt())
+                        .addColumn(rateInfo.getRateUIFrmt(null))
                     .addRow()
                         .addColumn(DBProperties.getProperty("ERP_CurrencyRateClient/RateSale.Label"))
                             .getCurrentColumn().setStyle("font-style: italic;").getCurrentTable()
-                        .addColumn(rateInfo.getSaleRateUIFrmt())
+                        .addColumn(rateInfo.getSaleRateUIFrmt(null))
                     .addRow()
                         .addColumn(currencyInst.getLatestValidFrom().toString(getDateFormat()))
                         .getCurrentColumn().setStyle("text-align: center;");

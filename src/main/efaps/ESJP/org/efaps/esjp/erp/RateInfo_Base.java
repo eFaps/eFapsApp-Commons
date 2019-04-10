@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,8 @@ import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment!
- *
  * @author The eFaps Team
  */
 @EFapsUUID("4471a1ed-59ff-4805-bf8f-62899d8e8efc")
@@ -43,11 +39,6 @@ public abstract class RateInfo_Base
 
     /** The Constant DEFAULTKEY. */
     protected static final String DEFAULTKEY = "sale";
-
-    /**
-     * Logging instance used in this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(RateInfo.class);
 
     /**
      * Scale for the BigDecimal values.
@@ -119,7 +110,7 @@ public abstract class RateInfo_Base
      */
     public void setRate(final BigDecimal _rate)
     {
-        this.rate = _rate;
+        rate = _rate;
     }
 
     /**
@@ -129,7 +120,7 @@ public abstract class RateInfo_Base
      */
     public void setRateUI(final BigDecimal _rate)
     {
-        this.rateUI = _rate;
+        rateUI = _rate;
     }
 
     /**
@@ -139,7 +130,7 @@ public abstract class RateInfo_Base
      */
     public BigDecimal getRate()
     {
-        return this.rate.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
+        return rate.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
     }
 
     /**
@@ -149,7 +140,7 @@ public abstract class RateInfo_Base
      */
     public BigDecimal getRateUI()
     {
-        return this.rateUI.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
+        return rateUI.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
     }
 
     /**
@@ -159,7 +150,7 @@ public abstract class RateInfo_Base
      */
     public BigDecimal getSaleRate()
     {
-        return this.saleRate.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
+        return saleRate.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
     }
 
     /**
@@ -169,7 +160,7 @@ public abstract class RateInfo_Base
      */
     public void setSaleRate(final BigDecimal _saleRate)
     {
-        this.saleRate = _saleRate;
+        saleRate = _saleRate;
     }
 
     /**
@@ -179,7 +170,7 @@ public abstract class RateInfo_Base
      */
     public BigDecimal getSaleRateUI()
     {
-        return this.saleRateUI.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
+        return saleRateUI.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
     }
 
     /**
@@ -189,7 +180,7 @@ public abstract class RateInfo_Base
      */
     public void setSaleRateUI(final BigDecimal _saleRateUI)
     {
-        this.saleRateUI = _saleRateUI;
+        saleRateUI = _saleRateUI;
     }
 
     /**
@@ -199,7 +190,7 @@ public abstract class RateInfo_Base
      */
     public int getScale()
     {
-        return this.scale;
+        return scale;
     }
 
     /**
@@ -209,7 +200,7 @@ public abstract class RateInfo_Base
      */
     public void setScale(final int _scale)
     {
-        this.scale = _scale;
+        scale = _scale;
     }
 
     /**
@@ -219,7 +210,7 @@ public abstract class RateInfo_Base
      */
     public Instance getCurrencyInstance()
     {
-        return this.currencyInst;
+        return currencyInst;
     }
 
     /**
@@ -230,7 +221,7 @@ public abstract class RateInfo_Base
      */
     public void setCurrencyInstance(final Instance _currencyInst)
     {
-        this.currencyInst = _currencyInst;
+        currencyInst = _currencyInst;
     }
 
     /**
@@ -242,10 +233,10 @@ public abstract class RateInfo_Base
     public Instance getTargetCurrencyInstance()
         throws EFapsException
     {
-        if (this.targetCurrencyInst == null) {
-            this.targetCurrencyInst = Currency.getBaseCurrency();
+        if (targetCurrencyInst == null) {
+            targetCurrencyInst = Currency.getBaseCurrency();
         }
-        return this.targetCurrencyInst;
+        return targetCurrencyInst;
     }
 
     /**
@@ -256,7 +247,7 @@ public abstract class RateInfo_Base
      */
     public void setTargetCurrencyInstance(final Instance _targetCurrencyInst)
     {
-        this.targetCurrencyInst = _targetCurrencyInst;
+        targetCurrencyInst = _targetCurrencyInst;
     }
 
     /**
@@ -286,10 +277,10 @@ public abstract class RateInfo_Base
      */
     public RateFormatter getFormatter()
     {
-        if (this.formatter == null) {
-            this.formatter = new RateFormatter();
+        if (formatter == null) {
+            formatter = new RateFormatter();
         }
-        return this.formatter;
+        return formatter;
     }
 
     /**
@@ -299,47 +290,47 @@ public abstract class RateInfo_Base
      */
     public void setFormatter(final RateFormatter _formatter)
     {
-        this.formatter = _formatter;
+        formatter = _formatter;
     }
 
     /**
      * @return formatter for rate
      * @throws EFapsException on error
      */
-    public String getRateFrmt()
+    public String getRateFrmt(final String _key)
         throws EFapsException
     {
-        return getFormatter().getFrmt4Rate().format(getRate());
+        return getFormatter().getFrmt4Rate(_key).format(getRate());
     }
 
     /**
      * @return formatter for rateui
      * @throws EFapsException on error
      */
-    public String getRateUIFrmt()
+    public String getRateUIFrmt(final String _key)
         throws EFapsException
     {
-        return getFormatter().getFrmt4RateUI().format(getRateUI());
+        return getFormatter().getFrmt4RateUI(_key).format(getRateUI());
     }
 
     /**
      * @return formatter for SaleRate
      * @throws EFapsException on error
      */
-    public String getSaleRateFrmt()
+    public String getSaleRateFrmt(final String _key)
         throws EFapsException
     {
-        return getFormatter().getFrmt4SaleRate().format(getSaleRate());
+        return getFormatter().getFrmt4SaleRate(_key).format(getSaleRate());
     }
 
     /**
      * @return formatter for SaleRateUI
      * @throws EFapsException on error
      */
-    public String getSaleRateUIFrmt()
+    public String getSaleRateUIFrmt(final String _key)
         throws EFapsException
     {
-        return getFormatter().getFrmt4SaleRateUI().format(getSaleRateUI());
+        return getFormatter().getFrmt4SaleRateUI(_key).format(getSaleRateUI());
     }
 
     /**
@@ -471,9 +462,9 @@ public abstract class RateInfo_Base
         final Properties props =  ERP.RATEINFO.get();
         final String rate = props.getProperty(_key, RateInfo.DEFAULTKEY);
         if (rate.equalsIgnoreCase("sale")) {
-            ret = _rateInfo.getSaleRateFrmt();
+            ret = _rateInfo.getSaleRateFrmt(_key);
         } else {
-            ret = _rateInfo.getRateFrmt();
+            ret = _rateInfo.getRateFrmt(_key);
         }
         return ret;
     }
@@ -521,9 +512,9 @@ public abstract class RateInfo_Base
         final Properties props =  ERP.RATEINFO.get();
         final String rate = props.getProperty(_key, RateInfo.DEFAULTKEY);
         if (rate.equalsIgnoreCase("sale")) {
-            ret = _rateInfo.getSaleRateUIFrmt();
+            ret = _rateInfo.getSaleRateUIFrmt(_key);
         } else {
-            ret = _rateInfo.getRateUIFrmt();
+            ret = _rateInfo.getRateUIFrmt(_key);
         }
         return ret;
     }

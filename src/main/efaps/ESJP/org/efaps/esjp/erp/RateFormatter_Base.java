@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,10 +46,10 @@ public abstract class RateFormatter_Base
      * @return the frmt4 rate
      * @throws EFapsException the eFaps exception
      */
-    public DecimalFormat getFrmt4Rate()
+    public DecimalFormat getFrmt4Rate(final String _key)
         throws EFapsException
     {
-        return getFormat("Rate");
+        return getFormat(_key + ".Rate", "Rate");
     }
 
     /**
@@ -58,10 +58,10 @@ public abstract class RateFormatter_Base
      * @return value of instance variable {@link #frmt4RateUI}
      * @throws EFapsException on error
      */
-    public DecimalFormat getFrmt4RateUI()
+    public DecimalFormat getFrmt4RateUI(final String _key)
         throws EFapsException
     {
-        return getFormat("RateUI");
+        return getFormat(_key + ".RateUI", "RateUI");
     }
 
     /**
@@ -70,10 +70,10 @@ public abstract class RateFormatter_Base
      * @return value of instance variable {@link #frmt4SaleRate}
      * @throws EFapsException on error
      */
-    public DecimalFormat getFrmt4SaleRate()
+    public DecimalFormat getFrmt4SaleRate(final String _key)
         throws EFapsException
     {
-        return getFormat("SaleRate");
+        return getFormat(_key + ".SaleRate", "SaleRate");
     }
 
     /**
@@ -82,10 +82,10 @@ public abstract class RateFormatter_Base
      * @return value of instance variable {@link #frmt4SaleRateUI}
      * @throws EFapsException on error
      */
-    public DecimalFormat getFrmt4SaleRateUI()
+    public DecimalFormat getFrmt4SaleRateUI(final String _key)
         throws EFapsException
     {
-        return getFormat("SaleRateUI");
+        return getFormat(_key + ".SaleRateUI", "SaleRateUI");
     }
 
     /**
@@ -93,10 +93,10 @@ public abstract class RateFormatter_Base
      * @return DecimalFormat
      * @throws EFapsException on error
      */
-    protected DecimalFormat getFormat(final String _key)
+    protected DecimalFormat getFormat(final String _key, final String _default)
         throws EFapsException
     {
-        return NumberFormatter.get().getFrmtFromProperties(NumberFormatter.get().getKey(_key), null,
+        return NumberFormatter.get().getFrmtFromProperties(NumberFormatter.get().getKey(_key), NumberFormatter.get().getKey(_default),
                         ERP.RATEFRMT.get());
     }
 

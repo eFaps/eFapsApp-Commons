@@ -176,7 +176,12 @@ public final class ERP
     public static final PropertiesSysConfAttribute RATEFRMT = new PropertiesSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "RateFormatter")
-                    .description(" Set Formatting information for rates")
+                    .description("Set Formatting information for rates")
+                    .addDefaultValue("Rate", "0.000000000000")
+                    .addDefaultValue("RateUI", "0.000")
+                    .addDefaultValue("SaleRate", "0.000000000000")
+                    .addDefaultValue("SaleRateUI", "0.000")
+                    .description("Can be overwritten by using TYPE.Rate, TYPE.SalesRateUI etc.")
                     .concatenate(true);
 
     /** See description. */

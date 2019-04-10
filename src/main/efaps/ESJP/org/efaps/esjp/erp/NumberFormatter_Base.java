@@ -81,10 +81,10 @@ public abstract class NumberFormatter_Base
         throws EFapsException
     {
         final FormatterKey key = getKey(NumberFormatter_Base.TWOFRMTKEY);
-        if (!this.key2formatter.containsKey(key)) {
-            this.key2formatter.put(key, getFormatter(2, 2));
+        if (!key2formatter.containsKey(key)) {
+            key2formatter.put(key, getFormatter(2, 2));
         }
-        return this.key2formatter.get(key);
+        return key2formatter.get(key);
     }
 
     /**
@@ -97,10 +97,10 @@ public abstract class NumberFormatter_Base
         throws EFapsException
     {
         final FormatterKey key = getKey(NumberFormatter_Base.ZEROFRMTKEY);
-        if (!this.key2formatter.containsKey(key)) {
-            this.key2formatter.put(key, getFormatter(0, 0));
+        if (!key2formatter.containsKey(key)) {
+            key2formatter.put(key, getFormatter(0, 0));
         }
-        return this.key2formatter.get(key);
+        return key2formatter.get(key);
     }
 
     /**
@@ -137,10 +137,10 @@ public abstract class NumberFormatter_Base
         throws EFapsException
     {
         final FormatterKey key = getKey(NumberFormatter_Base.FRMTKEY);
-        if (!this.key2formatter.containsKey(key)) {
-            this.key2formatter.put(key, getFormatter(null, null));
+        if (!key2formatter.containsKey(key)) {
+            key2formatter.put(key, getFormatter(null, null));
         }
-        return this.key2formatter.get(key);
+        return key2formatter.get(key);
     }
 
     /**
@@ -241,10 +241,10 @@ public abstract class NumberFormatter_Base
         throws EFapsException
     {
         final FormatterKey key = getKey(_key);
-        if (!this.key2formatter.containsKey(key)) {
+        if (!key2formatter.containsKey(key)) {
             getFrmtFromProperties(key, getKey(_default), ERP.NUMBERFRMT.get());
         }
-        return this.key2formatter.get(key);
+        return key2formatter.get(key);
     }
 
     /**
@@ -261,11 +261,14 @@ public abstract class NumberFormatter_Base
                                                   final Properties _properties)
         throws EFapsException
     {
-        if (!this.key2formatter.containsKey(_key)) {
+        if (!key2formatter.containsKey(_key)) {
             final DecimalFormat frmt;
             if (_properties.containsKey(_key.baseKey)) {
                 frmt = getFormatter(null, null);
                 frmt.applyPattern(_properties.getProperty(_key.baseKey));
+            } else if (_default != null && _properties.containsKey(_default.baseKey)) {
+                frmt = getFormatter(null, null);
+                frmt.applyPattern(_properties.getProperty(_default.baseKey));
             } else {
                 // init
                 getTwoDigitsFormatter();
@@ -274,12 +277,12 @@ public abstract class NumberFormatter_Base
                 if (_default == null) {
                     frmt = getFormatter();
                 } else {
-                    frmt = this.key2formatter.get(_default);
+                    frmt = key2formatter.get(_default);
                 }
             }
-            this.key2formatter.put(_key, frmt);
+            key2formatter.put(_key, frmt);
         }
-        return this.key2formatter.get(_key);
+        return key2formatter.get(_key);
     }
 
     /**
@@ -393,9 +396,9 @@ public abstract class NumberFormatter_Base
                             final String _locale,
                             final String _company)
         {
-            this.baseKey = _baseKey;
-            this.locale = _locale;
-            this.company = _company;
+            baseKey = _baseKey;
+            locale = _locale;
+            company = _company;
         }
 
         @Override
@@ -403,9 +406,9 @@ public abstract class NumberFormatter_Base
         {
             final boolean ret;
             if (_obj instanceof FormatterKey) {
-                ret = this.baseKey.equals(((FormatterKey) _obj).baseKey)
-                                && this.locale.equals(((FormatterKey) _obj).locale)
-                                && this.company.equals(((FormatterKey) _obj).company);
+                ret = baseKey.equals(((FormatterKey) _obj).baseKey)
+                                && locale.equals(((FormatterKey) _obj).locale)
+                                && company.equals(((FormatterKey) _obj).company);
             } else {
                 ret = super.equals(_obj);
             }
@@ -415,7 +418,7 @@ public abstract class NumberFormatter_Base
         @Override
         public int hashCode()
         {
-            return this.baseKey.hashCode() + this.locale.hashCode() + this.company.hashCode();
+            return baseKey.hashCode() + locale.hashCode() + company.hashCode();
         }
 
         @Override

@@ -122,7 +122,7 @@ public abstract class CurrencyPanel_Base
                         map.put("date", current.toString(getDateFormat()));
                         map.put("currency", currencyInst);
                         map.put("value", rateInfo.getRateUI());
-                        map.put("valueFrmt", rateInfo.getRateUIFrmt());
+                        map.put("valueFrmt", rateInfo.getRateUIFrmt(null));
                         current = current.plusDays(1);
                         values.add(map);
                     }
