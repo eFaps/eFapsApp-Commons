@@ -306,6 +306,25 @@ public abstract class Currency_Base
         return ret;
     }
 
+    public BigDecimal evalRate(final Object[] _values,
+                               final boolean _considerInverse,
+                               final Instance _currencyInstance)
+        throws EFapsException
+    {
+        Object[] values;
+        if (_considerInverse) {
+            values = _values;
+            if (_values.length > 2) {
+                values[2] = _currencyInstance.getId();
+            } else {
+                values = ArrayUtils.add(_values, _currencyInstance.getId());
+            }
+        } else {
+            values = _values;
+        }
+        return evalRate(values, _considerInverse);
+    }
+
     /**
      * Evaluate a rate object from the database.
      * @param _values           a rate value from the eFaps Database
@@ -517,10 +536,11 @@ public abstract class Currency_Base
         multi.execute();
         RateInfo ret = new RateInfo();
         if (multi.next()) {
+            final Instance currencyInstance = multi.<Instance>getSelect(sel);
             ret.setRate(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateAbstract.Rate), false));
-            ret.setRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateAbstract.Rate), true));
+            ret.setRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateAbstract.Rate), true, currencyInstance));
             ret.setSaleRate(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateAbstract.RateSale), false));
-            ret.setSaleRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateAbstract.RateSale), true));
+            ret.setSaleRateUI(evalRate(multi.<Object[]>getAttribute(CIERP.CurrencyRateAbstract.RateSale), true, currencyInstance));
             ret.setCurrencyInstance(multi.<Instance>getSelect(sel));
         } else {
             ret = RateInfo.getDummyRateInfo();
