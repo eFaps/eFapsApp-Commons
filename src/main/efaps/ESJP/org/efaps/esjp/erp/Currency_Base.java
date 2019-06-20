@@ -19,6 +19,7 @@ package org.efaps.esjp.erp;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -751,6 +752,78 @@ public abstract class Currency_Base
         }
         return ret;
     }
+
+    protected static BigDecimal convert(final Parameter _parameter,
+                                     final BigDecimal _amount,
+                                     final Instance _fromCurrencyInstance,
+                                     final Instance _toCurrencyInstance,
+                                     final String _rateKey)
+        throws EFapsException
+    {
+        return Currency_Base.convert(_parameter, _amount, _fromCurrencyInstance, _toCurrencyInstance, _rateKey, LocalDate.now());
+    }
+
+    /**
+     * Convert a given amount from one Currency into another by converting first the amount
+     * into a amount in the system base currency and form the base currency into the final currency.
+     *
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _fromAmount the original amount to be converted
+     * @param _fromCurrencyInstance the currency the original amount is in
+     * @param _toCurrencyInstance the currency the amount will be converted into
+     * @param _rateKey key that defines if Sales rate or buy rate will apply
+     * @param _date date the exchange rates will be evaluated for
+     * @return converted amount
+     * @throws EFapsException on error
+     */
+    protected static BigDecimal convert(final Parameter _parameter,
+                                        final BigDecimal _fromAmount,
+                                        final Instance _fromCurrencyInstance,
+                                        final Instance _toCurrencyInstance,
+                                        final String _rateKey,
+                                        final LocalDate _date)
+        throws EFapsException
+    {
+        final BigDecimal ret;
+        if (_fromCurrencyInstance.equals(_toCurrencyInstance)) {
+            ret = _fromAmount;
+        } else {
+            final DateTime date = new DateTime()
+                            .withYear(_date.getYear())
+                            .withMonthOfYear(_date.getMonthValue())
+                            .withDayOfMonth(_date.getDayOfMonth())
+                            .withTimeAtStartOfDay();
+
+            final RateInfo fromRateInfo = new Currency().evaluateRateInfo(_parameter, date, _fromCurrencyInstance);
+            final CurrencyInst fromCurInst = CurrencyInst.get(_fromCurrencyInstance);
+
+            final BigDecimal baseAmount;
+            // the standard conversion to base currency is done by dividing by rate, inverted ones are multiplied by RateUI
+            if (fromCurInst.isInvert()) {
+                final BigDecimal fromRate = RateInfo.getRateUI(_parameter, fromRateInfo, _rateKey);
+                baseAmount = _fromAmount.setScale(fromRateInfo.getScale(), RoundingMode.HALF_UP).multiply(fromRate);
+            } else {
+                final BigDecimal fromRate = RateInfo.getRate(_parameter, fromRateInfo, _rateKey);
+                baseAmount = _fromAmount.setScale(fromRateInfo.getScale(), RoundingMode.HALF_UP)
+                                .divide(fromRate, RoundingMode.HALF_UP);
+            }
+
+            final RateInfo toRateInfo = new Currency().evaluateRateInfo(_parameter, date, _toCurrencyInstance);
+            final CurrencyInst toCurInst = CurrencyInst.get(_toCurrencyInstance);
+            // the standard conversion from base currency into any other currency is done by multiplying by rate,
+            // inverted ones are divided by RateUI
+            if (toCurInst.isInvert()) {
+                final BigDecimal toRate = RateInfo.getRateUI(_parameter, toRateInfo, _rateKey);
+                ret = baseAmount.setScale(fromRateInfo.getScale(), RoundingMode.HALF_UP)
+                        .divide(toRate, RoundingMode.HALF_UP);
+            } else {
+                final BigDecimal toRate = RateInfo.getRate(_parameter, toRateInfo, _rateKey);
+                ret = baseAmount.multiply(toRate);
+            }
+        }
+        return ret;
+    }
+
 
     /**
      * @return Set of available CurrencyInst

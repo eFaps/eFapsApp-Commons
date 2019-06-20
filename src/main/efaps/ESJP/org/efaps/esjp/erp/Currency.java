@@ -18,6 +18,7 @@
 package org.efaps.esjp.erp;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collection;
 
 import org.efaps.admin.event.Parameter;
@@ -97,5 +98,26 @@ public class Currency
         throws EFapsException
     {
         return Currency_Base.getAvailable();
+    }
+
+    public static BigDecimal convert(final Parameter _parameter,
+                                     final BigDecimal _amount,
+                                     final Instance _fromCurrencyInstance,
+                                     final Instance _toCurrencyInstance,
+                                     final String _rateKey)
+        throws EFapsException
+    {
+        return Currency_Base.convert(_parameter, _amount, _fromCurrencyInstance, _toCurrencyInstance, _rateKey);
+    }
+
+    public static BigDecimal convert(final Parameter _parameter,
+                                     final BigDecimal _amount,
+                                     final Instance _fromCurrencyInstance,
+                                     final Instance _toCurrencyInstance,
+                                     final String _rateKey,
+                                     final LocalDate _date)
+        throws EFapsException
+    {
+        return Currency_Base.convert(_parameter, _amount, _fromCurrencyInstance, _toCurrencyInstance, _rateKey,_date);
     }
 }
