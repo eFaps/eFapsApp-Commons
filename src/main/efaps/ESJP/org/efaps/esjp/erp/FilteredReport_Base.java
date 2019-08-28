@@ -32,6 +32,21 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
+import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
+import net.sf.dynamicreports.report.base.expression.AbstractSimpleExpression;
+import net.sf.dynamicreports.report.builder.DynamicReports;
+import net.sf.dynamicreports.report.builder.VariableBuilder;
+import net.sf.dynamicreports.report.builder.column.ColumnBuilder;
+import net.sf.dynamicreports.report.builder.column.ComponentColumnBuilder;
+import net.sf.dynamicreports.report.builder.column.ValueColumnBuilder;
+import net.sf.dynamicreports.report.builder.component.GenericElementBuilder;
+import net.sf.dynamicreports.report.builder.expression.AbstractComplexExpression;
+import net.sf.dynamicreports.report.builder.group.GroupBuilder;
+import net.sf.dynamicreports.report.builder.subtotal.AggregationSubtotalBuilder;
+import net.sf.dynamicreports.report.builder.subtotal.CustomSubtotalBuilder;
+import net.sf.dynamicreports.report.constant.Calculation;
+import net.sf.dynamicreports.report.definition.ReportParameters;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -68,6 +83,7 @@ import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.esjp.ci.CIERP;
+import org.efaps.esjp.common.datetime.DateAndTimeUtils;
 import org.efaps.esjp.common.datetime.JodaTimeUtils;
 import org.efaps.esjp.common.jasperreport.AbstractCachedReport;
 import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
@@ -85,21 +101,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
-import net.sf.dynamicreports.report.base.expression.AbstractSimpleExpression;
-import net.sf.dynamicreports.report.builder.DynamicReports;
-import net.sf.dynamicreports.report.builder.VariableBuilder;
-import net.sf.dynamicreports.report.builder.column.ColumnBuilder;
-import net.sf.dynamicreports.report.builder.column.ComponentColumnBuilder;
-import net.sf.dynamicreports.report.builder.column.ValueColumnBuilder;
-import net.sf.dynamicreports.report.builder.component.GenericElementBuilder;
-import net.sf.dynamicreports.report.builder.expression.AbstractComplexExpression;
-import net.sf.dynamicreports.report.builder.group.GroupBuilder;
-import net.sf.dynamicreports.report.builder.subtotal.AggregationSubtotalBuilder;
-import net.sf.dynamicreports.report.builder.subtotal.CustomSubtotalBuilder;
-import net.sf.dynamicreports.report.constant.Calculation;
-import net.sf.dynamicreports.report.definition.ReportParameters;
 
 /**
  * @author The eFaps Team
@@ -179,7 +180,7 @@ public abstract class FilteredReport_Base
             final String[] value = _default.split(":");
             final Properties props = new Properties();
             props.setProperty(value[0], value.length > 1 ? value[1] : "");
-            ret = JodaTimeUtils.getDefaultvalue(_parameter, props);
+            ret = JodaTimeUtils.toDateTime(DateAndTimeUtils.getDefaultValue(_parameter, props));
         } else if ("Type".equalsIgnoreCase(_type)) {
             final Set<Long> set = new HashSet<>();
             if ("ALL".equals(_default)) {
@@ -971,18 +972,22 @@ public abstract class FilteredReport_Base
      * @param _field field the value is wanted for
      * @param _oldFilter old filter
      * @return object
+     * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
     protected Object getFilterValue(final Parameter _parameter,
                                     final Field _field,
                                     final Map<String, Object> _oldFilter)
+        throws EFapsException
     {
         final Object obj;
         final String val = _parameter.getParameterValue(_field.getName());
         final String[] values = _parameter.getParameterValues(_field.getName());
         final IUIProvider uiProvider = _field.getUIProvider();
-        if (uiProvider instanceof DateTimeUI || uiProvider instanceof DateUI) {
+        if (uiProvider instanceof DateTimeUI) {
             obj = new DateTime(val);
+        } else if (uiProvider instanceof DateUI) {
+            obj = JodaTimeUtils.toDateTime(DateAndTimeUtils.getDateForQuery(val));
         } else if (uiProvider instanceof BooleanUI) {
             obj = BooleanUtils.toBoolean(val);
         } else if ("currency".equals(_field.getName())) {
@@ -1806,7 +1811,7 @@ public abstract class FilteredReport_Base
          */
         public String getClassName()
         {
-            return this.className;
+            return className;
         }
 
         /**
@@ -1817,7 +1822,7 @@ public abstract class FilteredReport_Base
          */
         public GroupByFilterValue setClassName(final String _className)
         {
-            this.className = _className;
+            className = _className;
             return this;
         }
     }
@@ -1885,20 +1890,20 @@ public abstract class FilteredReport_Base
         public InstanceOption(final String _value,
                               final String _label)
         {
-            this.label = _label;
-            this.value = _value;
+            label = _label;
+            value = _value;
         }
 
         @Override
         public String getLabel()
         {
-            return this.label;
+            return label;
         }
 
         @Override
         public Object getValue()
         {
-            return this.value;
+            return value;
         }
 
         @Override
