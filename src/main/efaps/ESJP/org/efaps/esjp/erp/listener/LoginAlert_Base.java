@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2019 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
@@ -34,6 +36,8 @@ import org.efaps.esjp.erp.CurrencyInst;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.pages.login.LoginPage;
+import org.efaps.ui.wicket.util.Configuration;
+import org.efaps.ui.wicket.util.Configuration.ConfigAttribute;
 import org.efaps.util.EFapsException;
 import org.efaps.util.UUIDUtil;
 import org.joda.time.DateTime;
@@ -95,7 +99,7 @@ public abstract class LoginAlert_Base
                     }
                 } else {
                     final Collection<String> warnRoles = PropertiesUtil.analyseProperty(props, "Warn4Role", 0).values();
-                    final boolean warn = false;
+                    boolean warn = false;
                     for (final String roleStr : warnRoles) {
                         final Role role;
                         if (UUIDUtil.isUUID(roleStr)) {
@@ -104,7 +108,7 @@ public abstract class LoginAlert_Base
                             role = Role.get(roleStr);
                         }
                         if (role.isAssigned()) {
-                            force = true;
+                            warn = true;
                             break;
                         }
                     }
@@ -129,8 +133,14 @@ public abstract class LoginAlert_Base
     public void onClose()
     {
         if (isLogout()) {
+            final String url = Configuration.getAttribute(ConfigAttribute.LOGOUT_URL);
+            if (StringUtils.isEmpty(url)) {
+                throw new RestartResponseException(LoginPage.class);
+            }
             EFapsSession.get().logout();
-            throw new RestartResponseException(LoginPage.class);
+            if (StringUtils.isNotEmpty(url)) {
+                throw new RedirectToUrlException(url);
+            }
         }
     }
 
@@ -147,7 +157,7 @@ public abstract class LoginAlert_Base
      */
     protected boolean isLogout()
     {
-        return this.logout;
+        return logout;
     }
 
     /**
@@ -157,6 +167,6 @@ public abstract class LoginAlert_Base
      */
     protected void setLogout(final boolean _logout)
     {
-        this.logout = _logout;
+        logout = _logout;
     }
 }
