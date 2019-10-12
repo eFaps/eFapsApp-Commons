@@ -359,7 +359,7 @@ public abstract class Currency_Base
         }
         return numerator.divide(denominator,
                            numerator.scale() > denominator.scale() ? numerator.scale() : denominator.scale(),
-                           BigDecimal.ROUND_UP);
+                           RoundingMode.HALF_UP);
     }
 
     /**
@@ -478,9 +478,9 @@ public abstract class Currency_Base
             curr2tar.setCurrencyInstance(_currentCurrencyInst);
             curr2tar.setTargetCurrencyInstance(_targetCurrencyInst);
 
-            curr2tar.setRate(currentRateInfo.getRate().divide(targetRateInfo.getRate(), BigDecimal.ROUND_HALF_UP));
+            curr2tar.setRate(currentRateInfo.getRate().divide(targetRateInfo.getRate(), RoundingMode.HALF_UP));
             curr2tar.setSaleRate(currentRateInfo.getSaleRate().divide(targetRateInfo.getSaleRate(),
-                            BigDecimal.ROUND_HALF_UP));
+                            RoundingMode.HALF_UP));
 
             if (curr2tar.isInvert()) {
                 curr2tar.setRateUI(currentRateInfo.getRateUI().multiply(targetRateInfo.getRateUI()));

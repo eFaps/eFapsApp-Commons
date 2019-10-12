@@ -130,7 +130,7 @@ public abstract class RateInfo_Base
      */
     public BigDecimal getRate()
     {
-        return rate.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
+        return rate.setScale(getScale(), RoundingMode.HALF_DOWN);
     }
 
     /**
@@ -140,7 +140,7 @@ public abstract class RateInfo_Base
      */
     public BigDecimal getRateUI()
     {
-        return rateUI.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
+        return rateUI.setScale(getScale(), RoundingMode.HALF_DOWN);
     }
 
     /**
@@ -150,7 +150,7 @@ public abstract class RateInfo_Base
      */
     public BigDecimal getSaleRate()
     {
-        return saleRate.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
+        return saleRate.setScale(getScale(), RoundingMode.HALF_DOWN);
     }
 
     /**
@@ -170,7 +170,7 @@ public abstract class RateInfo_Base
      */
     public BigDecimal getSaleRateUI()
     {
-        return saleRateUI.setScale(getScale(), BigDecimal.ROUND_HALF_DOWN);
+        return saleRateUI.setScale(getScale(), RoundingMode.HALF_DOWN);
     }
 
     /**

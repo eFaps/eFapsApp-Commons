@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -421,7 +422,7 @@ public abstract class CommonDocument_Base
                     }
                 }
             }
-            ret.put(ReturnValues.VALUES, ((BigDecimal) object).setScale(scale, BigDecimal.ROUND_HALF_UP));
+            ret.put(ReturnValues.VALUES, ((BigDecimal) object).setScale(scale, RoundingMode.HALF_UP));
         }
         return ret;
     }
@@ -459,7 +460,7 @@ public abstract class CommonDocument_Base
                             // nothing must be done at all
                             Field_Base.LOG.error("Catched error", e);
                         }
-                        pos = new DropDownPosition(_value, _option).setSelected(new Long(persId).equals(_value));
+                        pos = new DropDownPosition(_value, _option).setSelected(Long.valueOf(persId).equals(_value));
                     } else {
                         pos = super.getDropDownPosition(_parameter, _value, _option);
                     }
@@ -1663,7 +1664,7 @@ public abstract class CommonDocument_Base
          */
         public CreatedDoc(final Instance _instance)
         {
-            this.instance = _instance;
+            instance = _instance;
         }
 
         /**
@@ -1673,7 +1674,7 @@ public abstract class CommonDocument_Base
          */
         public Map<String, Object> getValues()
         {
-            return this.values;
+            return values;
         }
 
         /**
@@ -1684,7 +1685,7 @@ public abstract class CommonDocument_Base
          */
         public Object getValue(final String _key)
         {
-            return this.values.get(_key);
+            return values.get(_key);
         }
 
         /**
@@ -1696,7 +1697,7 @@ public abstract class CommonDocument_Base
         public void addValue(final String _key,
                              final Object _value)
         {
-            this.values.put(_key, _value);
+            values.put(_key, _value);
         }
 
         /**
@@ -1706,7 +1707,7 @@ public abstract class CommonDocument_Base
          */
         public Instance getInstance()
         {
-            return this.instance;
+            return instance;
         }
 
         /**
@@ -1717,7 +1718,7 @@ public abstract class CommonDocument_Base
 
         public void setInstance(final Instance _instance)
         {
-            this.instance = _instance;
+            instance = _instance;
         }
 
         /**
@@ -1727,7 +1728,7 @@ public abstract class CommonDocument_Base
          */
         public List<Instance> getPositions()
         {
-            return this.positions;
+            return positions;
         }
 
         /**
@@ -1737,7 +1738,7 @@ public abstract class CommonDocument_Base
          */
         public void addPosition(final Instance _instance)
         {
-            this.positions.add(_instance);
+            positions.add(_instance);
         }
     }
 
