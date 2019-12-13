@@ -525,10 +525,12 @@ public abstract class Currency_Base
                                      final Instance _currentCurrencyInst)
         throws EFapsException
     {
+        final DateTime date = _date.toLocalDate().toDateTimeAtStartOfDay();
+
         final QueryBuilder queryBldr = new QueryBuilder(getType4ExchangeRate(_parameter));
         queryBldr.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.CurrencyLink, _currentCurrencyInst.getId());
-        queryBldr.addWhereAttrLessValue(CIERP.CurrencyRateAbstract.ValidFrom, _date.plusSeconds(1));
-        queryBldr.addWhereAttrGreaterValue(CIERP.CurrencyRateAbstract.ValidUntil, _date.minusSeconds(1));
+        queryBldr.addWhereAttrLessValue(CIERP.CurrencyRateAbstract.ValidFrom, date.plusSeconds(1));
+        queryBldr.addWhereAttrGreaterValue(CIERP.CurrencyRateAbstract.ValidUntil, date.minusSeconds(1));
 
         final CachedMultiPrintQuery multi = queryBldr.getCachedPrint(Currency_Base.CACHEKEY4RATE);
         final SelectBuilder sel = SelectBuilder.get().linkto(CIERP.CurrencyRateAbstract.CurrencyLink).instance();
