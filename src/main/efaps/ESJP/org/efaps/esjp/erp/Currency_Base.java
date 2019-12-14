@@ -359,7 +359,7 @@ public abstract class Currency_Base
         }
         return numerator.divide(denominator,
                            numerator.scale() > denominator.scale() ? numerator.scale() : denominator.scale(),
-                           BigDecimal.ROUND_UP);
+                           RoundingMode.HALF_UP);
     }
 
     /**
@@ -478,9 +478,9 @@ public abstract class Currency_Base
             curr2tar.setCurrencyInstance(_currentCurrencyInst);
             curr2tar.setTargetCurrencyInstance(_targetCurrencyInst);
 
-            curr2tar.setRate(currentRateInfo.getRate().divide(targetRateInfo.getRate(), BigDecimal.ROUND_HALF_UP));
+            curr2tar.setRate(currentRateInfo.getRate().divide(targetRateInfo.getRate(), RoundingMode.HALF_UP));
             curr2tar.setSaleRate(currentRateInfo.getSaleRate().divide(targetRateInfo.getSaleRate(),
-                            BigDecimal.ROUND_HALF_UP));
+                            RoundingMode.HALF_UP));
 
             if (curr2tar.isInvert()) {
                 curr2tar.setRateUI(currentRateInfo.getRateUI().multiply(targetRateInfo.getRateUI()));
@@ -525,10 +525,12 @@ public abstract class Currency_Base
                                      final Instance _currentCurrencyInst)
         throws EFapsException
     {
+        final DateTime date = _date.toLocalDate().toDateTimeAtStartOfDay();
+
         final QueryBuilder queryBldr = new QueryBuilder(getType4ExchangeRate(_parameter));
         queryBldr.addWhereAttrEqValue(CIERP.CurrencyRateAbstract.CurrencyLink, _currentCurrencyInst.getId());
-        queryBldr.addWhereAttrLessValue(CIERP.CurrencyRateAbstract.ValidFrom, _date.plusSeconds(1));
-        queryBldr.addWhereAttrGreaterValue(CIERP.CurrencyRateAbstract.ValidUntil, _date.minusSeconds(1));
+        queryBldr.addWhereAttrLessValue(CIERP.CurrencyRateAbstract.ValidFrom, date.plusSeconds(1));
+        queryBldr.addWhereAttrGreaterValue(CIERP.CurrencyRateAbstract.ValidUntil, date.minusSeconds(1));
 
         final CachedMultiPrintQuery multi = queryBldr.getCachedPrint(Currency_Base.CACHEKEY4RATE);
         final SelectBuilder sel = SelectBuilder.get().linkto(CIERP.CurrencyRateAbstract.CurrencyLink).instance();

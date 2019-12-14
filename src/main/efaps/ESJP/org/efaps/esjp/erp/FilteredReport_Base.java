@@ -32,21 +32,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
-import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
-import net.sf.dynamicreports.report.base.expression.AbstractSimpleExpression;
-import net.sf.dynamicreports.report.builder.DynamicReports;
-import net.sf.dynamicreports.report.builder.VariableBuilder;
-import net.sf.dynamicreports.report.builder.column.ColumnBuilder;
-import net.sf.dynamicreports.report.builder.column.ComponentColumnBuilder;
-import net.sf.dynamicreports.report.builder.column.ValueColumnBuilder;
-import net.sf.dynamicreports.report.builder.component.GenericElementBuilder;
-import net.sf.dynamicreports.report.builder.expression.AbstractComplexExpression;
-import net.sf.dynamicreports.report.builder.group.GroupBuilder;
-import net.sf.dynamicreports.report.builder.subtotal.AggregationSubtotalBuilder;
-import net.sf.dynamicreports.report.builder.subtotal.CustomSubtotalBuilder;
-import net.sf.dynamicreports.report.constant.Calculation;
-import net.sf.dynamicreports.report.definition.ReportParameters;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -101,6 +86,21 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
+import net.sf.dynamicreports.report.base.expression.AbstractSimpleExpression;
+import net.sf.dynamicreports.report.builder.DynamicReports;
+import net.sf.dynamicreports.report.builder.VariableBuilder;
+import net.sf.dynamicreports.report.builder.column.ColumnBuilder;
+import net.sf.dynamicreports.report.builder.column.ComponentColumnBuilder;
+import net.sf.dynamicreports.report.builder.column.ValueColumnBuilder;
+import net.sf.dynamicreports.report.builder.component.GenericElementBuilder;
+import net.sf.dynamicreports.report.builder.expression.AbstractComplexExpression;
+import net.sf.dynamicreports.report.builder.group.GroupBuilder;
+import net.sf.dynamicreports.report.builder.subtotal.AggregationSubtotalBuilder;
+import net.sf.dynamicreports.report.builder.subtotal.CustomSubtotalBuilder;
+import net.sf.dynamicreports.report.constant.Calculation;
+import net.sf.dynamicreports.report.definition.ReportParameters;
 
 /**
  * @author The eFaps Team
@@ -541,7 +541,7 @@ public abstract class FilteredReport_Base
 
         final Map<String, Object> map = getFilterMap(_parameter);
         if (!map.containsKey(key)) {
-            map.put(key, StringUtils.endsWith(key, "_negate") ? new Boolean(false) : new Boolean(true));
+            map.put(key, StringUtils.endsWith(key, "_negate") ? Boolean.valueOf(false) : Boolean.valueOf(true));
         }
         ret.put(ReturnValues.VALUES, map.get(key));
         return ret;

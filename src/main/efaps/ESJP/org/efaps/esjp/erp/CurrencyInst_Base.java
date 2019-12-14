@@ -91,7 +91,7 @@ public abstract class CurrencyInst_Base
      */
     public CurrencyInst_Base(final Instance _instance)
     {
-        this.instance = _instance;
+        instance = _instance;
     }
 
     /**
@@ -101,7 +101,7 @@ public abstract class CurrencyInst_Base
      */
     public Instance getInstance()
     {
-        return this.instance;
+        return instance;
     }
 
     /**
@@ -114,7 +114,7 @@ public abstract class CurrencyInst_Base
         throws EFapsException
     {
         initialize();
-        return this.symbol;
+        return symbol;
     }
 
     /**
@@ -125,17 +125,17 @@ public abstract class CurrencyInst_Base
     private void initialize()
         throws EFapsException
     {
-        if (!this.initialized) {
-            final PrintQuery print = new CachedPrintQuery(this.instance).setLifespan(1).setLifespanUnit(TimeUnit.HOURS);
+        if (!initialized) {
+            final PrintQuery print = new CachedPrintQuery(instance).setLifespan(1).setLifespanUnit(TimeUnit.HOURS);
             print.addAttribute(CIERP.Currency.Symbol, CIERP.Currency.Name, CIERP.Currency.Invert, CIERP.Currency.UUID,
                             CIERP.Currency.ISOCode);
             print.execute();
-            this.symbol = print.<String>getAttribute(CIERP.Currency.Symbol);
-            this.name = print.<String>getAttribute(CIERP.Currency.Name);
-            this.invert = print.<Boolean>getAttribute(CIERP.Currency.Invert);
-            this.uuid = UUID.fromString(print.<String>getAttribute(CIERP.Currency.UUID));
-            this.isoCode =  print.<String>getAttribute(CIERP.Currency.ISOCode);
-            this.initialized = true;
+            symbol = print.<String>getAttribute(CIERP.Currency.Symbol);
+            name = print.<String>getAttribute(CIERP.Currency.Name);
+            invert = print.<Boolean>getAttribute(CIERP.Currency.Invert);
+            uuid = UUID.fromString(print.<String>getAttribute(CIERP.Currency.UUID));
+            isoCode =  print.<String>getAttribute(CIERP.Currency.ISOCode);
+            initialized = true;
         }
     }
 
@@ -147,7 +147,7 @@ public abstract class CurrencyInst_Base
 
     public void setSymbol(final String _symbol)
     {
-        this.symbol = _symbol;
+        symbol = _symbol;
     }
 
     /**
@@ -160,7 +160,7 @@ public abstract class CurrencyInst_Base
         throws EFapsException
     {
         initialize();
-        return this.name;
+        return name;
     }
 
     /**
@@ -171,7 +171,7 @@ public abstract class CurrencyInst_Base
 
     public void setName(final String _name)
     {
-        this.name = _name;
+        name = _name;
     }
 
     /**
@@ -184,7 +184,7 @@ public abstract class CurrencyInst_Base
         throws EFapsException
     {
         initialize();
-        return this.invert;
+        return invert;
     }
 
     /**
@@ -195,7 +195,7 @@ public abstract class CurrencyInst_Base
 
     public void setInvert(final boolean _invert)
     {
-        this.invert = _invert;
+        invert = _invert;
     }
 
     /**
@@ -205,7 +205,7 @@ public abstract class CurrencyInst_Base
      */
     public boolean isInitialized()
     {
-        return this.initialized;
+        return initialized;
     }
 
     /**
@@ -215,7 +215,7 @@ public abstract class CurrencyInst_Base
      */
     public void setInitialized(final boolean _initialized)
     {
-        this.initialized = _initialized;
+        initialized = _initialized;
     }
 
     /**
@@ -228,7 +228,7 @@ public abstract class CurrencyInst_Base
         throws EFapsException
     {
         initialize();
-        return this.uuid;
+        return uuid;
     }
 
     /**
@@ -238,7 +238,7 @@ public abstract class CurrencyInst_Base
      */
     public void setUUID(final UUID _uuid)
     {
-        this.uuid = _uuid;
+        uuid = _uuid;
     }
 
     /**
@@ -251,7 +251,7 @@ public abstract class CurrencyInst_Base
         throws EFapsException
     {
         initialize();
-        return this.isoCode;
+        return isoCode;
     }
 
     /**
@@ -261,7 +261,7 @@ public abstract class CurrencyInst_Base
      */
     public void setISOCode(final String _iSOCode)
     {
-        this.isoCode = _iSOCode;
+        isoCode = _iSOCode;
     }
 
     /**
@@ -363,10 +363,10 @@ public abstract class CurrencyInst_Base
     {
         final Set<CurrencyInst> ret = new LinkedHashSet<>();
         final QueryBuilder queryBldr = new QueryBuilder(CIERP.Currency);
-        final CachedInstanceQuery query = queryBldr.getCachedQuery(QueryCache.DEFAULTKEY)
-                        .setLifespan(1).setLifespanUnit(TimeUnit.HOURS);
         queryBldr.addWhereAttrEqValue(CIERP.Currency.Status, Status.find(CIERP.CurrencyStatus.Active));
         queryBldr.addOrderByAttributeAsc(CIERP.Currency.ISOCode);
+        final CachedInstanceQuery query = queryBldr.getCachedQuery(QueryCache.DEFAULTKEY)
+                        .setLifespan(1).setLifespanUnit(TimeUnit.HOURS);
         query.executeWithoutAccessCheck();
         while (query.next()) {
             ret.add(new CurrencyInst(query.getCurrentValue()));

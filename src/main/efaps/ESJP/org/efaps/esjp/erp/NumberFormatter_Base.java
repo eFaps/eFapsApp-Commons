@@ -54,17 +54,17 @@ public abstract class NumberFormatter_Base
     /**
      * Key for basic formatter.
      */
-    private static String FRMTKEY = NumberFormatter.class.getName() + ".Formatter";
+    public static String FRMTKEY = NumberFormatter.class.getName() + ".Formatter";
 
     /**
      * Key for basic formatter.
      */
-    private static String TWOFRMTKEY = NumberFormatter.class.getName() + ".TwoDigitsFormatter";
+    public static String TWOFRMTKEY = NumberFormatter.class.getName() + ".TwoDigitsFormatter";
 
     /**
      * Key for basic formatter.
      */
-    private static String ZEROFRMTKEY = NumberFormatter.class.getName() + ".ZeroDigitsFormatter";
+    public static String ZEROFRMTKEY = NumberFormatter.class.getName() + ".ZeroDigitsFormatter";
 
     /**
      * Formatter mapping.
