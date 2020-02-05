@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
@@ -143,59 +144,34 @@ public abstract class NumberFormatter_Base
         return key2formatter.get(key);
     }
 
-    /**
-     * @param _type TypeName
-     * @return DecimalFormat
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getFrmt4UnitPrice(final String _type)
+    public DecimalFormat getFrmt4UnitPrice(final Type _type)
         throws EFapsException
     {
-        return getFrmtFromSysConf(_type + ".Frmt4UnitPrice", NumberFormatter_Base.TWOFRMTKEY);
+        return evalFrmt(_type, FrmtKey.UNITPRICE);
     }
 
-    /**
-     * @param _type TypeName
-     * @return DecimalFormat
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getFrmt4Quantity(final String _type)
+    public DecimalFormat getFrmt4Quantity(final Type _type)
         throws EFapsException
     {
-        return getFrmtFromSysConf(_type + ".Frmt4Quantity", NumberFormatter_Base.ZEROFRMTKEY);
+        return evalFrmt(_type, FrmtKey.QUANTITY);
     }
 
-    /**
-     * @param _type TypeName
-     * @return DecimalFormat
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getFrmt4Tax(final String _type)
+    public DecimalFormat getFrmt4Tax(final Type _type)
         throws EFapsException
     {
-        return getFrmtFromSysConf(_type + ".Frmt4Tax", NumberFormatter_Base.TWOFRMTKEY);
+        return evalFrmt(_type, FrmtKey.TAX);
     }
 
-    /**
-     * @param _type TypeName
-     * @return DecimalFormat
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getFrmt4Total(final String _type)
+    public DecimalFormat getFrmt4Total(final Type _type)
         throws EFapsException
     {
-        return getFrmtFromSysConf(_type + ".Frmt4Total", NumberFormatter_Base.TWOFRMTKEY);
+        return evalFrmt(_type, FrmtKey.TOTAL);
     }
 
-    /**
-     * @param _type TypeName
-     * @return DecimalFormat
-     * @throws EFapsException on error
-     */
-    public DecimalFormat getFrmt4Discount(final String _type)
+    public DecimalFormat getFrmt4Discount(final Type _type)
         throws EFapsException
     {
-        return getFrmtFromSysConf(_type + ".Frmt4Discount", NumberFormatter_Base.TWOFRMTKEY);
+        return evalFrmt(_type, FrmtKey.DISCOUNT);
     }
 
     /**
@@ -211,6 +187,13 @@ public abstract class NumberFormatter_Base
         throws EFapsException
     {
         return getFrmtFromSysConf(_type + "." + _key, NumberFormatter_Base.TWOFRMTKEY);
+    }
+
+    public DecimalFormat getFrmt(final String _prefix,
+                                 final FrmtKey _frmtKey)
+        throws EFapsException
+    {
+        return getFrmtFromSysConf(_prefix + "." + _frmtKey.key, _frmtKey.defaultKey);
     }
 
     /**
@@ -283,6 +266,32 @@ public abstract class NumberFormatter_Base
             key2formatter.put(_key, frmt);
         }
         return key2formatter.get(_key);
+    }
+
+    protected boolean hasFrmt(final FormatterKey _key)
+        throws EFapsException
+    {
+        return key2formatter.containsKey(_key) || ERP.NUMBERFRMT.get().containsKey(_key.baseKey);
+    }
+
+    protected DecimalFormat evalFrmt(final Type _type,
+                                     final FrmtKey _frmtKey)
+        throws EFapsException
+    {
+        DecimalFormat ret = null;
+        Type currentType = _type;
+        while (ret == null && currentType != null) {
+            final String currentKey = currentType.getName() + "." + _frmtKey.key;
+            if (hasFrmt(getKey(currentKey))) {
+                ret = getFrmtFromSysConf(currentKey, _frmtKey.defaultKey);
+            } else {
+                currentType = currentType.getParentType();
+            }
+        }
+        if (ret == null) {
+            ret = getFrmtFromSysConf(_type.getName() + "." + _frmtKey.key, _frmtKey.defaultKey);
+        }
+        return ret;
     }
 
     /**
@@ -425,6 +434,25 @@ public abstract class NumberFormatter_Base
         public String toString()
         {
             return ToStringBuilder.reflectionToString(this);
+        }
+    }
+
+    public enum FrmtKey
+    {
+        UNITPRICE("Frmt4UnitPrice", NumberFormatter_Base.TWOFRMTKEY),
+        TOTAL("Frmt4Total", NumberFormatter_Base.TWOFRMTKEY),
+        QUANTITY("Frmt4Quantity", NumberFormatter_Base.ZEROFRMTKEY),
+        TAX("Frmt4Tax", NumberFormatter_Base.TWOFRMTKEY),
+        DISCOUNT("Frmt4Discount", NumberFormatter_Base.TWOFRMTKEY);
+
+        public String key;
+        public String defaultKey;
+
+        FrmtKey(final String _key,
+                final String _defaultKey)
+        {
+            key = _key;
+            defaultKey = _defaultKey;
         }
     }
 }

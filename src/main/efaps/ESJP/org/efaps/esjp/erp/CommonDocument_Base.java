@@ -392,13 +392,13 @@ public abstract class CommonDocument_Base
                 final String frmtKey = getProperty(_parameter, "Formatter");
                 final DecimalFormat formatter;
                 if ("total".equalsIgnoreCase(frmtKey)) {
-                    formatter = NumberFormatter.get().getFrmt4Total(type.getName());
+                    formatter = NumberFormatter.get().getFrmt4Total(type);
                 } else if ("discount".equalsIgnoreCase(frmtKey)) {
-                    formatter = NumberFormatter.get().getFrmt4Discount(type.getName());
+                    formatter = NumberFormatter.get().getFrmt4Discount(type);
                 } else if ("quantity".equalsIgnoreCase(frmtKey)) {
-                    formatter = NumberFormatter.get().getFrmt4Quantity(type.getName());
+                    formatter = NumberFormatter.get().getFrmt4Quantity(type);
                 } else if ("unit".equalsIgnoreCase(frmtKey)) {
-                    formatter = NumberFormatter.get().getFrmt4UnitPrice(type.getName());
+                    formatter = NumberFormatter.get().getFrmt4UnitPrice(type);
                 } else if (frmtKey != null) {
                     formatter = NumberFormatter.get().getFrmt4Key(type.getName(), frmtKey);
                 } else {
@@ -748,7 +748,6 @@ public abstract class CommonDocument_Base
      * @param _extraParameter the extra parameter
      * @return StringBuilder containing the javascript
      */
-    @SuppressWarnings("checkstyle:ParameterNumber")
     protected StringBuilder getTableAddNewRowsScript(final Parameter _parameter,
                                                      final String _tableName,
                                                      final Collection<Map<String, Object>> _values,
