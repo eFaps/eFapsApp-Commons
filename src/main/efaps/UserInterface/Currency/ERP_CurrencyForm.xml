@@ -39,6 +39,13 @@
             <property name="Attribute">ISOCode</property>
             <property name="Required">true</property>
         </field>
+         <field name="isoNumber">
+            <property name="ModeCreate">EDITABLE</property>
+            <property name="ModeEdit">EDITABLE</property>
+            <property name="ModeSearch">EDITABLE</property>
+            <property name="Attribute">ISONumber</property>
+            <property name="Required">true</property>
+        </field>
         <field name="symbol">
             <property name="ModeCreate">EDITABLE</property>
             <property name="ModeEdit">EDITABLE</property>

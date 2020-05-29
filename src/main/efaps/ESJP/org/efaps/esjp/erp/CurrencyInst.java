@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 package org.efaps.esjp.erp;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.efaps.admin.program.esjp.EFapsApplication;
@@ -101,5 +102,11 @@ public class CurrencyInst
         throws EFapsException
     {
         return CurrencyInst_Base.getAvailable();
+    }
+
+    public static Optional<CurrencyInst> find(final String _codeOrNumber)
+        throws EFapsException
+    {
+        return CurrencyInst_Base.find(_codeOrNumber);
     }
 }

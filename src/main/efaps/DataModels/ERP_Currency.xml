@@ -60,6 +60,12 @@
             <sqlcolumn>ISOCODE</sqlcolumn>
         </attribute>
         <attribute>
+            <name>ISONumber</name>
+            <type>String</type>
+            <sqltable>ERP_CurrencySQLTable</sqltable>
+            <sqlcolumn>ISONUMBER</sqlcolumn>
+        </attribute>
+        <attribute>
             <name>Symbol</name>
             <type>String</type>
             <sqltable>ERP_CurrencySQLTable</sqltable>

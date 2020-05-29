@@ -31,6 +31,7 @@
             <column name="UUID"          type="STRING_SHORT" length="128" not-null="true"/>
             <column name="SYMBOL"        type="STRING_SHORT" length="3"   not-null="true"/>
             <column name="ISOCODE"       type="STRING_SHORT" length="3"   not-null="true"/>
+            <column name="ISONUMBER"     type="STRING_SHORT" length="3"   not-null="true"/>
             <column name="INVERT"        type="BOOLEAN"/>
         </database>
     </definition>

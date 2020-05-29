@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2016 The eFaps Team
+ * Copyright 2003 - 2020 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.efaps.esjp.erp;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -37,16 +38,17 @@ import org.efaps.db.QueryCache;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * TODO comment!
- *
- * @author The eFaps Team
- */
 @EFapsUUID("a848745e-417f-4148-9f24-7429cb445572")
 @EFapsApplication("eFapsApp-Commons")
 public abstract class CurrencyInst_Base
 {
+    /**
+     * Logging instance used in this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(CurrencyInst.class);
 
     /**
      * Instance for this Currency.
@@ -82,6 +84,11 @@ public abstract class CurrencyInst_Base
      * ISOCode of this Currency.
      */
     private String isoCode;
+
+    /**
+     * ISONumber of this Currency.
+     */
+    private String isoNumber;
 
     /**
      * Constructor when used as instance object. to access parameters from a
@@ -128,13 +135,14 @@ public abstract class CurrencyInst_Base
         if (!initialized) {
             final PrintQuery print = new CachedPrintQuery(instance).setLifespan(1).setLifespanUnit(TimeUnit.HOURS);
             print.addAttribute(CIERP.Currency.Symbol, CIERP.Currency.Name, CIERP.Currency.Invert, CIERP.Currency.UUID,
-                            CIERP.Currency.ISOCode);
+                            CIERP.Currency.ISOCode, CIERP.Currency.ISONumber);
             print.execute();
             symbol = print.<String>getAttribute(CIERP.Currency.Symbol);
             name = print.<String>getAttribute(CIERP.Currency.Name);
             invert = print.<Boolean>getAttribute(CIERP.Currency.Invert);
             uuid = UUID.fromString(print.<String>getAttribute(CIERP.Currency.UUID));
             isoCode =  print.<String>getAttribute(CIERP.Currency.ISOCode);
+            isoNumber =  print.<String>getAttribute(CIERP.Currency.ISONumber);
             initialized = true;
         }
     }
@@ -264,6 +272,18 @@ public abstract class CurrencyInst_Base
         isoCode = _iSOCode;
     }
 
+    public String getISONumber()
+        throws EFapsException
+    {
+        initialize();
+        return isoNumber;
+    }
+
+    public void setISONumber(final String _isoNumber)
+    {
+        isoNumber = _isoNumber;
+    }
+
     /**
      * Gets the latest valid from.
      *
@@ -372,5 +392,18 @@ public abstract class CurrencyInst_Base
             ret.add(new CurrencyInst(query.getCurrentValue()));
         }
         return ret;
+    }
+
+    protected static Optional<CurrencyInst> find(final String _codeOrNumber)
+        throws EFapsException
+    {
+        return CurrencyInst.getAvailable().stream().filter(ci -> {
+            try {
+                return _codeOrNumber.equals(ci.getISOCode()) || _codeOrNumber.equals(ci.getISONumber());
+            } catch (final EFapsException e) {
+                LOG.error("Catched", e);
+            }
+            return false;
+        }).findFirst();
     }
 }
