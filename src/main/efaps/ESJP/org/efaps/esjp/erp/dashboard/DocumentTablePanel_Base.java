@@ -17,11 +17,14 @@
 package org.efaps.esjp.erp.dashboard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.collections4.comparators.ComparatorChain;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.program.esjp.EFapsApplication;
@@ -42,6 +45,7 @@ import org.efaps.util.EFapsException;
 public abstract class DocumentTablePanel_Base
     extends AbstractTablePanel
 {
+
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
@@ -64,7 +68,7 @@ public abstract class DocumentTablePanel_Base
     {
         final List<String> ret = new ArrayList<>();
 
-        final Properties properties = this.getConfig();
+        final Properties properties = getConfig();
         final String formatStr = "Select%02d";
         for (int i = 1; i < 100; i++) {
             final String nameTmp = String.format(formatStr, i);
@@ -86,7 +90,7 @@ public abstract class DocumentTablePanel_Base
     protected String getLabel(final int _idx)
     {
         final String ret;
-        final Properties properties = this.getConfig();
+        final Properties properties = getConfig();
         final String formatStr = "Label%02d";
         final String nameTmp = String.format(formatStr, _idx);
         if (properties.containsKey(nameTmp)) {
@@ -97,14 +101,20 @@ public abstract class DocumentTablePanel_Base
         return ret;
     }
 
+    protected List<String> getSortBy()
+    {
+        final String sortBy = getConfig().getProperty("SortByColumns", "");
+        return sortBy.length() > 0 ? Arrays.asList(sortBy.split(",")) : Collections.emptyList();
+    }
+
     @Override
     protected List<Map<String, Object>> getDataSource()
         throws EFapsException
     {
         final List<Map<String, Object>> ret = new ArrayList<>();
-        final QueryBuilder queryBldr = AbstractCommon.getQueryBldrFromProperties(this.getConfig());
+        final QueryBuilder queryBldr = AbstractCommon.getQueryBldrFromProperties(getConfig());
         final MultiPrintQuery multi = queryBldr.getPrint();
-        final List<String> selects = this.getSelects();
+        final List<String> selects = getSelects();
         for (final String select : selects) {
             multi.addSelect(select);
         }
@@ -115,7 +125,7 @@ public abstract class DocumentTablePanel_Base
             for (final String select : selects) {
                 idx++;
                 final Object value = multi.getSelect(select);
-                final String label = this.getLabel(idx);
+                final String label = getLabel(idx);
                 if (label == null) {
                     final Attribute attr = multi.getAttribute4Select(select);
                     if (attr == null) {
@@ -128,6 +138,19 @@ public abstract class DocumentTablePanel_Base
                 }
             }
             ret.add(map);
+        }
+        final List<String> sortBy = getSortBy();
+        if (!sortBy.isEmpty()) {
+            final ComparatorChain<Map<String, Object>> chain = new ComparatorChain<>();
+            for (final String sortColumn : getSortBy()) {
+                final String label = getLabel(Integer.valueOf(sortColumn));
+                if (label != null) {
+                    chain.addComparator((_o1,
+                                         _o2) -> String.valueOf(_o1.get(label))
+                                                         .compareTo(String.valueOf(_o2.get(label))));
+                }
+            }
+            Collections.sort(ret, chain);
         }
         return ret;
     }
