@@ -120,7 +120,7 @@ public final class ERP
     public static final StringSysConfAttribute COMPANY_ESTABLECIMIENTO = new StringSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "CompanyEstablecimiento")
-                    .defaultValue("1000")
+                    .defaultValue("0000")
                     .description("Establecimiento of the company.");
 
     /** See description. */
