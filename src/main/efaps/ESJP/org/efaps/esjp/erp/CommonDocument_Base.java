@@ -1305,6 +1305,10 @@ public abstract class CommonDocument_Base
         if (companyDistrict != null && !companyDistrict.isEmpty()) {
             _report.getJrParameters().put("CompanyDistrict", companyDistrict);
         }
+        final String companyLogo = ERP.COMPANY_JASPERLOGO.get();
+        if (companyLogo != null && !companyLogo.isEmpty()) {
+            _report.getJrParameters().put("CompanyLogo", companyLogo);
+        }
     }
 
     /**

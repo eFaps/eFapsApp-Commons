@@ -123,6 +123,15 @@ public final class ERP
                     .defaultValue("0000")
                     .description("Establecimiento of the company.");
 
+
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final StringSysConfAttribute COMPANY_JASPERLOGO = new StringSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "CompanyJasperLogo")
+                    .defaultValue("JasperImage.DefaultLogo")
+                    .description("Jasper Logo");
+
     /** See description. */
     @EFapsSysConfAttribute
     public static final PropertiesSysConfAttribute FILTERREPORTCONFIG = new PropertiesSysConfAttribute()
