@@ -45,6 +45,12 @@
             <sqlcolumn>ID</sqlcolumn>
         </attribute>
         <attribute>
+            <name>Association</name>
+            <type>AssociationLink</type>
+            <sqltable>ERP_CurrencyRateSQLTable</sqltable>
+            <sqlcolumn>ASSOCID</sqlcolumn>
+        </attribute>
+        <attribute>
             <name>CurrencyLink</name>
             <type>Link</type>
             <typelink>ERP_Currency</typelink>
