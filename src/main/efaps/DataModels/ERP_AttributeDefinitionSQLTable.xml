@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2003 - 2011 The eFaps Team
+ Copyright 2003 - 2022 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,11 +16,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          The eFaps Team
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
-
 -->
 
 <datamodel-sqltable  xmlns="http://www.efaps.org/xsd"
@@ -28,8 +23,6 @@
                      xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
     <uuid>a9e1a953-5092-42bc-aa19-368b9d763360</uuid>
     <file-application>eFapsApp-Commons</file-application>
-    <file-revision>$Rev$</file-revision>
-
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_AttributeDefinitionSQLTable</name>
@@ -37,6 +30,7 @@
         <database>
             <table-name>T_ERPATTRDEF</table-name>
             <column name="TYPEID"   type="INTEGER"      not-null="true" />
+            <column name="ASSOCID"  type="INTEGER"      not-null="true" />
             <column name="VALUE"    type="STRING_SHORT" not-null="true" length="128"/>
             <column name="DESCR"    type="STRING_SHORT"                 length="512" />
             <column name="MAPKEY"   type="STRING_SHORT"                 length="64" />
