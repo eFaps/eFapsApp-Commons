@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2017 The eFaps Team
+ * Copyright 2003 - 2022 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -201,7 +201,8 @@ public abstract class FilteredReport_Base
         } else if ("InstanceSet".equalsIgnoreCase(_type)) {
             final Instance inst = Instance.get(_default);
             ret = new InstanceSetFilterValue().setObject(inst.isValid()
-                            ? new HashSet<>(Arrays.asList(inst)) : new HashSet<Instance>());
+                            ? new HashSet<>(Arrays.asList(inst))
+                            : new HashSet<Instance>());
         } else if ("Boolean".equalsIgnoreCase(_type)) {
             ret = BooleanUtils.toBoolean(_default);
         } else if ("Currency".equalsIgnoreCase(_type)) {
@@ -234,7 +235,7 @@ public abstract class FilteredReport_Base
                             Status.find(CIERP.AttributeDefinitionStatus.Active));
             final InstanceQuery query = queryBldr.getQuery();
             ret = new AttrDefFilterValue().setObject(new HashSet<>(query.execute()));
-        }  else if ("FilterValue".equalsIgnoreCase(_type)) {
+        } else if ("FilterValue".equalsIgnoreCase(_type)) {
             ret = getFilterValue(_parameter, _default);
         } else if ("GroupBy".equalsIgnoreCase(_type)) {
             ret = getGroupByFilterValue(_parameter, _default);
@@ -342,8 +343,10 @@ public abstract class FilteredReport_Base
         final List<DropDownPosition> values = new ArrayList<>();
         final Map<String, Object> filterMap = getFilterMap(_parameter);
         Object current = null;
-        if (filterMap.containsKey("currency")) {
-            final CurrencyFilterValue filter = (CurrencyFilterValue) filterMap.get("currency");
+        final IUIValue value = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
+        final String fieldName = value.getField().getName();
+        if (filterMap.containsKey(fieldName)) {
+            final CurrencyFilterValue filter = (CurrencyFilterValue) filterMap.get(fieldName);
             current = filter.getObject();
         }
         for (final CurrencyInst currency : CurrencyInst.getAvailable()) {
@@ -690,11 +693,10 @@ public abstract class FilteredReport_Base
                 ret = sysConf.getAttributeValueAsProperties(getProperty(_parameter, "QueryBldrConfigAttribute"));
             }
         } else {
-            ret =  MapUtils.toProperties((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES));
+            ret = MapUtils.toProperties((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES));
         }
         return ret;
     }
-
 
     /**
      * @param _parameter Parameter as passed by the eFaps API
@@ -763,23 +765,23 @@ public abstract class FilteredReport_Base
 
         final String divId = RandomUtil.randomAlphabetic(8);
 
-        final StringBuilder html =  new StringBuilder()
-                .append("<div class=\"groupByFilter\" id=\"").append(divId).append("\">")
-                .append("<div class=\"groupByContainer\">\n")
-                .append("<h3>")
-                .append(DBProperties.getProperty(FilteredReport.class.getName() + ".GroupByActive"))
-                .append("</h3>")
-                .append("<ol id=\"groupByNodeActive\" class=\"container\">\n")
-                .append("</ol>\n")
-                .append("</div>\n")
-                .append("<div class=\"groupByContainer\">\n")
-                .append("<h3>")
-                .append(DBProperties.getProperty(FilteredReport.class.getName() + ".GroupByInactive"))
-                .append("</h3>")
-                .append("<ol id=\"groupByNodeInactive\" class=\"container\">\n")
-                .append("</ol>\n")
-                .append("</div>\n")
-                .append("</div>\n");
+        final StringBuilder html = new StringBuilder()
+                        .append("<div class=\"groupByFilter\" id=\"").append(divId).append("\">")
+                        .append("<div class=\"groupByContainer\">\n")
+                        .append("<h3>")
+                        .append(DBProperties.getProperty(FilteredReport.class.getName() + ".GroupByActive"))
+                        .append("</h3>")
+                        .append("<ol id=\"groupByNodeActive\" class=\"container\">\n")
+                        .append("</ol>\n")
+                        .append("</div>\n")
+                        .append("<div class=\"groupByContainer\">\n")
+                        .append("<h3>")
+                        .append(DBProperties.getProperty(FilteredReport.class.getName() + ".GroupByInactive"))
+                        .append("</h3>")
+                        .append("<ol id=\"groupByNodeInactive\" class=\"container\">\n")
+                        .append("</ol>\n")
+                        .append("</div>\n")
+                        .append("</div>\n");
 
         final String key = RandomUtil.randomAlphabetic(8);
 
@@ -788,87 +790,88 @@ public abstract class FilteredReport_Base
 
         final StringBuilder js = new StringBuilder()
                         .append("var acList = new Source(\"groupByNodeActive\", ")
-                            .append("{ accept: [ \"").append(key).append("\"] });\n")
+                        .append("{ accept: [ \"").append(key).append("\"] });\n")
                         .append("var inacList = new Source(\"groupByNodeInactive\",")
-                            .append("{ accept: [ \"").append(key).append("\"] });\n")
+                        .append("{ accept: [ \"").append(key).append("\"] });\n")
                         .append("var data =  [\n");
 
         for (final Enum<?> val : inactive) {
             js.append("{ data: \"").append(DBProperties.getProperty(val.getClass().getName() + "." + val.toString()))
-                .append("\",")
-                .append(" key: \"").append(val.toString()).append("\",\n")
-                .append(" type: [ \"").append(key).append("\" ] },\n");
+                            .append("\",")
+                            .append(" key: \"").append(val.toString()).append("\",\n")
+                            .append(" type: [ \"").append(key).append("\" ] },\n");
         }
         js.append("];\n")
-            .append("var acData =  [\n");
+                        .append("var acData =  [\n");
 
         for (final Enum<?> val : active) {
             js.append("{ data: \"").append(DBProperties.getProperty(val.getClass().getName() + "." + val.toString()))
-                .append("\",")
-                .append(" key: \"").append(val.toString()).append("\",\n")
-                .append(" type: [ \"").append(key).append("\" ] },\n");
+                            .append("\",")
+                            .append(" key: \"").append(val.toString()).append("\",\n")
+                            .append(" type: [ \"").append(key).append("\" ] },\n");
         }
         js.append("];\n")
-            .append(" for(i = 0; i < data.length; ++i){\n")
-            .append("t = inacList._normalizedCreator(data[i]);\n")
-            .append("data[i].id = t.node.id;")
-            .append(" inacList.setItem(t.node.id, {data: t.data, type: t.type});\n")
-            .append(" inacList.parent.appendChild(t.node);\n")
-            .append(" }\n")
+                        .append(" for(i = 0; i < data.length; ++i){\n")
+                        .append("t = inacList._normalizedCreator(data[i]);\n")
+                        .append("data[i].id = t.node.id;")
+                        .append(" inacList.setItem(t.node.id, {data: t.data, type: t.type});\n")
+                        .append(" inacList.parent.appendChild(t.node);\n")
+                        .append(" }\n")
 
-            .append("for(i = 0; i < acData.length; ++i){\n")
-            .append(" domConstruct.place(\"<input type='hidden' name='").append(fieldName)
-                .append("' value='\" + acData[i].key + \"'/>\", \"").append(divId).append("\");\n")
-            .append("t = acList._normalizedCreator(acData[i]);\n")
-            .append("acData[i].id = t.node.id;")
-            .append(" acList.setItem(t.node.id, {data: t.data, type: t.type});\n")
-            .append(" acList.parent.appendChild(t.node);\n")
-            .append(" }\n")
-            .append("var all = data.concat(acData);")
-            .append("var sv = function() {\n")
-            .append("query(\"[name=")
-                .append(fieldName)
-                .append("]\").forEach(domConstruct.destroy);\n")
-            .append("query(\"[name=")
-                .append(fieldName)
-                .append("_inactive]\").forEach(domConstruct.destroy);\n")
-            .append("inacList.getAllNodes().forEach(function(_node) {\n  ")
-            .append("var sel;")
-            .append("array.some(all, function(item){\n")
-            .append("if (item.id === _node.id) {\n")
-            .append("sel = item;")
-            .append("return true;\n")
-            .append("}\n")
-            .append("return false;\n")
-            .append(" });\n")
-                .append(" domConstruct.place(\"<input type='hidden' name='")
-                .append(fieldName)
-                .append("_inactive' value='\" + sel.key + \"'/>\", \"")
-                .append(divId)
-                .append("\");\n")
-            .append("});\n")
-            .append("acList.getAllNodes().forEach(function(_node) {\n  ")
-            .append("var sel;")
-            .append("array.some(all, function(item){\n")
-            .append("if (item.id === _node.id) {\n")
-            .append("sel = item;")
-            .append("return true;\n")
-            .append("}\n")
-            .append("return false;\n")
-            .append(" });\n")
-                .append(" domConstruct.place(\"<input type='hidden' name='")
-                .append(fieldName)
-                .append("' value='\" + sel.key + \"'/>\", \"")
-                .append(divId)
-                .append("\");\n")
-            .append("});\n")
-            .append("}\n")
-            .append("aspect.after(acList, \"onDrop\", sv);\n")
-            .append("aspect.after(inacList, \"onDrop\", sv);\n");
+                        .append("for(i = 0; i < acData.length; ++i){\n")
+                        .append(" domConstruct.place(\"<input type='hidden' name='").append(fieldName)
+                        .append("' value='\" + acData[i].key + \"'/>\", \"").append(divId).append("\");\n")
+                        .append("t = acList._normalizedCreator(acData[i]);\n")
+                        .append("acData[i].id = t.node.id;")
+                        .append(" acList.setItem(t.node.id, {data: t.data, type: t.type});\n")
+                        .append(" acList.parent.appendChild(t.node);\n")
+                        .append(" }\n")
+                        .append("var all = data.concat(acData);")
+                        .append("var sv = function() {\n")
+                        .append("query(\"[name=")
+                        .append(fieldName)
+                        .append("]\").forEach(domConstruct.destroy);\n")
+                        .append("query(\"[name=")
+                        .append(fieldName)
+                        .append("_inactive]\").forEach(domConstruct.destroy);\n")
+                        .append("inacList.getAllNodes().forEach(function(_node) {\n  ")
+                        .append("var sel;")
+                        .append("array.some(all, function(item){\n")
+                        .append("if (item.id === _node.id) {\n")
+                        .append("sel = item;")
+                        .append("return true;\n")
+                        .append("}\n")
+                        .append("return false;\n")
+                        .append(" });\n")
+                        .append(" domConstruct.place(\"<input type='hidden' name='")
+                        .append(fieldName)
+                        .append("_inactive' value='\" + sel.key + \"'/>\", \"")
+                        .append(divId)
+                        .append("\");\n")
+                        .append("});\n")
+                        .append("acList.getAllNodes().forEach(function(_node) {\n  ")
+                        .append("var sel;")
+                        .append("array.some(all, function(item){\n")
+                        .append("if (item.id === _node.id) {\n")
+                        .append("sel = item;")
+                        .append("return true;\n")
+                        .append("}\n")
+                        .append("return false;\n")
+                        .append(" });\n")
+                        .append(" domConstruct.place(\"<input type='hidden' name='")
+                        .append(fieldName)
+                        .append("' value='\" + sel.key + \"'/>\", \"")
+                        .append(divId)
+                        .append("\");\n")
+                        .append("});\n")
+                        .append("}\n")
+                        .append("aspect.after(acList, \"onDrop\", sv);\n")
+                        .append("aspect.after(inacList, \"onDrop\", sv);\n");
 
         html.append(InterfaceUtils.wrappInScriptTag(_parameter,
-                            InterfaceUtils.wrapInDojoRequire(_parameter, js, DojoLibs.DNDSOURCE, DojoLibs.QUERY,
-                                            DojoLibs.DOMCONSTRUCT, DojoLibs.ASPECT, DojoLibs.ARRAY), true, 0));
+                        InterfaceUtils.wrapInDojoRequire(_parameter, js, DojoLibs.DNDSOURCE, DojoLibs.QUERY,
+                                        DojoLibs.DOMCONSTRUCT, DojoLibs.ASPECT, DojoLibs.ARRAY),
+                        true, 0));
 
         ret.put(ReturnValues.SNIPLETT, html);
         return ret;
@@ -990,17 +993,17 @@ public abstract class FilteredReport_Base
             obj = JodaTimeUtils.toDateTime(DateAndTimeUtils.getDateForQuery(val));
         } else if (uiProvider instanceof BooleanUI) {
             obj = BooleanUtils.toBoolean(val);
-        } else if ("currency".equals(_field.getName())) {
-            if ("BASE".equals(val)) {
-                obj = new CurrencyFilterValue().setObject(Instance.get("", "", "BASE"));
-            } else {
-                obj = new CurrencyFilterValue().setObject(Instance.get(val));
-            }
         } else if (_oldFilter.containsKey(_field.getName())) {
             final Object oldObj = _oldFilter.get(_field.getName());
-            if (oldObj instanceof EnumFilterValue) {
-                @SuppressWarnings("rawtypes")
-                final Class clazz = ((EnumFilterValue) oldObj).getObject().getDeclaringClass();
+            if (oldObj instanceof CurrencyFilterValue) {
+                if ("BASE".equals(val)) {
+                    obj = new CurrencyFilterValue().setObject(Instance.get("", "", "BASE"));
+                } else {
+                    obj = new CurrencyFilterValue().setObject(Instance.get(val));
+                }
+            } else if (oldObj instanceof EnumFilterValue) {
+                @SuppressWarnings("rawtypes") final Class clazz = ((EnumFilterValue) oldObj).getObject()
+                                .getDeclaringClass();
                 obj = new EnumFilterValue().setObject(Enum.valueOf(clazz, val));
             } else if (oldObj instanceof StatusFilterValue) {
                 final Set<Long> statusIds = new HashSet<>();
@@ -1089,8 +1092,8 @@ public abstract class FilteredReport_Base
                             html.append("<br/>");
                         }
                         html.append("<span style=\"font-weight: bold;\">")
-                            .append(entry.getKey())
-                            .append(": ").append("</span>").append(entry.getValue());
+                                        .append(entry.getKey())
+                                        .append(": ").append("</span>").append(entry.getValue());
                     }
                 }
             } else {
@@ -1113,7 +1116,7 @@ public abstract class FilteredReport_Base
                             value = DBProperties.getProperty(dBProperties.get(entry.getKey()) + "." + valueTmp);
                         } else if (valueTmp instanceof IFilterValue) {
                             value = ((IFilterValue) valueTmp).getLabel(_parameter);
-                            negate  = ((IFilterValue) valueTmp).isNegate();
+                            negate = ((IFilterValue) valueTmp).isNegate();
                         } else {
                             value = valueTmp.toString();
                         }
@@ -1125,7 +1128,7 @@ public abstract class FilteredReport_Base
                     inner.append("\">").append(DBProperties.getProperty(dBProperties.get(entry.getKey()))).append(" ")
                                     .append("</span>");
                     table.addColumn(inner).addColumn(value)
-                        .getCurrentColumn().setStyle("max-width: 300px;white-space: normal");
+                                    .getCurrentColumn().setStyle("max-width: 300px;white-space: normal");
                     i++;
                 }
                 html.append(table.toHtml());
@@ -1215,7 +1218,7 @@ public abstract class FilteredReport_Base
 
     /**
      * @param _parameter Parameter as passed by the eFaps API
-     * @param _instances    Instances the label is wanted for
+     * @param _instances Instances the label is wanted for
      * @return String
      * @throws EFapsException on error
      */
@@ -1227,8 +1230,8 @@ public abstract class FilteredReport_Base
         if (_instances != null) {
             for (final Instance instance : _instances) {
                 if (instance.isValid()) {
-                    @SuppressWarnings("unchecked")
-                    final Map<String, String> props = (Map<String, String>) _parameter.get(ParameterValues.PROPERTIES);
+                    @SuppressWarnings("unchecked") final Map<String, String> props = (Map<String, String>) _parameter
+                                    .get(ParameterValues.PROPERTIES);
                     boolean search = true;
                     String select = null;
                     String phrase = null;
@@ -1415,7 +1418,7 @@ public abstract class FilteredReport_Base
                 public String evaluate(final ReportParameters _reportParameters)
                 {
                     final Object value = _reportParameters.getFieldValue(_fieldName);
-                    return  String.format("Total '%s':", value);
+                    return String.format("Total '%s':", value);
                 }
             }, _showInColumn, Calculation.NOTHING);
         }
@@ -1442,7 +1445,8 @@ public abstract class FilteredReport_Base
                                      final String _qauntityKey,
                                      final ColumnBuilder<?, ?> _showInColumn)
         {
-            super(new AbstractSimpleExpression<BigDecimal>() {
+            super(new AbstractSimpleExpression<BigDecimal>()
+            {
 
                 /** The Constant serialVersionUID. */
                 private static final long serialVersionUID = 1L;
@@ -1632,7 +1636,7 @@ public abstract class FilteredReport_Base
                 labels.add(Status.get(val).getLabel());
             }
             Collections.sort(labels, (_o1,
-             _o2) -> _o1.compareTo(_o2));
+                                      _o2) -> _o1.compareTo(_o2));
             for (final String label : labels) {
                 if (ret.length() > 0) {
                     ret.append(", ");
@@ -1649,6 +1653,7 @@ public abstract class FilteredReport_Base
     public static class InstanceFilterValue
         extends AbstractFilterValue<Instance>
     {
+
         /**
          * Needed for serialization.
          */
@@ -1690,6 +1695,7 @@ public abstract class FilteredReport_Base
     public static class CurrencyFilterValue
         extends AbstractFilterValue<Instance>
     {
+
         /**
          *
          */
@@ -1720,6 +1726,7 @@ public abstract class FilteredReport_Base
     public static class EnumFilterValue
         extends AbstractFilterValue<Enum<?>>
     {
+
         /** */
         private static final long serialVersionUID = 1L;
 
@@ -1737,6 +1744,7 @@ public abstract class FilteredReport_Base
     public static class GroupByFilterValue
         extends AbstractFilterValue<List<Enum<?>>>
     {
+
         /** */
         private static final long serialVersionUID = 1L;
 
@@ -1827,13 +1835,13 @@ public abstract class FilteredReport_Base
         }
     }
 
-
     /**
      * FilterClass.
      */
     public static class AttrDefFilterValue
         extends AbstractFilterValue<Set<Instance>>
     {
+
         /** */
         private static final long serialVersionUID = 1L;
 
@@ -1853,7 +1861,7 @@ public abstract class FilteredReport_Base
             }
 
             Collections.sort(labels, (_o1,
-             _o2) -> _o1.compareTo(_o2));
+                                      _o2) -> _o1.compareTo(_o2));
             for (final String label : labels) {
                 if (ret.length() > 0) {
                     ret.append(", ");
