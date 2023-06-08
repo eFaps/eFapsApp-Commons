@@ -134,6 +134,13 @@ public final class ERP
 
     /** See description. */
     @EFapsSysConfAttribute
+    public static final SysConfLink COMPANY_CONTACT = new SysConfLink()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "company.Contact")
+                    .description("Company Contact Object");
+
+    /** See description. */
+    @EFapsSysConfAttribute
     public static final PropertiesSysConfAttribute FILTERREPORTCONFIG = new PropertiesSysConfAttribute()
                     .sysConfUUID(SYSCONFUUID)
                     .key(BASE + "Config4FilteredReport")

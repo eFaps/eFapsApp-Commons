@@ -886,6 +886,33 @@ public abstract class CommonDocument_Base
         return ret;
     }
 
+    protected StringBuilder getSetFieldValue(final String fieldName,
+                                             final boolean escape,
+                                             final String selectedValue,
+                                             final String... valueLabels)
+    {
+        final StringBuilder ret = new StringBuilder();
+        ret.append("eFapsSetFieldValue(").append(0).append(",'").append(fieldName)
+                        .append("', new Array('").append(selectedValue == null ? valueLabels[0] : selectedValue)
+                        .append("'");
+        for (int i = 0; i < valueLabels.length; i = i + 2) {
+            ret.append(",");
+            if (escape) {
+                ret.append("'").append(StringEscapeUtils.escapeEcmaScript(valueLabels[i])).append("'");
+            } else {
+                ret.append(valueLabels[i]);
+            }
+
+            if (escape) {
+                ret.append(",'").append(StringEscapeUtils.escapeEcmaScript(valueLabels[i + 1])).append("'");
+            } else {
+                ret.append(",").append(valueLabels[i + 1]);
+            }
+        }
+        ret.append("));");
+        return ret;
+    }
+
     /**
      * JavaScript Snipplet that removes from all SELECT with
      * <code>fieldname</code> all other options except the one
