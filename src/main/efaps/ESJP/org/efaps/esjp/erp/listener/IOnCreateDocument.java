@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2015 The eFaps Team
+ * Copyright 2003 - 2023 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,17 @@
  *
  */
 
-
 package org.efaps.esjp.erp.listener;
 
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.program.esjp.IEsjpListener;
+import org.efaps.db.Instance;
 import org.efaps.esjp.common.listener.ITypedClass;
-import org.efaps.esjp.erp.CommonDocument_Base.CreatedDoc;
 import org.efaps.util.EFapsException;
 
-
 /**
- * TODO comment!
  *
  * @author The eFaps Team
  */
@@ -37,28 +34,32 @@ import org.efaps.util.EFapsException;
 public interface IOnCreateDocument
     extends IEsjpListener
 {
+
     /**
      * Called after the creation/insert of a new Document with the values
      * already set and the instance valid.
      *
-     * @param _parameter    Parameter as passed by the eFaps API
-     * @param _createdDoc   Created Document
+     * @param _parameter Parameter as passed by the eFaps API
+     * @param _createdDoc Created Document
      * @throws EFapsException on error
      */
-    void afterCreate(final Parameter _parameter,
-                     final CreatedDoc _createdDoc)
+    void afterCreate(final Parameter parameter,
+                     final Instance instance)
         throws EFapsException;
 
     /**
      * Called for the standard JavaScript field value to be able to add own
      * scripts via listener.
      *
-     * @param _typeClass    Typed class as an easy way to distinguish
-     * @param _parameter    Parameter as passed by the eFaps API
+     * @param _typeClass Typed class as an easy way to distinguish
+     * @param _parameter Parameter as passed by the eFaps API
      * @throws EFapsException on error
      * @return JavaScript for UserInterface
      */
-    CharSequence getJavaScript4Doc(final ITypedClass _typeClass,
-                                   final Parameter _parameter)
-        throws EFapsException;
+    default CharSequence getJavaScript4Doc(final ITypedClass _typeClass,
+                                           final Parameter _parameter)
+        throws EFapsException
+    {
+        return "";
+    }
 }
