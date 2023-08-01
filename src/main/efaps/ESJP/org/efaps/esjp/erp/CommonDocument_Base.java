@@ -343,10 +343,8 @@ public abstract class CommonDocument_Base
                 if (!accessDef.equalsIgnoreCase(access)) {
                     ret.put(ReturnValues.TRUE, true);
                 }
-            } else {
-                if (accessDef.equalsIgnoreCase(access)) {
-                    ret.put(ReturnValues.TRUE, true);
-                }
+            } else if (accessDef.equalsIgnoreCase(access)) {
+                ret.put(ReturnValues.TRUE, true);
             }
         }
         return ret;
@@ -451,19 +449,17 @@ public abstract class CommonDocument_Base
                 if (TargetMode.EDIT.equals(_parameter.get(ParameterValues.ACCESSMODE))) {
                     final Long persId = (Long) uiValue.getObject();
                     pos = new DropDownPosition(_value, _option).setSelected(_value.equals(persId));
-                } else {
-                    if ("true".equalsIgnoreCase((String) props.get("SelectCurrent"))) {
-                        long persId = 0;
-                        try {
-                            persId = Context.getThreadContext().getPerson().getId();
-                        } catch (final EFapsException e) {
-                            // nothing must be done at all
-                            Field_Base.LOG.error("Catched error", e);
-                        }
-                        pos = new DropDownPosition(_value, _option).setSelected(Long.valueOf(persId).equals(_value));
-                    } else {
-                        pos = super.getDropDownPosition(_parameter, _value, _option);
+                } else if ("true".equalsIgnoreCase((String) props.get("SelectCurrent"))) {
+                    long persId = 0;
+                    try {
+                        persId = Context.getThreadContext().getPerson().getId();
+                    } catch (final EFapsException e) {
+                        // nothing must be done at all
+                        Field_Base.LOG.error("Catched error", e);
                     }
+                    pos = new DropDownPosition(_value, _option).setSelected(Long.valueOf(persId).equals(_value));
+                } else {
+                    pos = super.getDropDownPosition(_parameter, _value, _option);
                 }
                 return pos;
             }
@@ -1173,14 +1169,12 @@ public abstract class CommonDocument_Base
             Status status = null;
             if (inst.isValid()) {
                 status = Status.get(inst.getId());
-            } else {
-                if (statusTmp != null && !statusTmp.isEmpty()) {
-                    try {
-                        final Long statusId = Long.valueOf(statusTmp);
-                        status = Status.get(statusId);
-                    } catch (final NumberFormatException e) {
-                        Log.warn("Catched NumberFormatException");
-                    }
+            } else if (statusTmp != null && !statusTmp.isEmpty()) {
+                try {
+                    final Long statusId = Long.valueOf(statusTmp);
+                    status = Status.get(statusId);
+                } catch (final NumberFormatException e) {
+                    Log.warn("Catched NumberFormatException");
                 }
             }
             if (status != null) {
@@ -1221,13 +1215,10 @@ public abstract class CommonDocument_Base
             try {
                 final StandartReport report = new StandartReport();
                 _parameter.put(ParameterValues.INSTANCE, _createdDoc.getInstance());
-                String name = (String) _createdDoc.getValue(CIERP.DocumentAbstract.Name.name);
-                if (name == null) {
-                    final PrintQuery print = new PrintQuery(_createdDoc.getInstance());
-                    print.addAttribute(CIERP.DocumentAbstract.Name);
-                    print.execute();
-                    name = print.<String>getAttribute(CIERP.DocumentAbstract.Name);
-                }
+                final PrintQuery print = new PrintQuery(_createdDoc.getInstance());
+                print.addAttribute(CIERP.DocumentAbstract.Name);
+                print.executeWithoutAccessCheck();
+                final var name = print.<String>getAttribute(CIERP.DocumentAbstract.Name);
                 final String fileName = DBProperties.getProperty(_createdDoc.getInstance().getType().getLabelKey(),
                                 "es") + "_" + name;
                 report.setFileName(fileName);
