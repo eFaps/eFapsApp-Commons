@@ -344,6 +344,34 @@ public final class ERP
         }
     }
 
+    public enum LogLevel
+        implements IBitEnum
+    {
+        /** NONE. */
+        INFO, /** Docu. */
+        WARN, /** Outgoing. */
+        ERROR;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int getInt()
+        {
+            return BitEnumType.getInt4Index(ordinal());
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int getBitIndex()
+        {
+            return ordinal();
+        }
+    }
+
+
     /**
      * Singelton.
      */
