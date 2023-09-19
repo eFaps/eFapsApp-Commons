@@ -77,7 +77,7 @@
             <name>Value</name>
             <type>String</type>
             <sqltable>ERP_LogSQLTable</sqltable>
-            <sqlcolumn>LOG</sqlcolumn>
+            <sqlcolumn>VALUE</sqlcolumn>
         </attribute>
         <attribute>
             <name>Creator</name>

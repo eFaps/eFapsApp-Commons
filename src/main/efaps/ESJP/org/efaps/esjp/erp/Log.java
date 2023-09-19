@@ -18,6 +18,8 @@ package org.efaps.esjp.erp;
 
 import java.time.OffsetDateTime;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.commons.lang3.EnumUtils;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
@@ -48,6 +50,7 @@ public class Log
     private OffsetDateTime logDateTime;
     private String message;
     private String value;
+    private CIType ciType;
 
     public String getKey()
     {
@@ -107,7 +110,7 @@ public class Log
     {
         if (value != null) {
             try {
-                getObjectMapper().writeValueAsString(value);
+                this.value = getObjectMapper().writeValueAsString(value);
             } catch (final JsonProcessingException e) {
                 LOG.error("Catched", e);
             }
@@ -115,9 +118,22 @@ public class Log
         return this;
     }
 
+    public CIType getCIType()
+    {
+        return ciType;
+    }
+
+    public Log withCIType(final CIType ciType)
+    {
+        this.ciType = ciType;
+        return this;
+    }
+
     public Instance register()
         throws EFapsException
     {
+        LOG.info("Registered LOG with: {}", this);
+
         final var insert = EQL.builder().insert(getType())
                         .set(CIERP.LogAbstract.Level, getLevel())
                         .set(CIERP.LogAbstract.LogDateTime, getLogDateTime())
@@ -141,7 +157,7 @@ public class Log
 
     protected CIType getType()
     {
-        return CIERP.Log;
+        return this.ciType == null ? CIERP.Log : this.ciType;
     }
 
     protected ObjectMapper getObjectMapper()
@@ -150,5 +166,11 @@ public class Log
         mapper.registerModule(new JavaTimeModule());
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         return mapper;
+    }
+
+    @Override
+    public String toString()
+    {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
     }
 }
