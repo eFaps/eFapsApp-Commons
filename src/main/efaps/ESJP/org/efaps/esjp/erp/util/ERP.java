@@ -254,6 +254,19 @@ public final class ERP
                     .key(BASE + "BinUser.Activate")
                     .description("Activate the mechanism for BinUser");
 
+    /** See description. */
+    @EFapsSysConfAttribute
+    public static final PropertiesSysConfAttribute SERIALNUMBERS = new PropertiesSysConfAttribute()
+                    .sysConfUUID(SYSCONFUUID)
+                    .key(BASE + "SerialNumbers")
+                    .addDefaultValue("Sales_Invoice", "F001")
+                    .addDefaultValue("Sales_Invoice.AssignOnStatus", "Open")
+                    .addDefaultValue("Sales_Receipt", "B001")
+                    .addDefaultValue("Sales_Receipt.AssignOnStatus", "Open")
+                    .description("A mapping like: Sales_Invoice=001;002;003\n"
+                                    + "Sales_Invoice.AssignOnStatus=Open\n"
+                                    + "Sales_Invoice.SuffixLength=6");
+
     /**
      * Enum used for a multistate for Activation in ERP_DocumentType.
      */
