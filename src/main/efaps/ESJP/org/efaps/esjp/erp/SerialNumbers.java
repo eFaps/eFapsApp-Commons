@@ -73,6 +73,21 @@ public class SerialNumbers
         return serial + "-" + getNextNumber(documentType, maxNumber);
     }
 
+    public static String getPlaceholder(final CIType documentType,
+                                        final String serial)
+        throws EFapsException
+    {
+        return getPlaceholder(documentType.getType().getName(), serial);
+    }
+
+
+    public static String getPlaceholder(final String documentType,
+                                        final String serial)
+        throws EFapsException
+    {
+        return serial + "-" + getNextNumber(documentType, -1);
+    }
+
     public static String getNextNumber(final String documentType,
                                        final Integer maxNumber)
         throws EFapsException
