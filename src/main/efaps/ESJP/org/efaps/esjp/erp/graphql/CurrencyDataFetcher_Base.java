@@ -22,6 +22,8 @@ import java.util.Map;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.esjp.erp.CurrencyInst;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import graphql.execution.DataFetcherResult;
 import graphql.schema.DataFetcher;
@@ -32,12 +34,14 @@ import graphql.schema.DataFetchingEnvironment;
 public abstract class CurrencyDataFetcher_Base
     implements DataFetcher<Object>
 {
+    private static final Logger LOG = LoggerFactory.getLogger(CurrencyDataFetcher.class);
 
     @Override
     public Object get(final DataFetchingEnvironment _environment)
         throws Exception
     {
         final Map<String, Object> source = _environment.getSource();
+        LOG.info("Fetching currency object for: {}", source);
         final Long currencyId = (Long) source.get(_environment.getField().getName());
         final var currencyInst = CurrencyInst.get(currencyId);
         final Map<String, String> data = new HashMap<>();
