@@ -49,6 +49,8 @@
             <foreign name="T_ERPDOC_FK_SALESPERS"   key="SALESPERS" reference="T_USERPERSON(ID)" />
             <foreign name="T_ERPDOC_FK_CRTR"        key="CREATOR"   reference="T_USERPERSON(ID)" />
             <foreign name="T_ERPDOC_FK_MDFR"        key="MODIFIER"  reference="T_USERPERSON(ID)" />
+            <index  name="T_ERPDOC_INDEX_TYPEID" columns="TYPEID"/>
+            <index  name="T_ERPDOC_INDEX_TYPEIDSTATUS" columns="TYPEID,STATUS"/>
         </database>
     </definition>
 </datamodel-sqltable>
