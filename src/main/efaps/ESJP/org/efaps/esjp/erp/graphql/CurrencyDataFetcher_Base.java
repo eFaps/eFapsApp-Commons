@@ -43,12 +43,14 @@ public abstract class CurrencyDataFetcher_Base
         final Map<String, Object> source = _environment.getSource();
         LOG.info("Fetching currency object for: {}", source);
         final Long currencyId = (Long) source.get(_environment.getField().getName());
-        final var currencyInst = CurrencyInst.get(currencyId);
         final Map<String, String> data = new HashMap<>();
-        data.put("isoCode", currencyInst.getISOCode());
-        data.put("isoNumber", currencyInst.getISONumber());
-        data.put("name", currencyInst.getName());
-        data.put("symbol", currencyInst.getSymbol());
+        if (currencyId != null) {
+            final var currencyInst = CurrencyInst.get(currencyId);
+            data.put("isoCode", currencyInst.getISOCode());
+            data.put("isoNumber", currencyInst.getISONumber());
+            data.put("name", currencyInst.getName());
+            data.put("symbol", currencyInst.getSymbol());
+        }
         return DataFetcherResult.newResult()
                         .data(data)
                         .build();
