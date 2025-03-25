@@ -17,30 +17,21 @@
 
 -->
 
-
-
 <ui-command xmlns="http://www.efaps.org/xsd"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-
   <uuid>674a1666-2317-4ec5-bb28-1ced8c96a7e3</uuid>
   <file-application>eFapsApp-Commons</file-application>
-  
-
     <definition>
         <version-expression>(version==latest)</version-expression>
         <name>ERP_CurrencyTree_Rate_Menu_Action_Create</name>
-
         <access>
             <role>ERP_CurrencyAdmin</role>
         </access>
-
-        
         <target>
             <form>ERP_CurrencyRateForm</form>
-            <execute program="org.efaps.esjp.common.uiform.Create" />
+            <execute program="org.efaps.esjp.erp.Currency" method="create" />
         </target>
-        
         <property name="Target">modal</property>
         <property name="TargetCreateType">ERP_CurrencyRateClient</property>
         <property name="TargetConnectAttribute">ERP_CurrencyRateAbstract/CurrencyLink</property>
@@ -48,5 +39,4 @@
         <property name="WindowHeight">460</property>
         <property name="WindowWidth">515</property>
     </definition>
-
 </ui-command>

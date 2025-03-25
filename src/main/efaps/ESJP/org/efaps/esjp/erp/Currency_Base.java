@@ -44,6 +44,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractUserInterfaceObject.TargetMode;
 import org.efaps.db.CachedMultiPrintQuery;
 import org.efaps.db.Context;
@@ -53,8 +54,11 @@ import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
 import org.efaps.db.SelectBuilder;
 import org.efaps.db.Update;
+import org.efaps.eql.EQL;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.AbstractCommon;
+import org.efaps.esjp.common.uiform.Create;
+import org.efaps.esjp.common.uiform.Edit;
 import org.efaps.esjp.common.uiform.Field;
 import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
 import org.efaps.esjp.db.InstanceUtils;
@@ -103,15 +107,79 @@ public abstract class Currency_Base
         throws EFapsException
     {
         final IUIValue fValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
-        final DateTime value;
+        Object value;
         if (TargetMode.CREATE.equals(_parameter.get(ParameterValues.ACCESSMODE))) {
             value = new DateTime().plusYears(10);
         } else {
-            value = (DateTime) fValue.getObject();
+            value = fValue.getObject();
         }
         final Return ret = new Return();
         ret.put(ReturnValues.VALUES, value);
         return ret;
+    }
+
+    public Return create(final Parameter parameter)
+        throws EFapsException
+    {
+        // if app
+        if (parameter.get(ParameterValues.PAYLOAD) != null) {
+            @SuppressWarnings("unchecked")
+            final var values = (Map<String, ?>) parameter.get(ParameterValues.PAYLOAD);
+            final var command = (AbstractCommand) parameter.get(ParameterValues.UIOBJECT);
+            final var parentInstance = parameter.getInstance();
+            final var createType = command.getTargetCreateType();
+
+            final var inverted  = CurrencyInst.get(parentInstance).isInvert();
+
+            final var rateUiValue = values.get("rate");
+            final var rateSaleUiValue = values.get("rateSale");
+            final var rate = new Object[] { inverted ? 1 : rateUiValue, inverted ? rateUiValue : 1 };
+            final var rateSale = new Object[] { inverted ? 1 : rateSaleUiValue, inverted ? rateSaleUiValue : 1 };
+
+            EQL.builder().insert(createType)
+                .set(CIERP.CurrencyRateAbstract.CurrencyLink, parentInstance.getId())
+                .set(CIERP.CurrencyRateAbstract.TargetCurrencyLink,  Currency.getBaseCurrency())
+                .set(CIERP.CurrencyRateAbstract.Rate, rate)
+                .set(CIERP.CurrencyRateAbstract.RateSale, rateSale)
+                .set(CIERP.CurrencyRateAbstract.ValidFrom, values.get("validFrom"))
+                .set(CIERP.CurrencyRateAbstract.ValidUntil,  values.get("validUntil"))
+                .execute();
+            return new Return();
+        } else {
+            return new Create().execute(parameter);
+        }
+    }
+
+
+    public Return update(final Parameter parameter)
+        throws EFapsException
+    {
+        // if app
+        if (parameter.get(ParameterValues.PAYLOAD) != null) {
+            @SuppressWarnings("unchecked")
+            final var values = (Map<String, ?>) parameter.get(ParameterValues.PAYLOAD);
+            final var instance = parameter.getInstance();
+            final var eval = EQL.builder().print(instance)
+                            .attribute(CIERP.CurrencyRateAbstract.CurrencyLink)
+                            .evaluate();
+
+            final var currencyId = eval.get(CIERP.CurrencyRateAbstract.CurrencyLink);
+            final var inverted = CurrencyInst.get(currencyId).isInvert();
+
+            final var rateUiValue = values.get("rate");
+            final var rateSaleUiValue = values.get("rateSale");
+            final var rate = new Object[] { inverted ? 1 : rateUiValue, inverted ? rateUiValue : 1 };
+            final var rateSale = new Object[] { inverted ? 1 : rateSaleUiValue, inverted ? rateSaleUiValue : 1 };
+            EQL.builder().update(instance)
+                            .set(CIERP.CurrencyRateAbstract.Rate, rate)
+                            .set(CIERP.CurrencyRateAbstract.RateSale, rateSale)
+                            .set(CIERP.CurrencyRateAbstract.ValidFrom, values.get("validFrom"))
+                            .set(CIERP.CurrencyRateAbstract.ValidUntil, values.get("validUntil"))
+                            .execute();
+            return new Return();
+        } else {
+            return new Edit().execute(parameter);
+        }
     }
 
     /**
@@ -230,19 +298,24 @@ public abstract class Currency_Base
     /**
      * Method is used as attribute RATE_VALUE event.
      *
-     * @param _parameter    Parameter as passed by the efasp API
+     * @param parameter    Parameter as passed by the efasp API
      * @return value for rate on error
      * @throws EFapsException on error
      */
     @SuppressWarnings("unchecked")
-    public Return getRateValue(final Parameter _parameter)
+    public Return getRateValue(final Parameter parameter)
         throws EFapsException
     {
         final Return ret = new Return();
-        if (_parameter.get(ParameterValues.ACCESSMODE) != null
-                        && _parameter.get(ParameterValues.ACCESSMODE).equals(TargetMode.CREATE)) {
-            final Instance instance = _parameter.getInstance();
-            final Instance callInstance = _parameter.getCallInstance();
+        // new UI
+        if (parameter.get(ParameterValues.OTHERS) != null
+                        && parameter.get(ParameterValues.OTHERS) instanceof Object[]) {
+            final var values = (Object[]) parameter.get(ParameterValues.OTHERS);
+            ret.put(ReturnValues.VALUES, evalRate(values, true));
+        } else if (parameter.get(ParameterValues.ACCESSMODE) != null
+                        && parameter.get(ParameterValues.ACCESSMODE).equals(TargetMode.CREATE)) {
+            final Instance instance = parameter.getInstance();
+            final Instance callInstance = parameter.getCallInstance();
             if (InstanceUtils.isKindOf(instance, CIERP.Currency)) {
                 final CurrencyInst currencyInst = CurrencyInst.get(instance);
                 if (currencyInst.isInvert()) {
@@ -255,7 +328,7 @@ public abstract class Currency_Base
                 }
             } else {
                 // in case that a special default value was set
-                final IUIValue uiValue =  (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
+                final IUIValue uiValue =  (IUIValue) parameter.get(ParameterValues.UIOBJECT);
                 if (uiValue != null &&  uiValue.getObject() instanceof Object[]) {
                     final Object[] values = (Object[]) uiValue.getObject();
                     if (values.length > 2) {
@@ -281,13 +354,12 @@ public abstract class Currency_Base
                 fieldValues = new HashSet<>();
                 Context.getThreadContext().setRequestAttribute(Currency_Base.REQUEST_KEYRATE, fieldValues);
             }
-            final IUIValue fieldValue = (IUIValue) _parameter.get(ParameterValues.UIOBJECT);
+            final IUIValue fieldValue = (IUIValue) parameter.get(ParameterValues.UIOBJECT);
             if (fieldValues.contains(fieldValue)) {
                 ret.put(ReturnValues.VALUES, fieldValue.getObject());
             } else {
                 final Object value = fieldValue.getObject();
-                if (value instanceof Object[]) {
-                    final Object[] values = (Object[]) value;
+                if (value instanceof final Object[] values) {
                     if (values[2] != null) {
                         final CurrencyInst currencyInst = CurrencyInst.get((Long) values[2]);
                         if (currencyInst.isInvert()) {
