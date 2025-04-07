@@ -75,6 +75,7 @@ import org.efaps.esjp.common.util.InterfaceUtils;
 import org.efaps.esjp.common.util.InterfaceUtils_Base.DojoLibs;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.ui.html.Table;
+import org.efaps.esjp.ui.rest.dto.ValueDto;
 import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.util.EFapsException;
@@ -132,6 +133,8 @@ public abstract class FilteredReport_Base
      */
     private static final Logger LOG = LoggerFactory.getLogger(FilteredReport.class);
 
+    private Map<String, Object> filterMap;
+
     /**
      * Set the default filter in the context map. Must be called before any
      * other access to work.
@@ -187,7 +190,7 @@ public abstract class FilteredReport_Base
                     set.add(type.getId());
                 }
             } else if ("NONE".equals(_default) || _default.isEmpty()) {
-                set.add(Long.valueOf(0));
+                set.add((long) 0);
             } else if (isUUID(_default)) {
                 set.add(Type.get(UUID.fromString(_default)).getId());
             } else {
@@ -397,7 +400,7 @@ public abstract class FilteredReport_Base
         } else {
             map.put(key, "");
         }
-        Collections.sort(tokens, (_arg0, _arg1) -> _arg0.getLabel().compareTo(_arg1.getLabel()));
+        Collections.sort(tokens, Comparator.comparing(IOption::getLabel));
         ret.put(ReturnValues.VALUES, tokens);
         return ret;
     }
@@ -562,8 +565,7 @@ public abstract class FilteredReport_Base
         final List<DropDownPosition> values = new ArrayList<>();
         final Object uiObject = _parameter.get(ParameterValues.UIOBJECT);
         final String key;
-        if (uiObject instanceof UIValue) {
-            final UIValue uiValue = (UIValue) uiObject;
+        if (uiObject instanceof final UIValue uiValue) {
             key = uiValue.getField().getName();
         } else {
             final IUIValue fieldValue = (IUIValue) uiObject;
@@ -607,7 +609,7 @@ public abstract class FilteredReport_Base
             dropdown.setSelected(selected.contains(type.getId()));
             values.add(dropdown);
         }
-        Collections.sort(values, (o1, o2) -> o1.getLabel().compareTo(o2.getLabel()));
+        Collections.sort(values, Comparator.comparing(DropDownPosition::getLabel));
         final Return ret = new Return();
         ret.put(ReturnValues.VALUES, values);
         return ret;
@@ -707,8 +709,7 @@ public abstract class FilteredReport_Base
         final Return ret = new Return();
         final Object uiObject = _parameter.get(ParameterValues.UIOBJECT);
         final String key;
-        if (uiObject instanceof UIValue) {
-            final UIValue uiValue = (UIValue) uiObject;
+        if (uiObject instanceof final UIValue uiValue) {
             key = uiValue.getField().getName();
         } else {
             final IUIValue fieldValue = (IUIValue) uiObject;
@@ -885,14 +886,29 @@ public abstract class FilteredReport_Base
     public Map<String, Object> getFilterMap(final Parameter _parameter)
         throws EFapsException
     {
-        final Map<String, Map<String, Object>> map = getCtxMap(_parameter);
-        final String filterKey = getFilterKey(_parameter);
-        Map<String, Object> ret = map.get(filterKey);
-        if (ret == null) {
-            ret = new HashMap<>();
-            map.put(filterKey, ret);
+        Map<String, Object> ret;
+        if (this.filterMap == null) {
+            final Map<String, Map<String, Object>> map = getCtxMap(_parameter);
+            final String filterKey = getFilterKey(_parameter);
+            ret = map.get(filterKey);
+            if (ret == null) {
+                ret = new HashMap<>();
+                map.put(filterKey, ret);
+            }
+        } else {
+            ret = this.filterMap;
         }
         return ret;
+    }
+
+    public void setFilterMap(Map<String, Object> filterMap)
+    {
+        this.filterMap = filterMap;
+    }
+
+    public Map<String, Object> getFilterMap()
+    {
+        return this.filterMap;
     }
 
     /**
@@ -930,8 +946,7 @@ public abstract class FilteredReport_Base
         String ret = getProperty(_parameter, "FilterKey");
         if (ret == null) {
             final Object callCmd = _parameter.get(ParameterValues.CALL_CMD);
-            if (callCmd instanceof AbstractCommand) {
-                final AbstractCommand cmd = (AbstractCommand) callCmd;
+            if (callCmd instanceof final AbstractCommand cmd) {
                 ret = cmd.getProperty("FilterKey");
             } else {
                 final Object uiForm = _parameter.get(ParameterValues.CLASS);
@@ -1187,6 +1202,11 @@ public abstract class FilteredReport_Base
         }
         return ret;
     }
+
+    public List<ValueDto> getFilters() {
+        return null;
+    }
+
 
     @Override
     protected Long getLifespan(final Parameter _parameter)
@@ -1601,7 +1621,7 @@ public abstract class FilteredReport_Base
                     labels.add(Type.get(val).getLabel());
                 }
             }
-            Collections.sort(labels, (_o1, _o2) -> _o1.compareTo(_o2));
+            Collections.sort(labels, String::compareTo);
             for (final String label : labels) {
                 if (ret.length() > 0) {
                     ret.append(", ");
@@ -1633,8 +1653,7 @@ public abstract class FilteredReport_Base
             for (final Long val : getObject()) {
                 labels.add(Status.get(val).getLabel());
             }
-            Collections.sort(labels, (_o1,
-                                      _o2) -> _o1.compareTo(_o2));
+            Collections.sort(labels, String::compareTo);
             for (final String label : labels) {
                 if (ret.length() > 0) {
                     ret.append(", ");
@@ -1858,8 +1877,7 @@ public abstract class FilteredReport_Base
                 labels.add(value + (description != null && !description.isEmpty() ? " - " + description : ""));
             }
 
-            Collections.sort(labels, (_o1,
-                                      _o2) -> _o1.compareTo(_o2));
+            Collections.sort(labels, String::compareTo);
             for (final String label : labels) {
                 if (ret.length() > 0) {
                     ret.append(", ");
