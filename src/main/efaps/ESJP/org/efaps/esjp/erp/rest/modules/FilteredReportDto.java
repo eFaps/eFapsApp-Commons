@@ -32,17 +32,24 @@ public class FilteredReportDto
 {
 
     private final String report;
+    private final String downloadKey;
     private final List<ValueDto> filters;
 
     private FilteredReportDto(Builder builder)
     {
         this.report = builder.report;
+        this.downloadKey = builder.downloadKey;
         this.filters = builder.filters;
     }
 
     public String getReport()
     {
         return report;
+    }
+
+    public String getDownloadKey()
+    {
+        return downloadKey;
     }
 
     public List<ValueDto> getFilters()
@@ -65,6 +72,7 @@ public class FilteredReportDto
     {
 
         private String report;
+        private String downloadKey;
         private List<ValueDto> filters = Collections.emptyList();
 
         private Builder()
@@ -74,6 +82,12 @@ public class FilteredReportDto
         public Builder withReport(String report)
         {
             this.report = report;
+            return this;
+        }
+
+        public Builder withDownloadKey(String downloadKey)
+        {
+            this.downloadKey = downloadKey;
             return this;
         }
 

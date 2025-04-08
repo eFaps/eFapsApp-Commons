@@ -15,6 +15,7 @@
  */
 package org.efaps.esjp.erp.rest.modules;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.Module;
 import org.efaps.esjp.common.parameter.ParameterUtil;
 import org.efaps.esjp.ui.rest.dto.ValueDto;
+import org.efaps.esjp.ui.util.FileUtil;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -61,6 +63,7 @@ public class FilteredReportController
         final var module = Module.get(UUID.fromString(moduleId));
         final var className = module.getProperty("FilteredReport");
         String htmlContent = null;
+        String downloadKey = null;
         List<ValueDto> filters = null;
         try {
             final IFilteredReportProvider provider = (IFilteredReportProvider) Class.forName(className).getConstructor()
@@ -68,14 +71,28 @@ public class FilteredReportController
             final var parameter = ParameterUtil.instance();
             final var report = provider.getReport(parameter);
             provider.setFilterMap(evalFilterMap(queryParams, provider));
-            htmlContent = report.getHtml(parameter, true);
             filters = provider.getFilters();
+
+            if (queryParams.containsKey("mime")) {
+                final var mime = queryParams.get("mime").get(0);
+                report.setFileName(report.getDBProperty("FileName"));
+                File file = null;
+                if ("xls".equalsIgnoreCase(mime)) {
+                    file = report.getExcel(parameter);
+                } else if ("pdf".equalsIgnoreCase(mime)) {
+                    file = report.getPDF(parameter);
+                }
+                downloadKey = FileUtil.put(file);
+            } else {
+                htmlContent = report.getHtml(parameter, true);
+            }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                         | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
             LOG.error("Catched", e);
         }
         return Response.ok(FilteredReportDto.builder()
                         .withReport(htmlContent)
+                        .withDownloadKey(downloadKey)
                         .withFilters(filters).build())
                         .build();
     }
@@ -112,5 +129,4 @@ public class FilteredReportController
                                        final List<String> values) {
         return provider.evalFilterValue4Key(key, values);
     }
-
 }
