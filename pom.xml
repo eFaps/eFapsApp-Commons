@@ -157,7 +157,7 @@
         </dependency>
         <dependency>
             <groupId>org.efaps.apps</groupId>
-            <artifactId>data</artifactId>
+            <artifactId>efaps-app-data</artifactId>
             <version>${efaps.app.dependencies}</version>
         </dependency>
         <dependency>
