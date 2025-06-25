@@ -75,6 +75,7 @@ import org.efaps.esjp.common.util.InterfaceUtils;
 import org.efaps.esjp.common.util.InterfaceUtils_Base.DojoLibs;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.ui.html.Table;
+import org.efaps.esjp.ui.rest.dto.OptionDto;
 import org.efaps.esjp.ui.rest.dto.ValueDto;
 import org.efaps.ui.wicket.models.EmbeddedLink;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -1207,6 +1208,35 @@ public abstract class FilteredReport_Base
         return null;
     }
 
+    protected List<OptionDto> getOptions(final Class<? extends Enum<?>> optionEnum)
+    {
+        final List<OptionDto> ret = new ArrayList<>();
+        if (optionEnum.isEnum()) {
+            final var clazzName = optionEnum.getName();
+            for (final var enumConstant : optionEnum.getEnumConstants()) {
+                final var name = enumConstant.name();
+                ret.add(OptionDto.builder()
+                                .withLabel(DBProperties.getProperty(clazzName + "." + name))
+                                .withValue(name)
+                                .build());
+            }
+        }
+        return ret;
+    }
+
+    protected List<OptionDto> getOptions4Boolean(final String key)
+    {
+        final List<OptionDto> ret = new ArrayList<>();
+        ret.add(OptionDto.builder()
+                        .withLabel(DBProperties.getProperty(key + ".false"))
+                        .withValue(false)
+                        .build());
+        ret.add(OptionDto.builder()
+                        .withLabel(DBProperties.getProperty(key + ".true"))
+                        .withValue(true)
+                        .build());
+        return ret;
+    }
 
     @Override
     protected Long getLifespan(final Parameter _parameter)
