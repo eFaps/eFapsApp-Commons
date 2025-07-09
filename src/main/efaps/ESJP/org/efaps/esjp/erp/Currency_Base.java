@@ -66,6 +66,7 @@ import org.efaps.esjp.erp.util.ERP;
 import org.efaps.ui.wicket.util.DateUtil;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,13 +201,13 @@ public abstract class Currency_Base
             name2Value.put(attr.getName(), (Object[]) entry.getValue());
         }
         final Object curIdObj = name2Value.get(CIERP.CurrencyRateAbstract.CurrencyLink.name)[0];
-        final Long curId = curIdObj instanceof Long ? (Long) curIdObj : Long.parseLong((String) curIdObj);
+        final Long curId = curIdObj instanceof final Long l ? l : Long.parseLong((String) curIdObj);
         final Object validFromObj = name2Value.get(CIERP.CurrencyRateAbstract.ValidFrom.name)[0];
-        final DateTime validFrom = validFromObj instanceof DateTime
-                        ? (DateTime) validFromObj : new DateTime(validFromObj);
+        final DateTime validFrom = validFromObj instanceof final DateTime d
+                        ? d : new DateTime(validFromObj);
         final Object validUntilObj = name2Value.get(CIERP.CurrencyRateAbstract.ValidUntil.name)[0];
-        final DateTime validUntil = validUntilObj instanceof DateTime
-                        ? (DateTime) validUntilObj : new DateTime(validUntilObj);
+        final DateTime validUntil = validUntilObj instanceof final DateTime d
+                        ? d : new DateTime(validUntilObj);
         update(_parameter, curId, validFrom, validUntil, rateInstance);
         return new Return();
     }
@@ -573,12 +574,20 @@ public abstract class Currency_Base
      * @throws EFapsException on error
      */
     public RateInfo evaluateRateInfo(final Parameter _parameter,
-                                     final String _dateStr,
+                                     final String dateStr,
                                      final Instance _currentCurrencyInst)
         throws EFapsException
     {
-        return evaluateRateInfo(_parameter, _dateStr != null && _dateStr.length() > 0
-                        ? DateUtil.getDateFromParameter(_dateStr) : new DateTime(), _currentCurrencyInst);
+        DateTime date;
+        if (dateStr == null) {
+            date = new DateTime();
+        } else if (dateStr.matches("^\\d\\d\\d\\d-\\d\\d-\\d\\d$")) {
+            date = DateTime.parse(dateStr);
+        } else {
+            final var shortFormat = DateTimeFormat.shortDate();
+            date = shortFormat.parseDateTime(dateStr);
+        }
+        return evaluateRateInfo(_parameter, date, _currentCurrencyInst);
     }
 
     /**
