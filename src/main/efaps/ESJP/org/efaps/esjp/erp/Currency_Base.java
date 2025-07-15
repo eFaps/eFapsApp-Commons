@@ -57,13 +57,13 @@ import org.efaps.db.Update;
 import org.efaps.eql.EQL;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.AbstractCommon;
+import org.efaps.esjp.common.datetime.JodaTimeUtils;
 import org.efaps.esjp.common.uiform.Create;
 import org.efaps.esjp.common.uiform.Edit;
 import org.efaps.esjp.common.uiform.Field;
 import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
 import org.efaps.esjp.db.InstanceUtils;
 import org.efaps.esjp.erp.util.ERP;
-import org.efaps.ui.wicket.util.DateUtil;
 import org.efaps.util.EFapsException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -497,7 +497,7 @@ public abstract class Currency_Base
         throws EFapsException
     {
         return evaluateRateInfos(_parameter, StringUtils.isEmpty(_dateStr) ? new DateTime().withTimeAtStartOfDay()
-                        : DateUtil.getDateFromParameter(_dateStr), _currentCurrencyInst,
+                        : JodaTimeUtils.getDateFromParameter(_dateStr), _currentCurrencyInst,
                                         _targetCurrencyInst);
     }
 
