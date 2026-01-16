@@ -365,8 +365,9 @@ public abstract class FilteredReport_Base
             dropdown.setSelected(current != null && "BASE".equals(((Instance) current).getKey()));
             values.add(dropdown);
         }
-        Collections.sort(values, (_o1, _o2) -> String.valueOf(_o1.getOrderValue()).compareTo(
-                        String.valueOf(_o2.getOrderValue())));
+        Collections.sort(values, (_o1,
+                                  _o2) -> String.valueOf(_o1.getOrderValue()).compareTo(
+                                                  String.valueOf(_o2.getOrderValue())));
         final Return ret = new Return();
         ret.put(ReturnValues.VALUES, values);
         return ret;
@@ -1204,7 +1205,8 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
-    public List<ValueDto> getFilters() {
+    public List<ValueDto> getFilters()
+    {
         return null;
     }
 
@@ -1235,6 +1237,29 @@ public abstract class FilteredReport_Base
                         .withLabel(DBProperties.getProperty(key + ".true"))
                         .withValue(true)
                         .build());
+        return ret;
+    }
+
+    protected List<OptionDto> getOptions4Types(final String... typeKeys)
+        throws EFapsException
+    {
+        final List<Type> types = new ArrayList<>();
+        for (final var typeStr : typeKeys) {
+            if (isUUID(typeStr)) {
+                types.add(Type.get(UUID.fromString(typeStr)));
+            } else {
+                types.add(Type.get(typeStr));
+            }
+        }
+
+        final List<OptionDto> ret = new ArrayList<>();
+        types.forEach(type -> {
+            ret.add(OptionDto.builder()
+                            .withLabel(type.getLabel())
+                            .withValue(type.getId())
+                            .build());
+        });
+        ret.sort(Comparator.comparing(OptionDto::getLabel));
         return ret;
     }
 

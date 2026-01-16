@@ -22,6 +22,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.esjp.common.jasperreport.AbstractDynamicReport;
+import org.efaps.esjp.ui.rest.dto.AutocompleteResponseDto;
 import org.efaps.esjp.ui.rest.dto.ValueDto;
 import org.efaps.util.EFapsException;
 
@@ -40,6 +41,10 @@ public interface IFilteredReportProvider
     default Object evalFilterValue4Key(String key,
                                        List<String> values)
     {
+        return null;
+    }
+
+    default AutocompleteResponseDto autocomplete(String fieldName, String term) {
         return null;
     }
 }

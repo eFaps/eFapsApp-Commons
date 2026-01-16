@@ -26,14 +26,17 @@ import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.Module;
 import org.efaps.esjp.common.parameter.ParameterUtil;
+import org.efaps.esjp.ui.rest.dto.PayloadDto;
 import org.efaps.esjp.ui.rest.dto.ValueDto;
 import org.efaps.esjp.ui.util.FileUtil;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -58,37 +61,28 @@ public class FilteredReportController
                               @Context UriInfo uriInfo)
         throws EFapsException
     {
-        LOG.info("Getting FilteredReport for: {}", moduleId);
         final var queryParams = uriInfo.getQueryParameters();
-        final var module = Module.get(UUID.fromString(moduleId));
-        final var className = module.getProperty("FilteredReport");
         String htmlContent = null;
         String downloadKey = null;
         List<ValueDto> filters = null;
-        try {
-            final IFilteredReportProvider provider = (IFilteredReportProvider) Class.forName(className).getConstructor()
-                            .newInstance();
-            final var parameter = ParameterUtil.instance();
-            final var report = provider.getReport(parameter);
-            provider.setFilterMap(evalFilterMap(queryParams, provider));
-            filters = provider.getFilters();
+        final var provider = evalProvider(moduleId);
+        final var parameter = ParameterUtil.instance();
+        final var report = provider.getReport(parameter);
+        provider.setFilterMap(evalFilterMap(queryParams, provider));
+        filters = provider.getFilters();
 
-            if (queryParams.containsKey("mime")) {
-                final var mime = queryParams.get("mime").get(0);
-                report.setFileName(report.getDBProperty("FileName"));
-                File file = null;
-                if ("xls".equalsIgnoreCase(mime)) {
-                    file = report.getExcel(parameter);
-                } else if ("pdf".equalsIgnoreCase(mime)) {
-                    file = report.getPDF(parameter);
-                }
-                downloadKey = FileUtil.put(file);
-            } else {
-                htmlContent = report.getHtml(parameter, true);
+        if (queryParams.containsKey("mime")) {
+            final var mime = queryParams.get("mime").get(0);
+            report.setFileName(report.getDBProperty("FileName"));
+            File file = null;
+            if ("xls".equalsIgnoreCase(mime)) {
+                file = report.getExcel(parameter);
+            } else if ("pdf".equalsIgnoreCase(mime)) {
+                file = report.getPDF(parameter);
             }
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                        | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
-            LOG.error("Catched", e);
+            downloadKey = FileUtil.put(file);
+        } else {
+            htmlContent = report.getHtml(parameter, true);
         }
         return Response.ok(FilteredReportDto.builder()
                         .withReport(htmlContent)
@@ -113,6 +107,9 @@ public class FilteredReportController
                     case PICKLIST: {
                         yield evalPickListValue(provider, entry.getKey(), entry.getValue());
                     }
+                    case CHECKBOX: {
+                        yield entry.getValue();
+                    }
                     default:
                         yield entry.getValue().get(0);
                 };
@@ -126,7 +123,37 @@ public class FilteredReportController
 
     protected Object evalPickListValue(final IFilteredReportProvider provider,
                                        final String key,
-                                       final List<String> values) {
+                                       final List<String> values)
+    {
         return provider.evalFilterValue4Key(key, values);
+    }
+
+    protected IFilteredReportProvider evalProvider(final String moduleId)
+        throws CacheReloadException
+    {
+        IFilteredReportProvider provider = null;
+        LOG.info("Evaluating FilteredReportProvider for: {}", moduleId);
+        final var module = Module.get(UUID.fromString(moduleId));
+        final var className = module.getProperty("FilteredReport");
+        try {
+            provider = (IFilteredReportProvider) Class.forName(className).getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                        | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+            LOG.error("Catched", e);
+        }
+        return provider;
+    }
+
+    @Path("/{id}/autocomplete/{fieldName}")
+    @POST
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Response autocomplete(@PathParam("id") final String moduleId,
+                                 @PathParam("fieldName") final String fieldName,
+                                 final PayloadDto payloadDto)
+        throws EFapsException
+    {
+        final var provider = evalProvider(moduleId);
+        final var dto = provider.autocomplete(fieldName, (String) payloadDto.getValues().get("query"));
+        return Response.ok(dto).build();
     }
 }
