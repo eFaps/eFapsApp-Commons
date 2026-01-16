@@ -34,6 +34,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.efaps.admin.common.MsgPhrase;
 import org.efaps.admin.common.SystemConfiguration;
@@ -104,6 +105,7 @@ import net.sf.dynamicreports.report.definition.ReportParameters;
 
 /**
  * @author The eFaps Team
+ * @param <E>
  */
 @EFapsUUID("fc64ff47-d1f6-4aed-8d7d-2a9128a51a19")
 @EFapsApplication("eFapsApp-Commons")
@@ -1221,6 +1223,41 @@ public abstract class FilteredReport_Base
                                 .withLabel(DBProperties.getProperty(clazzName + "." + name))
                                 .withValue(name)
                                 .build());
+            }
+        }
+        return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <E extends Enum<E>> E evaluateEnumFilter(final String key,
+                                                       final Class<E> enumClass,
+                                                       final E defaultValue)
+        throws EFapsException
+    {
+        final var filterValue = getFilterMap() == null ? null : getFilterMap().get(key);
+        E ret;
+        if (filterValue != null) {
+            if (filterValue instanceof final EnumFilterValue enumFilterValue) {
+                ret = (E) enumFilterValue.getObject();
+            } else {
+                ret = (E) EnumUtils.getEnum(enumClass, (String) filterValue, defaultValue);
+            }
+        } else {
+            ret = defaultValue;
+        }
+        return ret;
+    }
+
+    protected boolean evaluateBooleanFilter(final String key)
+        throws EFapsException
+    {
+        boolean ret = false;
+        final var filterValue = getFilterMap() == null ? null : getFilterMap().get(key);
+        if (filterValue != null) {
+            if (filterValue instanceof final Boolean boolValue) {
+                ret = boolValue;
+            } else if (filterValue instanceof final String stringValue) {
+                ret = BooleanUtils.toBoolean(stringValue);
             }
         }
         return ret;
