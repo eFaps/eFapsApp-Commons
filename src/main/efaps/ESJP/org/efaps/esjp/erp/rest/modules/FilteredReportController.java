@@ -87,6 +87,8 @@ public class FilteredReportController
         return Response.ok(FilteredReportDto.builder()
                         .withReport(htmlContent)
                         .withDownloadKey(downloadKey)
+                        .withExportPdf(provider.isExportPdf())
+                        .withExportXls(provider.isExportXls())
                         .withFilters(filters).build())
                         .build();
     }

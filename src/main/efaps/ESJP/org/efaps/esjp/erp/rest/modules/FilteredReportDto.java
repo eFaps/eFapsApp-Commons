@@ -25,6 +25,8 @@ import org.efaps.esjp.ui.rest.dto.ValueDto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import jakarta.annotation.Generated;
+
 @JsonDeserialize(builder = FilteredReportDto.Builder.class)
 @EFapsUUID("7aab63b7-aff0-41c8-aa25-c74bbf685751")
 @EFapsApplication("eFapsApp-Commons")
@@ -33,18 +35,33 @@ public class FilteredReportDto
 
     private final String report;
     private final String downloadKey;
+    private final boolean exportXls;
+    private final boolean exportPdf;
     private final List<ValueDto> filters;
 
+    @Generated("SparkTools")
     private FilteredReportDto(Builder builder)
     {
         this.report = builder.report;
         this.downloadKey = builder.downloadKey;
+        this.exportXls = builder.exportXls;
+        this.exportPdf = builder.exportPdf;
         this.filters = builder.filters;
     }
 
     public String getReport()
     {
         return report;
+    }
+
+    public boolean isExportXls()
+    {
+        return exportXls;
+    }
+
+    public boolean isExportPdf()
+    {
+        return exportPdf;
     }
 
     public String getDownloadKey()
@@ -63,16 +80,20 @@ public class FilteredReportDto
         return ToStringBuilder.reflectionToString(this);
     }
 
+    @Generated("SparkTools")
     public static Builder builder()
     {
         return new Builder();
     }
 
+    @Generated("SparkTools")
     public static final class Builder
     {
 
         private String report;
         private String downloadKey;
+        private boolean exportXls;
+        private boolean exportPdf;
         private List<ValueDto> filters = Collections.emptyList();
 
         private Builder()
@@ -88,6 +109,18 @@ public class FilteredReportDto
         public Builder withDownloadKey(String downloadKey)
         {
             this.downloadKey = downloadKey;
+            return this;
+        }
+
+        public Builder withExportXls(boolean exportXls)
+        {
+            this.exportXls = exportXls;
+            return this;
+        }
+
+        public Builder withExportPdf(boolean exportPdf)
+        {
+            this.exportPdf = exportPdf;
             return this;
         }
 

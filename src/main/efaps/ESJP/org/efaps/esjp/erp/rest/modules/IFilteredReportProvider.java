@@ -44,7 +44,19 @@ public interface IFilteredReportProvider
         return null;
     }
 
-    default AutocompleteResponseDto autocomplete(String fieldName, String term) {
+    default AutocompleteResponseDto autocomplete(String fieldName,
+                                                 String term)
+    {
         return null;
+    }
+
+    default boolean isExportPdf()
+    {
+        return true;
+    }
+
+    default boolean isExportXls()
+    {
+        return true;
     }
 }
