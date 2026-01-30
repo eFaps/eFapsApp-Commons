@@ -29,7 +29,7 @@
         <database>
             <table-name>T_ERPLOG</table-name>
             <column name="TYPEID"       type="INTEGER"  not-null="true" />
-             <column name="COMPANYID"   type="INTEGER"  not-null="true" />
+            <column name="COMPANYID"    type="INTEGER"  not-null="true" />
             <column name="LOGLEVEL"     type="INTEGER"  not-null="true" />
             <column name="LOGDATETIME"  type="DATETIME" not-null="true" />
             <column name="KEY"          type="STRING_SHORT" length="256"/>
@@ -43,6 +43,8 @@
             <column name="MODIFIED" not-null="true" type="DATETIME" />
             <foreign key="CREATOR"  name="T_ERPLOG_FK_CRTR" reference="T_USERPERSON(ID)" />
             <foreign key="MODIFIER" name="T_ERPLOG_FK_MDFR" reference="T_USERPERSON(ID)" />
+            <index  name="T_ERPLOG_INDEX_TYPEID_COMPANYID" columns="TYPEID,COMPANYID"/>
+            <index  name="T_ERPLOG_INDEX_TYPEID_COMPANYID_CREATED_INT1" columns="TYPEID,COMPANYID,CREATED,INT1"/>
         </database>
     </definition>
 </datamodel-sqltable>
