@@ -87,7 +87,6 @@ import org.efaps.esjp.erp.listener.IOnCreateDocument;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
-import org.jfree.util.Log;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1172,7 +1171,7 @@ public abstract class CommonDocument_Base
                     final Long statusId = Long.valueOf(statusTmp);
                     status = Status.get(statusId);
                 } catch (final NumberFormatException e) {
-                    Log.warn("Catched NumberFormatException");
+                    LOG.warn("Catched NumberFormatException");
                 }
             }
             if (status != null) {

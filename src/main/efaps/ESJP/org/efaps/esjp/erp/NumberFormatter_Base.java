@@ -33,7 +33,9 @@ import org.efaps.db.Context;
 import org.efaps.esjp.admin.common.IReloadCacheListener;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.util.EFapsException;
-import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * The Class NumberFormatter_Base.
@@ -45,6 +47,8 @@ import org.jfree.util.Log;
 public abstract class NumberFormatter_Base
     implements IReloadCacheListener
 {
+    private static final Logger LOG = LoggerFactory.getLogger(NumberFormatter.class);
+
     /**
      * The singelton instance.
      */
@@ -336,7 +340,7 @@ public abstract class NumberFormatter_Base
         try {
             ret = (BigDecimal) _format.parse(_strValue);
         } catch (final ParseException e) {
-            Log.warn("Catched parsing exception", e);
+            LOG.warn("Catched parsing exception", e);
             ret = BigDecimal.ZERO;
         }
         return ret;
