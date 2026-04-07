@@ -66,6 +66,7 @@ import org.efaps.db.InstanceQuery;
 import org.efaps.db.MultiPrintQuery;
 import org.efaps.db.PrintQuery;
 import org.efaps.db.QueryBuilder;
+import org.efaps.eql.EQL;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.common.datetime.DateAndTimeUtils;
 import org.efaps.esjp.common.datetime.JodaTimeUtils;
@@ -1280,6 +1281,33 @@ public abstract class FilteredReport_Base
                             .withValue(type.getId())
                             .build());
         });
+        ret.sort(Comparator.comparing(OptionDto::getLabel));
+        return ret;
+    }
+
+    protected List<OptionDto> getOptions4AttrDef(final String... typeKeys)
+        throws EFapsException
+    {
+        final List<OptionDto> ret = new ArrayList<>();
+        final var eval = EQL.builder().print()
+                        .query(typeKeys)
+                        .where()
+                        .attribute(CIERP.AttributeDefinitionAbstract.StatusAbstract)
+                        .eq(CIERP.AttributeDefinitionStatus.Active)
+                        .select()
+                        .attribute(CIERP.AttributeDefinitionAbstract.Value,
+                                        CIERP.AttributeDefinitionAbstract.Description)
+                        .evaluate();
+
+        while (eval.next()) {
+            final String value = eval.get(CIERP.AttributeDefinitionAbstract.Value);
+            final String description = eval.get(CIERP.AttributeDefinitionAbstract.Description);
+            ret.add(OptionDto.builder()
+                            .withLabel(value + (description != null && !description.isEmpty() ? " - " + description
+                                            : ""))
+                            .withValue(eval.inst().getOid())
+                            .build());
+        }
         ret.sort(Comparator.comparing(OptionDto::getLabel));
         return ret;
     }
