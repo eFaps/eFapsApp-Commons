@@ -109,6 +109,9 @@ public class FilteredReportController
                     case PICKLIST: {
                         yield evalPickListValue(provider, entry.getKey(), entry.getValue());
                     }
+                    case AUTOCOMPLETE: {
+                        yield evalAutocompleteValue(provider, entry.getKey(), entry.getValue());
+                    }
                     case CHECKBOX: {
                         yield entry.getValue();
                     }
@@ -126,6 +129,13 @@ public class FilteredReportController
     protected Object evalPickListValue(final IFilteredReportProvider provider,
                                        final String key,
                                        final List<String> values)
+    {
+        return provider.evalFilterValue4Key(key, values);
+    }
+
+    protected Object evalAutocompleteValue(final IFilteredReportProvider provider,
+                                           final String key,
+                                           final List<String> values)
     {
         return provider.evalFilterValue4Key(key, values);
     }

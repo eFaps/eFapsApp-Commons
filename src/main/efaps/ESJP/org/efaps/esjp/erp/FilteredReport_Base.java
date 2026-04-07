@@ -912,7 +912,7 @@ public abstract class FilteredReport_Base
 
     public Map<String, Object> getFilterMap()
     {
-        return this.filterMap;
+        return this.filterMap == null ? new HashMap<>() : this.filterMap;
     }
 
     /**
@@ -1212,22 +1212,6 @@ public abstract class FilteredReport_Base
         return null;
     }
 
-    protected List<OptionDto> getOptions(final Class<? extends Enum<?>> optionEnum)
-    {
-        final List<OptionDto> ret = new ArrayList<>();
-        if (optionEnum.isEnum()) {
-            final var clazzName = optionEnum.getName();
-            for (final var enumConstant : optionEnum.getEnumConstants()) {
-                final var name = enumConstant.name();
-                ret.add(OptionDto.builder()
-                                .withLabel(DBProperties.getProperty(clazzName + "." + name))
-                                .withValue(name)
-                                .build());
-            }
-        }
-        return ret;
-    }
-
     @SuppressWarnings("unchecked")
     protected <E extends Enum<E>> E evaluateEnumFilter(final String key,
                                                        final Class<E> enumClass,
@@ -1296,6 +1280,40 @@ public abstract class FilteredReport_Base
                             .withValue(type.getId())
                             .build());
         });
+        ret.sort(Comparator.comparing(OptionDto::getLabel));
+        return ret;
+    }
+
+    protected List<OptionDto> getOptions4Enum(final Class<? extends Enum<?>> enumClass)
+    {
+        return getOptions4Enum(enumClass.getName(), enumClass);
+    }
+
+    protected List<OptionDto> getOptions4Enum(final String baseKey,
+                                              final Class<? extends Enum<?>> enumClass)
+    {
+        final List<OptionDto> ret = new ArrayList<>();
+        for (final var constant : enumClass.getEnumConstants()) {
+            final var constantName = constant.name();
+            ret.add(OptionDto.builder()
+                            .withLabel(DBProperties.getProperty(baseKey + "." + constantName))
+                            .withValue(constantName)
+                            .build());
+        }
+        ret.sort(Comparator.comparing(OptionDto::getLabel));
+        return ret;
+    }
+
+    protected List<OptionDto> getOptions4Currency()
+        throws EFapsException
+    {
+        final List<OptionDto> ret = new ArrayList<>();
+        for (final var currency : CurrencyInst.getAvailable()) {
+            ret.add(OptionDto.builder()
+                            .withLabel(currency.getName())
+                            .withValue(currency.getName())
+                            .build());
+        }
         ret.sort(Comparator.comparing(OptionDto::getLabel));
         return ret;
     }
