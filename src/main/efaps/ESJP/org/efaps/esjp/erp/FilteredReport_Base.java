@@ -1332,14 +1332,20 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
-    protected List<OptionDto> getOptions4Currency()
+    protected List<OptionDto> getOptions4Currency(final boolean showBaseCurrency)
         throws EFapsException
     {
         final List<OptionDto> ret = new ArrayList<>();
         for (final var currency : CurrencyInst.getAvailable()) {
             ret.add(OptionDto.builder()
                             .withLabel(currency.getName())
-                            .withValue(currency.getName())
+                            .withValue(currency.getInstance().getOid())
+                            .build());
+        }
+        if (showBaseCurrency) {
+            ret.add(OptionDto.builder()
+                            .withLabel(DBProperties.getProperty(FilteredReport.class.getName() + ".BaseCurrency"))
+                            .withValue("BASE")
                             .build());
         }
         ret.sort(Comparator.comparing(OptionDto::getLabel));
