@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1248,6 +1249,45 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
+
+    protected CurrencyInst evaluateCurrencyInstFilter(final String key)
+        throws EFapsException
+    {
+        final var filterValue = getFilterMap() == null ? null : getFilterMap().get(key);
+        CurrencyInst ret = null;
+        if (filterValue != null) {
+            if (filterValue instanceof final CurrencyFilterValue currencyFilter) {
+                if (currencyFilter.getObject() instanceof Instance && currencyFilter.getObject().isValid()) {
+                    ret = CurrencyInst.get(currencyFilter.getObject());
+                } else if (currencyFilter.getObject() instanceof Instance
+                                && "BASE".equals(currencyFilter.getObject().getKey())) {
+                    ret = CurrencyInst.get(Currency.getBaseCurrency());
+                } else {
+                    ret = null;
+                }
+            } else if ("BASE".equals(filterValue)) {
+                ret = CurrencyInst.get(Currency.getBaseCurrency());
+            } else {
+                ret = CurrencyInst.get(Instance.get(filterValue.toString()));
+            }
+        }
+        return ret;
+    }
+
+    protected Instance evaluateInstanceFilter(final String key)
+    {
+        Instance ret = null;
+        final var filterValue = getFilterMap() == null ? null : getFilterMap().get(key);
+        if (filterValue != null) {
+            if (filterValue instanceof final InstanceFilterValue instanceFilter) {
+                ret = instanceFilter.getObject();
+            } else {
+                ret = Instance.get(filterValue.toString());
+            }
+        }
+        return ret;
+    }
+
     protected List<OptionDto> getOptions4Boolean(final String key)
     {
         final List<OptionDto> ret = new ArrayList<>();
@@ -1312,16 +1352,21 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
-    protected List<OptionDto> getOptions4Enum(final Class<? extends Enum<?>> enumClass)
+    protected  <E extends Enum<E>> List<OptionDto> getOptions4Enum(final Class<E> enumClass)
     {
-        return getOptions4Enum(enumClass.getName(), enumClass);
+       return getOptions4Enum(enumClass.getName(), enumClass);
     }
 
-    protected List<OptionDto> getOptions4Enum(final String baseKey,
-                                              final Class<? extends Enum<?>> enumClass)
+    protected <E extends Enum<E>> List<OptionDto> getOptions4Enum(final String baseKey,
+                                                                  final Class<E> enumClass)
     {
+        return getOptions4Enum(baseKey, EnumSet.allOf(enumClass));
+    }
+
+    protected <E extends Enum<E>> List<OptionDto> getOptions4Enum(final String baseKey,
+                                                                  final EnumSet<E> enumset) {
         final List<OptionDto> ret = new ArrayList<>();
-        for (final var constant : enumClass.getEnumConstants()) {
+        for (final var constant : enumset) {
             final var constantName = constant.name();
             ret.add(OptionDto.builder()
                             .withLabel(DBProperties.getProperty(baseKey + "." + constantName))
@@ -1335,22 +1380,28 @@ public abstract class FilteredReport_Base
     protected List<OptionDto> getOptions4Currency(final boolean showBaseCurrency)
         throws EFapsException
     {
-        final List<OptionDto> ret = new ArrayList<>();
-        for (final var currency : CurrencyInst.getAvailable()) {
-            ret.add(OptionDto.builder()
-                            .withLabel(currency.getName())
-                            .withValue(currency.getInstance().getOid())
-                            .build());
-        }
-        if (showBaseCurrency) {
-            ret.add(OptionDto.builder()
-                            .withLabel(DBProperties.getProperty(FilteredReport.class.getName() + ".BaseCurrency"))
-                            .withValue("BASE")
-                            .build());
-        }
-        ret.sort(Comparator.comparing(OptionDto::getLabel));
-        return ret;
+        return getOptions4Currency(showBaseCurrency, false);
     }
+
+    protected List<OptionDto> getOptions4Currency(final boolean showBaseCurrency, final boolean showEmptyValue)
+                    throws EFapsException
+                {
+                    final List<OptionDto> ret = new ArrayList<>();
+                    for (final var currency : CurrencyInst.getAvailable()) {
+                        ret.add(OptionDto.builder()
+                                        .withLabel(currency.getName())
+                                        .withValue(currency.getInstance().getOid())
+                                        .build());
+                    }
+                    if (showBaseCurrency) {
+                        ret.add(OptionDto.builder()
+                                        .withLabel(DBProperties.getProperty(FilteredReport.class.getName() + ".BaseCurrency"))
+                                        .withValue("BASE")
+                                        .build());
+                    }
+                    ret.sort(Comparator.comparing(OptionDto::getLabel));
+                    return ret;
+                }
 
     @Override
     protected Long getLifespan(final Parameter _parameter)
