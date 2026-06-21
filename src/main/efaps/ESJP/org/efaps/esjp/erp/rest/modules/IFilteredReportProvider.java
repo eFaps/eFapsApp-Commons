@@ -34,9 +34,17 @@ public interface IFilteredReportProvider
     AbstractDynamicReport getReport(final Parameter parameter)
         throws EFapsException;
 
+    List<ValueDto.Builder> getFilterDefinitions()
+        throws EFapsException;
+
     void setFilterMap(final Map<String, Object> filterMap);
 
     List<ValueDto> getFilters();
+
+    default Object evalDefaultValue4Key(String key)
+    {
+        return null;
+    }
 
     default Object evalFilterValue4Key(String key,
                                        List<String> values)

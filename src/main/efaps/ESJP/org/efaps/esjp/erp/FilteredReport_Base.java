@@ -17,6 +17,7 @@ package org.efaps.esjp.erp;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.temporal.TemporalAdjuster;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -76,6 +77,7 @@ import org.efaps.esjp.common.uiform.Field_Base.DropDownPosition;
 import org.efaps.esjp.common.uiform.Field_Base.ListType;
 import org.efaps.esjp.common.util.InterfaceUtils;
 import org.efaps.esjp.common.util.InterfaceUtils_Base.DojoLibs;
+import org.efaps.esjp.erp.rest.modules.IFilteredReportProvider;
 import org.efaps.esjp.erp.util.ERP;
 import org.efaps.esjp.ui.html.Table;
 import org.efaps.esjp.ui.rest.dto.OptionDto;
@@ -1214,6 +1216,31 @@ public abstract class FilteredReport_Base
         return null;
     }
 
+    @Override
+    protected String getCacheKey(final Parameter _parameter)
+        throws EFapsException
+    {
+        if (this instanceof IFilteredReportProvider) {
+            final StringBuilder ret = new StringBuilder();
+            ret.append(Context.getThreadContext().getCompany() == null
+                            ? "NONE"
+                            : Context.getThreadContext().getCompany().getId())
+                            .append(":")
+                            .append(Context.getThreadContext().getPerson().getId())
+                            .append(":").append(getFilters().toString());
+            return ret.toString();
+        } else {
+            return super.getCacheKey(_parameter);
+        }
+    }
+
+    protected TemporalAdjuster evalTemporalAdjuster(final Properties properties,
+                                                    final String key)
+    {
+        final var value = properties.getProperty(key, "NONE");
+        return DateAndTimeUtils.getTemporalAdjuster(value);
+    }
+
     @SuppressWarnings("unchecked")
     protected <E extends Enum<E>> E evaluateEnumFilter(final String key,
                                                        final Class<E> enumClass,
@@ -1225,6 +1252,8 @@ public abstract class FilteredReport_Base
         if (filterValue != null) {
             if (filterValue instanceof final EnumFilterValue enumFilterValue) {
                 ret = (E) enumFilterValue.getObject();
+            } else if (filterValue instanceof final Enum<?> val) {
+                ret = (E) val;
             } else {
                 ret = (E) EnumUtils.getEnum(enumClass, (String) filterValue, defaultValue);
             }
@@ -1248,7 +1277,6 @@ public abstract class FilteredReport_Base
         }
         return ret;
     }
-
 
     protected CurrencyInst evaluateCurrencyInstFilter(final String key)
         throws EFapsException
@@ -1288,15 +1316,45 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
+    protected List<Type> evaluateTypeFilter(final String key)
+        throws EFapsException
+    {
+        final List<Type> ret = new ArrayList<>();
+        final var filterValue = getFilterMap() == null ? null : getFilterMap().get(key);
+        if (filterValue != null) {
+            if (filterMap.get("type") instanceof TypeFilterValue) {
+                final TypeFilterValue filters = (TypeFilterValue) filterMap.get("type");
+                for (final Long typeid : filters.getObject()) {
+                    ret.add(Type.get(typeid));
+                }
+            } else {
+                final var typeIds = (List<?>) filterMap.get("type");
+                for (final var typeid : typeIds) {
+                    if (typeid != null) {
+                        ret.add(Type.get(toLong(typeid)));
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
     protected List<OptionDto> getOptions4Boolean(final String key)
+    {
+        final var prefix = this.getClass().getName();
+        return getOptions4Boolean(prefix, key);
+    }
+
+    protected List<OptionDto> getOptions4Boolean(final String prefix,
+                                                 final String key)
     {
         final List<OptionDto> ret = new ArrayList<>();
         ret.add(OptionDto.builder()
-                        .withLabel(DBProperties.getProperty(key + ".false"))
+                        .withLabel(DBProperties.getProperty(prefix + "." + key + ".false"))
                         .withValue(false)
                         .build());
         ret.add(OptionDto.builder()
-                        .withLabel(DBProperties.getProperty(key + ".true"))
+                        .withLabel(DBProperties.getProperty(prefix + "." + key + ".true"))
                         .withValue(true)
                         .build());
         return ret;
@@ -1352,9 +1410,9 @@ public abstract class FilteredReport_Base
         return ret;
     }
 
-    protected  <E extends Enum<E>> List<OptionDto> getOptions4Enum(final Class<E> enumClass)
+    protected <E extends Enum<E>> List<OptionDto> getOptions4Enum(final Class<E> enumClass)
     {
-       return getOptions4Enum(enumClass.getName(), enumClass);
+        return getOptions4Enum(enumClass.getName(), enumClass);
     }
 
     protected <E extends Enum<E>> List<OptionDto> getOptions4Enum(final String baseKey,
@@ -1364,7 +1422,8 @@ public abstract class FilteredReport_Base
     }
 
     protected <E extends Enum<E>> List<OptionDto> getOptions4Enum(final String baseKey,
-                                                                  final EnumSet<E> enumset) {
+                                                                  final EnumSet<E> enumset)
+    {
         final List<OptionDto> ret = new ArrayList<>();
         for (final var constant : enumset) {
             final var constantName = constant.name();
@@ -1383,25 +1442,54 @@ public abstract class FilteredReport_Base
         return getOptions4Currency(showBaseCurrency, false);
     }
 
-    protected List<OptionDto> getOptions4Currency(final boolean showBaseCurrency, final boolean showEmptyValue)
-                    throws EFapsException
-                {
-                    final List<OptionDto> ret = new ArrayList<>();
-                    for (final var currency : CurrencyInst.getAvailable()) {
-                        ret.add(OptionDto.builder()
-                                        .withLabel(currency.getName())
-                                        .withValue(currency.getInstance().getOid())
-                                        .build());
-                    }
-                    if (showBaseCurrency) {
-                        ret.add(OptionDto.builder()
-                                        .withLabel(DBProperties.getProperty(FilteredReport.class.getName() + ".BaseCurrency"))
-                                        .withValue("BASE")
-                                        .build());
-                    }
-                    ret.sort(Comparator.comparing(OptionDto::getLabel));
-                    return ret;
-                }
+    protected List<OptionDto> getOptions4Currency(final boolean showBaseCurrency,
+                                                  final boolean showEmptyValue)
+        throws EFapsException
+    {
+        final List<OptionDto> ret = new ArrayList<>();
+        for (final var currency : CurrencyInst.getAvailable()) {
+            ret.add(OptionDto.builder()
+                            .withLabel(currency.getName())
+                            .withValue(currency.getInstance().getOid())
+                            .build());
+        }
+        if (showBaseCurrency) {
+            ret.add(OptionDto.builder()
+                            .withLabel(DBProperties.getProperty(FilteredReport.class.getName() + ".BaseCurrency"))
+                            .withValue("BASE")
+                            .build());
+        }
+        ret.sort(Comparator.comparing(OptionDto::getLabel));
+        return ret;
+    }
+
+    protected String getLabel(String key)
+    {
+        final var prefix = this.getClass().getName();
+        return DBProperties.getProperty(prefix + "." + key);
+    }
+
+    protected boolean toBoolean(Object value)
+    {
+        if (value instanceof final Boolean bool) {
+            return bool;
+        }
+        if (value instanceof final String boolStr) {
+            return BooleanUtils.toBoolean(boolStr);
+        }
+        return false;
+    }
+
+    protected long toLong(Object value)
+    {
+        if (value instanceof final Long val) {
+            return val;
+        }
+        if (value instanceof final String valStr) {
+            return Long.valueOf(valStr);
+        }
+        return 0;
+    }
 
     @Override
     protected Long getLifespan(final Parameter _parameter)

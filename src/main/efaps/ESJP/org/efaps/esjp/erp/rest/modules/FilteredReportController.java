@@ -17,10 +17,13 @@ package org.efaps.esjp.erp.rest.modules;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.efaps.admin.program.esjp.EFapsApplication;
 import org.efaps.admin.program.esjp.EFapsUUID;
@@ -31,7 +34,6 @@ import org.efaps.esjp.ui.rest.dto.ValueDto;
 import org.efaps.esjp.ui.util.FileUtil;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,12 +66,13 @@ public class FilteredReportController
         final var queryParams = uriInfo.getQueryParameters();
         String htmlContent = null;
         String downloadKey = null;
-        List<ValueDto> filters = null;
+
         final var provider = evalProvider(moduleId);
+        provider.setFilterMap(evalFilterMap(queryParams, provider));
+        final var filters = provider.getFilters();
+
         final var parameter = ParameterUtil.instance();
         final var report = provider.getReport(parameter);
-        provider.setFilterMap(evalFilterMap(queryParams, provider));
-        filters = provider.getFilters();
 
         if (queryParams.containsKey("mime")) {
             final var mime = queryParams.get("mime").get(0);
@@ -95,16 +98,17 @@ public class FilteredReportController
 
     protected Map<String, Object> evalFilterMap(final MultivaluedMap<String, String> queryParams,
                                                 final IFilteredReportProvider provider)
+        throws EFapsException
     {
         final Map<String, Object> ret = new HashMap<>();
-        final List<ValueDto> filters = provider.getFilters();
-
+        final var filterDefintions = provider.getFilterDefinitions().stream()
+                        .collect(Collectors.toMap(ValueDto.Builder::getName, Function.identity()));
         for (final var entry : queryParams.entrySet()) {
-            final var filterOpt = filters.stream().filter(dto -> dto.getName().equals(entry.getKey())).findFirst();
-            if (filterOpt.isPresent()) {
-                final Object val = switch (filterOpt.get().getType()) {
+            final var filterDef = filterDefintions.get(entry.getKey());
+            if (filterDef != null) {
+                final Object val = switch (filterDef.getType()) {
                     case DATE: {
-                        yield DateTime.parse(entry.getValue().get(0));
+                        yield LocalDate.parse(entry.getValue().get(0));
                     }
                     case PICKLIST: {
                         yield evalPickListValue(provider, entry.getKey(), entry.getValue());
@@ -123,7 +127,22 @@ public class FilteredReportController
                 ret.put(entry.getKey(), entry.getValue().get(0));
             }
         }
+
+        for (final var filterDef : filterDefintions.entrySet()) {
+            if (!ret.containsKey(filterDef.getKey())) {
+                final var defaultValue = evalDefaultValue4Key(provider, filterDef.getKey());
+                if (defaultValue != null) {
+                    ret.put(filterDef.getKey(), defaultValue);
+                }
+            }
+        }
         return ret;
+    }
+
+    protected Object evalDefaultValue4Key(final IFilteredReportProvider provider,
+                                          final String key)
+    {
+        return provider.evalDefaultValue4Key(key);
     }
 
     protected Object evalPickListValue(final IFilteredReportProvider provider,
