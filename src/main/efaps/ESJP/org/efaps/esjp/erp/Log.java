@@ -131,7 +131,8 @@ public class Log
     public Instance register()
         throws EFapsException
     {
-        LOG.info("Registered LOG with: {}", this);
+        LOG.info("Registered LOG with type: {}, level: {}, key: {}, message: {}, value: {}",
+                        getType(), getLevel(), getKey(), getMessage(), getValue());
 
         final var insert = EQL.builder().insert(getType())
                         .set(CIERP.LogAbstract.Level, getLevel())
