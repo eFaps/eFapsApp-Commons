@@ -29,6 +29,8 @@ import org.efaps.eql.builder.Insert;
 import org.efaps.esjp.ci.CIERP;
 import org.efaps.esjp.erp.util.ERP.LogLevel;
 import org.efaps.util.EFapsException;
+import org.efaps.util.IFormatedLog;
+import org.efaps.util.LogMsg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +42,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @EFapsUUID("121ee1a3-3ebb-46b1-9fe6-1d2ea21f995e")
 @EFapsApplication("eFapsApp-Commons")
 public class Log
+    implements IFormatedLog
 {
 
     private static final Logger LOG = LoggerFactory.getLogger(Log.class);
@@ -131,8 +134,7 @@ public class Log
     public Instance register()
         throws EFapsException
     {
-        LOG.info("Registered LOG with type: {}, level: {}, key: {}, message: {}, value: {}",
-                        getType(), getLevel(), getKey(), getMessage(), getValue());
+        LOG.info("Registered LOG: {}", this);
 
         final var insert = EQL.builder().insert(getType())
                         .set(CIERP.LogAbstract.Level, getLevel())
@@ -172,5 +174,17 @@ public class Log
     public String toString()
     {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SIMPLE_STYLE);
+    }
+
+    @Override
+    public String logInfo() {
+        return LogMsg.builder("Log")
+                        .info("key", getKey())
+                        .info("level", getLevel())
+                        .info("logDateTime", getLogDateTime())
+                        .info("message", getMessage())
+                        .info("value", getValue())
+                        .info("type", getType())
+                        .build();
     }
 }
